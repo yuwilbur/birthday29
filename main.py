@@ -18,7 +18,7 @@ class Birthday29():
         pygame.init()
         #screenAttributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         screenAttributes = 0
-        screen = pygame.display.set_mode(Camera.RESOLUTION_LO, screenAttributes)
+        screen = pygame.display.set_mode(Camera.RESOLUTION_HI, screenAttributes)
         debugger = Debugger()
         displayLogger = PerformanceLogger('Display')
         
@@ -40,7 +40,6 @@ class Birthday29():
             displayLogger.startLog()
             if not self.surface == None:
                 screen.blit(self.surface, (0,0), (0,0,self.surface.get_width(),self.surface.get_height()))
-            # screen.blit(debugger.createSurface(), (0,0))
             debugger.clear()
             pygame.display.update()
             displayLogger.endLog()

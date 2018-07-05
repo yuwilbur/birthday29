@@ -2,6 +2,7 @@ from camera import Camera
 from drawEvent import DrawEvent
 from event import Event
 import time
+import copy
 
 class CameraProcess:
     def __init__(self, event_dispatcher):
@@ -13,5 +14,5 @@ class CameraProcess:
     def update(self):
         self.camera.capture(self.rawData)
         Camera.rawToGrayscale(self.rawData, self.processedData)
-        self.event_dispatcher.dispatch_event(Event(DrawEvent.TYPE, self.processedData))
+        self.event_dispatcher.dispatch_event(Event(DrawEvent.TYPE, copy.deepcopy(self.processedData)))
         
