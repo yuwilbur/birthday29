@@ -12,32 +12,27 @@ class CameraTool:
         displayInfo = pygame.display.Info()
         self.camera = None
         self.displayResolution = (displayInfo.current_w, displayInfo.current_h)
-        
-    def processData(self, raw, processed):
-        processed[0::3] = raw[0:raw.size / 3]
-        processed[1::3] = raw[0:raw.size / 3]
-        processed[2::3] = raw[0:raw.size / 3]
 
     def createCamera(self, resolution):
         if self.camera is not None:
             self.camera.close()
         self.imageResolution = resolution
         self.camera = BdCamera(self.imageResolution)
-        self.rawData = self.camera.createEmptyData()
-        self.processedData = self.camera.createEmptyData()
+        self.rawData = self.camera.createEmptyRawData()
+        self.processedData = self.camera.createEmptyRawData()
 
     def run(self):
         screenAttributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         screen = pygame.display.set_mode(self.displayResolution, screenAttributes)
         debugger = Debugger()
 
-        self.createCamera((320, 160))
+        self.createCamera(BdCamera.RESOLUTION_LO)
         _running = True
         _paused = False
         while _running:
             if not _paused:
                 self.camera.capture(self.rawData)
-            self.processData(self.rawData, self.processedData)
+            self.camera.rawToGrayscale(self.rawData, self.processedData)
             surface = pygame.image.frombuffer(self.processedData, self.imageResolution, 'RGB')
             debugger.clear()
             debugger.append('[P]ause | [S]ave | [L]oad | ' + str(self.imageResolution[0]) + 'x' + str(self.imageResolution[1]))
@@ -53,13 +48,13 @@ class CameraTool:
                         _running = False
                         break;
                     if event.key == pygame.K_1:
-                        self.createCamera((320, 160))
+                        self.createCamera(BdCamera.RESOLUTION_LO)
                         break;
                     if event.key == pygame.K_2:
-                        self.createCamera((640, 320))
+                        self.createCamera(BdCamera.RESOLUTION_MI)
                         break;
                     if event.key == pygame.K_3:
-                        self.createCamera((1280, 640))
+                        self.createCamera(BdCamera.RESOLUTION_HI)
                         break;
                     if event.key == pygame.K_p:
                         _paused = not _paused
