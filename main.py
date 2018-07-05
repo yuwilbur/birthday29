@@ -6,17 +6,14 @@ import pygame
 import time
 import picamera
 
-RESOLUTION = 0
+RESOLUTION_TYPE = 0
 
-if (RESOLUTION == 0):
-    WIDTH = 320
-    HEIGHT = 240
-elif(RESOLUTION == 1):
-    WIDTH = 640
-    HEIGHT = 480
-elif(RESOLUTION == 2):
-    WIDTH = 1280
-    HEIGHT = 720
+if (RESOLUTION_TYPE == 0):
+    RESOLUTION = (320, 160)
+elif(RESOLUTION_TYPE == 1):
+    RESOLUTION = (640, 320)
+elif(RESOLUTION_TYPE == 2):
+    RESOLUTION = (1280, 640)
 
 def processData(raw, processed):
     processed[0::3] = raw[0:raw.size / 3]
@@ -24,10 +21,10 @@ def processData(raw, processed):
     processed[2::3] = raw[0:raw.size / 3]
 
 def main():
-    camera = BdCamera(WIDTH, HEIGHT)
+    camera = BdCamera(RESOLUTION)
     pygame.init()
     screenAttributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
-    screen = pygame.display.set_mode((WIDTH,HEIGHT), screenAttributes)
+    screen = pygame.display.set_mode(RESOLUTION, screenAttributes)
     debugger = Debugger()
     cameraLogger = PerformanceLogger('Camera')
     displayLogger = PerformanceLogger('Display')
@@ -47,8 +44,8 @@ def main():
         debugger.append(processLogger.getLog() + ' ')
 
         displayLogger.startLog()
-        surface = pygame.image.frombuffer(processedData, (WIDTH,HEIGHT), 'RGB')
-        screen.blit(surface, (0,0), (0,0,WIDTH,HEIGHT))
+        surface = pygame.image.frombuffer(processedData, RESOLUTION, 'RGB')
+        screen.blit(surface, (0,0), (0,0,surface.get_width(),surface.get_height()))
         screen.blit(debugger.createSurface(), (0,0))
         debugger.clear()
         pygame.display.update()
