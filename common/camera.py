@@ -7,7 +7,9 @@ class BdCamera:
         self.height = height
         self.camera = picamera.PiCamera()
         self.camera.resolution = (width, height)
-        self.camera.shutter_speed = 250
+        self.camera.shutter_speed = 500
+        self.camera.awb_mode = 'off'
+        self.camera.awb_gains = 1.0
 
     def createEmptyData(self):
         return np.empty(self.width * self.height * 3, dtype=np.uint8)
