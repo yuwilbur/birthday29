@@ -1,7 +1,7 @@
 import picamera
 import numpy as np
 
-class BdCamera:
+class Camera:
     RESOLUTION_LO = (320, 160)
     RESOLUTION_MI = (640, 320)
     RESOLUTION_HI = (1280, 640)

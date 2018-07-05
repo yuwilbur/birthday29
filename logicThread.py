@@ -1,4 +1,6 @@
 from common.input import Input
+from common.cameraProcess import CameraProcess
+from common.periodSync import PeriodSync
 import threading
 import time
 
@@ -7,16 +9,15 @@ class LogicThread(threading.Thread):
         super(LogicThread, self).__init__()
         self._stop_event = threading.Event()
         self.input = Input(event_dispatcher)
+        self.cameraProcess = CameraProcess(event_dispatcher)
 
     def stop(self):
         self._stop_event.set()
-        
     def run(self):
-        loopPeriodThreshold = 0.01
+        periodSync = PeriodSync()
         while(not self._stop_event.is_set()):
-            startTime = time.time()
+            start_time = time.time()
             self.input.update()
-            endTime = time.time()
-            loopPeriodDelta = loopPeriodThreshold - (endTime - startTime)
-            if (loopPeriodDelta > 0.0):
-                time.sleep(loopPeriodDelta)
+            self.cameraProcess.update()
+            end_time = time.time()
+            periodSync.Sync(end_time - start_time)
