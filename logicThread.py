@@ -3,15 +3,19 @@ import threading
 import time
 
 class LogicThread(threading.Thread):
-    def setDispatcher(self, event_dispatcher):
-        self.event_dispatcher = event_dispatcher
+    def __init__(self, event_dispatcher):
+        super(LogicThread, self).__init__()
+        self._stop_event = threading.Event()
+        self.input = Input(event_dispatcher)
+
+    def stop(self):
+        self._stop_event.set()
         
     def run(self):
         loopPeriodThreshold = 0.01
-        input = Input(self.event_dispatcher)
-        while(True):
+        while(not self._stop_event.is_set()):
             startTime = time.time()
-            input.update()
+            self.input.update()
             endTime = time.time()
             loopPeriodDelta = loopPeriodThreshold - (endTime - startTime)
             if (loopPeriodDelta > 0.0):

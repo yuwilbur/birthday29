@@ -29,9 +29,8 @@ class Birthday29():
         event_dispatcher = EventDispatcher()
         event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
         
-        logicThread = LogicThread()
+        logicThread = LogicThread(event_dispatcher)
         logicThread.setDaemon(True)
-        logicThread.setDispatcher(event_dispatcher)
         logicThread.start()
         
         while(self._running):
@@ -58,11 +57,16 @@ class Birthday29():
             test += str(np.amax(processedData))
             debugger.append(test)
 
+        logicThread.stop()
+        logicThread.join()
         pygame.quit()
 
     def processInputEvent(self, event):
         if event == InputEvent.ESCAPE:
+            pygame.quit()
+            sys.exit()
+        if event == InputEvent.Q:
             self._running = False
-    
+
 if (__name__ == "__main__"):
     Birthday29().run()

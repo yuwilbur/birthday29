@@ -11,5 +11,13 @@ class Input():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.event_dispatcher.dispatch_event(InputEvent.ESCAPE)
-                if event.key == pygame.K_t:
-                    print 'Test'
+                if event.key == pygame.K_q:
+                    self.event_dispatcher.dispatch_event(InputEvent.Q)
+                if event.key == pygame.K_UP:
+                    self.event_dispatcher.dispatch_event(InputEvent.UP)
+                if event.key == pygame.K_DOWN:
+                    self.event_dispatcher.dispatch_event(InputEvent.DOWN)
+                if event.key == pygame.K_RIGHT:
+                    self.event_dispatcher.dispatch_event(InputEvent.RIGHT)
+                if event.key == pygame.K_LEFT:
+                    self.event_dispatcher.dispatch_event(InputEvent.LEFT)
