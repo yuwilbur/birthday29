@@ -22,6 +22,11 @@ class BdCamera:
     def rawToY(self, raw, Y):
         Y = raw[0:raw.size / 3]
 
+    def YToGrayscale(self, Y, grayscale):
+        grayscale[0::3] = Y
+        grayscale[1::3] = Y
+        grayscale[2::3] = Y
+
     def createEmptyYData(self):
         return np.empty(self.resolution[0] * self.resolution[1], dtype=np.uint8)
 
