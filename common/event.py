@@ -3,6 +3,9 @@ class Event(object):
         self._type = event_type
         self._data = data
 
+    def __eq__(self, other):
+        return self.type() == other.type() and self.data() == other.data()
+
     def type(self):
         return self._type
 
