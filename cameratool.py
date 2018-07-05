@@ -4,52 +4,73 @@ import numpy as np
 import pygame
 import picamera
 
-WIDTH = 640
-HEIGHT = 480
-
 filename = 'testcamera.npy'
 
-def processData(raw, processed):
-    processed[0::3] = raw[0:raw.size / 3]
-    processed[1::3] = raw[0:raw.size / 3]
-    processed[2::3] = raw[0:raw.size / 3]
+class CameraTool:
+    def __init__(self):
+        pygame.init()
+        displayInfo = pygame.display.Info()
+        self.camera = None
+        self.displayResolution = (displayInfo.current_w, displayInfo.current_h)
+        
+    def processData(self, raw, processed):
+        processed[0::3] = raw[0:raw.size / 3]
+        processed[1::3] = raw[0:raw.size / 3]
+        processed[2::3] = raw[0:raw.size / 3]
 
-def main():
-    camera = BdCamera(640,480)
-    pygame.init()
-    screenAttributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
-    screen = pygame.display.set_mode((WIDTH,HEIGHT), screenAttributes)
-    debugger = Debugger()
-    rawData = camera.createEmptyData()
-    processedData = camera.createEmptyData()
-    _running = True
-    _paused = False
-    while _running:
-        if not _paused:
-            camera.capture(rawData)
-        processData(rawData, processedData)
-        surface = pygame.image.frombuffer(processedData, (WIDTH,HEIGHT), 'RGB')
-        debugger.clear()
-        debugger.append("[P]ause | [S]ave | [L]oad")
-        screen.blit(surface, (0,0), (0,0,WIDTH,HEIGHT))
-        screen.blit(debugger.createSurface(), (0,0))
-        pygame.display.update()
-        debugger.clear()
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    _running = False
-                    break;
-                if event.key == pygame.K_p:
-                    _paused = not _paused
-                    break;
-                if event.key == pygame.K_s:
-                    np.save(filename, rawData)
-                    break;
-                if event.key == pygame.K_l:
-                    rawData = np.load(filename)
-                    break;
+    def createCamera(self, resolution):
+        if self.camera is not None:
+            self.camera.close()
+        self.imageResolution = resolution
+        self.camera = BdCamera(self.imageResolution)
+        self.rawData = self.camera.createEmptyData()
+        self.processedData = self.camera.createEmptyData()
+
+    def run(self):
+        screenAttributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
+        screen = pygame.display.set_mode(self.displayResolution, screenAttributes)
+        debugger = Debugger()
+
+        self.createCamera((320, 160))
+        _running = True
+        _paused = False
+        while _running:
+            if not _paused:
+                self.camera.capture(self.rawData)
+            self.processData(self.rawData, self.processedData)
+            surface = pygame.image.frombuffer(self.processedData, self.imageResolution, 'RGB')
+            debugger.clear()
+            debugger.append('[P]ause | [S]ave | [L]oad | ' + str(self.imageResolution[0]) + 'x' + str(self.imageResolution[1]))
+            surface = pygame.transform.scale(surface, self.displayResolution)
+            screen.blit(surface, (0,0), (0,0,surface.get_width(),surface.get_height()))
+            screen.blit(debugger.createSurface(), (0,0))
+            pygame.display.update()
+            debugger.clear()
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        _running = False
+                        break;
+                    if event.key == pygame.K_1:
+                        self.createCamera((320, 160))
+                        break;
+                    if event.key == pygame.K_2:
+                        self.createCamera((640, 320))
+                        break;
+                    if event.key == pygame.K_3:
+                        self.createCamera((1280, 640))
+                        break;
+                    if event.key == pygame.K_p:
+                        _paused = not _paused
+                        break;
+                    if event.key == pygame.K_s:
+                        np.save(filename, rawData)
+                        break;
+                    if event.key == pygame.K_l:
+                        rawData = np.load(filename)
+                        break;
 
 if (__name__ == "__main__"):
-    main()
+    cameraTool = CameraTool()
+    cameraTool.run()
