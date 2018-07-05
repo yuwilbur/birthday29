@@ -1,4 +1,6 @@
 from camera import Camera
+from drawEvent import DrawEvent
+from event import Event
 import time
 
 class CameraProcess:
@@ -6,10 +8,10 @@ class CameraProcess:
         self.event_dispatcher = event_dispatcher
         self.camera = Camera(Camera.RESOLUTION_LO)
         self.rawData = self.camera.createEmptyRawData()
-        # self.processedData = self.camera.createEmptyRawData()
+        self.processedData = self.camera.createEmptyRawData()
 
     def update(self):
-        #start_time = time.time()
         self.camera.capture(self.rawData)
-        #print "camera: " + str(time.time() - start_time)
+        Camera.rawToGrayscale(self.rawData, self.processedData)
+        self.event_dispatcher.dispatch_event(Event(DrawEvent.TYPE, self.processedData))
         

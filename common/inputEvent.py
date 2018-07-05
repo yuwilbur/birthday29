@@ -1,7 +1,7 @@
 from event import Event
 
 class InputEvent():
-    TYPE = 'InputEvent'
+    TYPE = __name__
     ESCAPE = Event(TYPE,'ESCAPE')
     Q = Event(TYPE, 'Q')
     UP = Event(TYPE,'UP')

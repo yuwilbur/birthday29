@@ -1,4 +1,4 @@
-from common.camera import BdCamera
+from common.camera import Camera
 from common.debug import Debugger
 import numpy as np
 import pygame
@@ -17,7 +17,7 @@ class CameraTool:
         if self.camera is not None:
             self.camera.close()
         self.imageResolution = resolution
-        self.camera = BdCamera(self.imageResolution)
+        self.camera = Camera(self.imageResolution)
         self.rawData = self.camera.createEmptyRawData()
         self.processedData = self.camera.createEmptyRawData()
 
@@ -26,13 +26,13 @@ class CameraTool:
         screen = pygame.display.set_mode(self.displayResolution, screenAttributes)
         debugger = Debugger()
 
-        self.createCamera(BdCamera.RESOLUTION_LO)
+        self.createCamera(Camera.RESOLUTION_LO)
         _running = True
         _paused = False
         while _running:
             if not _paused:
                 self.camera.capture(self.rawData)
-            self.camera.rawToGrayscale(self.rawData, self.processedData)
+            Camera.rawToGrayscale(self.rawData, self.processedData)
             surface = pygame.image.frombuffer(self.processedData, self.imageResolution, 'RGB')
             debugger.clear()
             debugger.append('[P]ause | [S]ave | [L]oad | ' + str(self.imageResolution[0]) + 'x' + str(self.imageResolution[1]))
@@ -48,13 +48,13 @@ class CameraTool:
                         _running = False
                         break;
                     if event.key == pygame.K_1:
-                        self.createCamera(BdCamera.RESOLUTION_LO)
+                        self.createCamera(Camera.RESOLUTION_LO)
                         break;
                     if event.key == pygame.K_2:
-                        self.createCamera(BdCamera.RESOLUTION_MI)
+                        self.createCamera(Camera.RESOLUTION_MI)
                         break;
                     if event.key == pygame.K_3:
-                        self.createCamera(BdCamera.RESOLUTION_HI)
+                        self.createCamera(Camera.RESOLUTION_HI)
                         break;
                     if event.key == pygame.K_p:
                         _paused = not _paused

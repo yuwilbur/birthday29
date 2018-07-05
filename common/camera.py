@@ -14,15 +14,18 @@ class Camera:
         self.camera.awb_mode = 'off'
         self.camera.awb_gains = 1.0
 
-    def rawToGrayscale(self, raw, grayscale):
+    @staticmethod
+    def rawToGrayscale(raw, grayscale):
         grayscale[0::3] = raw[0:raw.size / 3]
         grayscale[1::3] = raw[0:raw.size / 3]
         grayscale[2::3] = raw[0:raw.size / 3]
 
-    def rawToY(self, raw, Y):
+    @staticmethod
+    def rawToY(raw, Y):
         Y = raw[0:raw.size / 3]
 
-    def YToGrayscale(self, Y, grayscale):
+    @staticmethod
+    def YToGrayscale(Y, grayscale):
         grayscale[0::3] = Y
         grayscale[1::3] = Y
         grayscale[2::3] = Y
