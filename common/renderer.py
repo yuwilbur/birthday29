@@ -1,5 +1,4 @@
 from common.drawEvent import DrawEvent
-from common.camera import Camera
 import pygame
 
 class PygameRenderer():
@@ -23,7 +22,7 @@ class PygameRenderer():
         pygame.display.update()
 
     def processDrawEvent(self, event):
-            self._surface = pygame.image.frombuffer(event.data(), Camera.RESOLUTION_LO, 'RGB')
+            self._surface = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
 
     
         
