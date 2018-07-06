@@ -1,7 +1,7 @@
 from common.input import Input
 from logicThread import LogicThread
 from common.event import EventDispatcher
-from common.inputEvent import InputEvent
+from common.events import InputEvent
 from common.periodSync import PeriodSync
 from common.renderer import PygameRenderer
 import sys

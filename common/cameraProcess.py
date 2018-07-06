@@ -1,6 +1,6 @@
 from camera import Camera
-from drawEvent import DrawEvent
 from event import Event
+from events import DrawEvent
 import time
 import copy
 

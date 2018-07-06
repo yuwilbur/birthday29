@@ -1,5 +1,8 @@
 from event import Event
 
+class DrawEvent():
+    TYPE = __name__
+
 class InputEvent():
     TYPE = __name__
     ESCAPE = Event(TYPE,'ESCAPE')

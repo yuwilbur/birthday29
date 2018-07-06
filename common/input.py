@@ -1,4 +1,4 @@
-from inputEvent import InputEvent
+from events import InputEvent
 import pygame
 import sys
 
