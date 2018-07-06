@@ -22,7 +22,7 @@ class PygameRenderer():
         pygame.display.update()
 
     def processDrawEvent(self, event):
-            self._surface = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
+            self._surface = pygame.image.frombuffer(event.data()[0], event.data()[2], 'RGB')
 
     
         

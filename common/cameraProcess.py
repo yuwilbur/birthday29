@@ -15,6 +15,6 @@ class CameraProcess:
     def update(self):
         self._camera.capture(self._rawData)
         Camera.rawToGrayscale(self._rawData, self._processedData)
-        data = (copy.deepcopy(self._processedData), self._resolution)
+        data = (copy.deepcopy(self._processedData), (0,0), self._resolution)
         self._event_dispatcher.dispatch_event(Event(DrawEvent.TYPE, data))
         
