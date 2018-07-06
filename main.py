@@ -9,7 +9,6 @@ from common.drawEvent import DrawEvent
 from common.periodSync import PeriodSync
 import numpy as np 
 import pygame
-import time
 import picamera
 import sys
 
@@ -33,9 +32,9 @@ class Birthday29():
         logicThread.start()
 
         self.surface = None
-        periodSync = PeriodSync()
+        period_sync = PeriodSync()
         while(self._running):
-            start_time = time.time()
+            period_sync.Start()
 
             displayLogger.startLog()
             if not self.surface == None:
@@ -45,8 +44,8 @@ class Birthday29():
             displayLogger.endLog()
             debugger.append(displayLogger.getLog() + ' ')
 
-            end_time = time.time()
-            periodSync.Sync(end_time - start_time)
+            period_sync.End()
+            period_sync.Sync()
 
         logicThread.stop()
         logicThread.join()

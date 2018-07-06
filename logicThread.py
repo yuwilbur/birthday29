@@ -2,7 +2,6 @@ from common.input import Input
 from common.cameraProcess import CameraProcess
 from common.periodSync import PeriodSync
 import threading
-import time
 
 class LogicThread(threading.Thread):
     def __init__(self, event_dispatcher):
@@ -13,11 +12,12 @@ class LogicThread(threading.Thread):
 
     def stop(self):
         self._stop_event.set()
+
     def run(self):
-        periodSync = PeriodSync()
+        period_sync = PeriodSync()
         while(not self._stop_event.is_set()):
-            start_time = time.time()
+            period_sync.Start()
             self.input.update()
             self.cameraProcess.update()
-            end_time = time.time()
-            periodSync.Sync(end_time - start_time)
+            period_sync.End()
+            period_sync.Sync()
