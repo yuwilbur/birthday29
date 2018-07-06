@@ -3,12 +3,14 @@ from common.camera import Camera
 import pygame
 
 class PygameRenderer():
-    def __init__(self, event_dispatcher, resolution):
+    def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher
         pygame.init()
         #screen_attributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         screen_attributes = 0
-        self._screen = pygame.display.set_mode(resolution, screen_attributes)
+        display_info = pygame.display.Info()
+        self._resolution = (display_info.current_w, display_info.current_h)
+        self._screen = pygame.display.set_mode(self._resolution, screen_attributes)
         self._event_dispatcher.add_event_listener(DrawEvent.TYPE, self.processDrawEvent)
         self._surface = None
 
@@ -21,7 +23,7 @@ class PygameRenderer():
         pygame.display.update()
 
     def processDrawEvent(self, event):
-        self._surface = pygame.image.frombuffer(event.data(), Camera.RESOLUTION_LO, 'RGB')
+            self._surface = pygame.image.frombuffer(event.data(), Camera.RESOLUTION_LO, 'RGB')
 
     
         

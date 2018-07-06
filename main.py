@@ -1,7 +1,4 @@
-from common.camera import Camera
 from common.input import Input
-from common.debug import Debugger
-from common.debug import PerformanceLogger
 from logicThread import LogicThread
 from common.event import EventDispatcher
 from common.inputEvent import InputEvent
@@ -15,7 +12,7 @@ class Birthday29():
         event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
 
         inputProcess = Input(event_dispatcher)
-        renderer = PygameRenderer(event_dispatcher, Camera.RESOLUTION_HI)
+        renderer = PygameRenderer(event_dispatcher)
         logicThread = LogicThread(event_dispatcher)
         logicThread.setDaemon(True)
         logicThread.start()
