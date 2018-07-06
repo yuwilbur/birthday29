@@ -4,32 +4,32 @@ import time
 class Debugger:
     def __init__(self):
         pygame.font.init()
-        self.fontArial = pygame.font.SysFont('Arial', 12)
-        self.log = ''
+        self._fontArial = pygame.font.SysFont('Arial', 12)
+        self._log = ''
 
     def append(self, log):
-        self.log += log
+        self._log += log
 
     def clear(self):
-        self.log = ''
+        self._log = ''
 
     def createSurface(self):
-        return self.fontArial.render(self.log, False, (0, 255, 0))
+        return self._fontArial.render(self._log, False, (0, 255, 0))
 
 class PerformanceLogger:
     def __init__(self, name):
-        self.name = name
-        self.log = 0.0
-        self.lastGetLog = 0.0
+        self._name = name
+        self._log = 0.0
+        self._lastGetLog = 0.0
 
     def startLog(self):
-        self.start = time.time()
+        self._start = time.time()
 
     def endLog(self):
-        self.end = time.time()
+        self._end = time.time()
 
     def getLog(self):
-        if(time.time() - self.lastGetLog > 0.2):
-            self.lastGetLog = time.time()
-            self.log = self.end - self.start
-        return self.name + ' ' + format(self.log*1000, '.0f') + 'ms'
+        if(time.time() - self._lastGetLog > 0.2):
+            self._lastGetLog = time.time()
+            self._log = self._end - self._start
+        return self._name + ' ' + format(self._log*1000, '.0f') + 'ms'
