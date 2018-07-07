@@ -22,7 +22,7 @@ class Camera:
 
     @staticmethod
     def rawToY(raw, Y):
-        Y = raw[0:raw.size / 3]
+        Y[0::1] = raw[0:raw.size / 3]
 
     @staticmethod
     def YToGrayscale(Y, grayscale):
@@ -33,7 +33,7 @@ class Camera:
     def createEmptyYData(self):
         return np.empty(self.resolution[0] * self.resolution[1], dtype=np.uint8)
 
-    def createEmptyRawData(self):
+    def createEmptyFullData(self):
         return np.empty(self.resolution[0] * self.resolution[1] * 3, dtype=np.uint8)
 
     def capture(self, data):

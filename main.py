@@ -1,5 +1,5 @@
-from common.input import Input
-from logicThread import LogicThread
+from inputThread import InputThread
+from cameraThread import CameraThread
 from common.event import EventDispatcher
 from common.events import InputEvent
 from common.periodSync import PeriodSync
@@ -11,25 +11,30 @@ class Birthday29():
         event_dispatcher = EventDispatcher()
         event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
 
-        inputProcess = Input(event_dispatcher)
         renderer = PygameRenderer(event_dispatcher)
-        logicThread = LogicThread(event_dispatcher)
-        logicThread.setDaemon(True)
-        logicThread.start()
+
+        inputThread = InputThread(event_dispatcher)
+        inputThread.setDaemon(True)
+        inputThread.start()
+
+        cameraThread = CameraThread(event_dispatcher)
+        cameraThread.setDaemon(True)
+        cameraThread.start()
         
         period_sync = PeriodSync()
         self._running = True
         while(self._running):
             period_sync.Start()
 
-            inputProcess.update()
             renderer.update()
 
             period_sync.End()
             period_sync.Sync()
 
-        logicThread.stop()
-        logicThread.join()
+        cameraThread.stop()
+        cameraThread.join()
+        inputThread.stop()
+        inputThread.join()
     
     def processInputEvent(self, event):
         if event == InputEvent.ESCAPE:
