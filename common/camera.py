@@ -1,8 +1,7 @@
 import config
 import numpy as np
 import copy
-if not config.STILL_PHOTO:
-    import picamera
+import picamera
 
 class Camera:
     RESOLUTION_LO = (320, 160)
