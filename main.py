@@ -4,10 +4,12 @@ from common.event import EventDispatcher
 from common.events import InputEvent
 from common.periodSync import PeriodSync
 from common.renderer import PygameRenderer
+from common import config
 import sys
 
 class Birthday29():
     def run(self):
+        config.STILL_PHOTO = True
         event_dispatcher = EventDispatcher()
         event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
 

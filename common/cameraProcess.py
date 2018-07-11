@@ -4,7 +4,6 @@ from events import DrawEvent
 from events import YImageEvent
 import time
 import copy
-import numpy
 
 class CameraProcess:
     def __init__(self, event_dispatcher):
@@ -16,7 +15,7 @@ class CameraProcess:
         self._y = self._camera.createEmptyYData()
 
     def update(self):
-        self._camera.capture(self._raw)
+        self._raw = self._camera.capture()
     
         Camera.rawToY(self._raw, self._y)
         y_data = (self._y, self._resolution)

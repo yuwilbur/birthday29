@@ -1,18 +1,24 @@
 import picamera
+import config
 import numpy as np
+import copy
 
 class Camera:
     RESOLUTION_LO = (320, 160)
     RESOLUTION_MI = (640, 320)
     RESOLUTION_HI = (1280, 640)
 
+    FILENAME = 'testcamera.npy'
+
     def __init__(self, resolution):
-        self.resolution = resolution
-        self.camera = picamera.PiCamera()
-        self.camera.resolution = resolution
-        self.camera.shutter_speed = 500
-        self.camera.awb_mode = 'off'
-        self.camera.awb_gains = 1.0
+        self._resolution = resolution
+        self._raw = self.createEmptyFullData()
+        if not config.STILL_PHOTO:
+            self._camera = picamera.PiCamera()
+            self._camera.resolution = resolution
+            self._camera.shutter_speed = 500
+            self._camera.awb_mode = 'off'
+            self._camera.awb_gains = 1.0
 
     @staticmethod
     def rawToGrayscale(raw, grayscale):
@@ -31,13 +37,18 @@ class Camera:
         grayscale[2::3] = Y
 
     def createEmptyYData(self):
-        return np.empty(self.resolution[0] * self.resolution[1], dtype=np.uint8)
+        return np.empty(self._resolution[0] * self._resolution[1], dtype=np.uint8)
 
     def createEmptyFullData(self):
-        return np.empty(self.resolution[0] * self.resolution[1] * 3, dtype=np.uint8)
+        return np.empty(self._resolution[0] * self._resolution[1] * 3, dtype=np.uint8)
 
-    def capture(self, data):
-        self.camera.capture(data, use_video_port=True, format='yuv')
+    def capture(self):
+        if not config.STILL_PHOTO:
+            self._camera.capture(self._raw, use_video_port=True, format='yuv')
+        else:
+            self._raw = np.load(Camera.FILENAME)
+        return self._raw
 
     def close(self):
-        self.camera.close()
+        if not config.STILL_PHOTO:
+            self._camera.close()

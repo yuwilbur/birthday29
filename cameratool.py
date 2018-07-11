@@ -18,8 +18,8 @@ class CameraTool:
             self.camera.close()
         self.imageResolution = resolution
         self.camera = Camera(self.imageResolution)
-        self.rawData = self.camera.createEmptyRawData()
-        self.processedData = self.camera.createEmptyRawData()
+        self.rawData = self.camera.createEmptyFullData()
+        self.processedData = self.camera.createEmptyFullData()
 
     def run(self):
         screenAttributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
@@ -60,10 +60,10 @@ class CameraTool:
                         _paused = not _paused
                         break;
                     if event.key == pygame.K_s:
-                        np.save(filename, rawData)
+                        np.save(filename, self.rawData)
                         break;
                     if event.key == pygame.K_l:
-                        rawData = np.load(filename)
+                        self.rawData = np.load(filename)
                         break;
 
 if (__name__ == "__main__"):
