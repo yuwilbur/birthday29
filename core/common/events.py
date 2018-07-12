@@ -3,8 +3,8 @@ from ..common.event import Event
 class YImageEvent():
     TYPE = "YImage"
 
-class DrawEvent():
-    TYPE = "Draw"
+class RGBImageEvent():
+    TYPE = "RGBImage"
 
 class InputEvent():
     TYPE = "Input"

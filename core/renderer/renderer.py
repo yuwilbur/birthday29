@@ -1,4 +1,4 @@
-from ..common.events import DrawEvent
+from ..common.events import RGBImageEvent
 
 import pygame
 
@@ -11,7 +11,7 @@ class PygameRenderer():
         display_info = pygame.display.Info()
         self._resolution = (display_info.current_w, display_info.current_h)
         self._screen = pygame.display.set_mode(self._resolution, screen_attributes)
-        self._event_dispatcher.add_event_listener(DrawEvent.TYPE, self.processDrawEvent)
+        self._event_dispatcher.add_event_listener(RGBImageEvent.TYPE, self.processRGBImageEvent)
         self._surface = None
 
     def __del__(self):
@@ -22,8 +22,8 @@ class PygameRenderer():
             self._screen.blit(self._surface, (0,0), (0,0,self._surface.get_width(),self._surface.get_height()))
         pygame.display.update()
 
-    def processDrawEvent(self, event):
-            self._surface = pygame.image.frombuffer(event.data()[0], event.data()[2], 'RGB')
+    def processRGBImageEvent(self, event):
+            self._surface = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
 
     
         

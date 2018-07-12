@@ -1,5 +1,5 @@
 from ..common.event import Event
-from ..common.events import DrawEvent
+from ..common.events import RGBImageEvent
 from ..common.events import YImageEvent
 from ..input.camera import Camera
 
@@ -24,7 +24,6 @@ def cameraWorker(pipe, resolution):
         if not main_conn.poll():
             worker_conn.send((y, grayscale))
 
-
 class CameraProcess:
     END_MESSAGE = 'END'
     def __init__(self, event_dispatcher):
@@ -45,4 +44,4 @@ class CameraProcess:
         data = self._main_conn.recv()
     
         self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (data[0], self._resolution)))
-        self._event_dispatcher.dispatch_event(Event(DrawEvent.TYPE, (data[1], (0,0), self._resolution)))
+        self._event_dispatcher.dispatch_event(Event(RGBImageEvent.TYPE, (data[1], self._resolution)))
