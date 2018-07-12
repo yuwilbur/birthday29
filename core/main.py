@@ -1,5 +1,5 @@
-from .input.inputThread import InputThread
-from .cameraThread import CameraThread
+from .input.input_thread import InputThread
+from .camera_thread import CameraThread
 from .common.event import EventDispatcher
 from .common.events import InputEvent
 from .period_sync import PeriodSync

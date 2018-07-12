@@ -1,6 +1,6 @@
-from .cameraProcess import CameraProcess
+from .camera_process import CameraProcess
 from .period_sync import PeriodSync
-from .imageProcessThread import ImageProcessThread
+from .image_process import ImageProcessThread
 import threading
 import time
 
