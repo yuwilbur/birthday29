@@ -15,7 +15,7 @@ class Camera:
 
     def __init__(self, resolution):
         self._resolution = resolution
-        self._raw = self.createEmptyFullData()
+        self._raw = Camera.createEmptyFullData(self._resolution)
         if 'picamera' in sys.modules:
             self._camera = picamera.PiCamera()
             self._camera.resolution = resolution
@@ -39,11 +39,13 @@ class Camera:
         grayscale[1::3] = Y
         grayscale[2::3] = Y
 
-    def createEmptyYData(self):
-        return np.empty(self._resolution[0] * self._resolution[1], dtype=np.uint8)
+    @staticmethod
+    def createEmptyYData(resolution):
+        return np.empty(resolution[0] * resolution[1], dtype=np.uint8)
 
-    def createEmptyFullData(self):
-        return np.empty(self._resolution[0] * self._resolution[1] * 3, dtype=np.uint8)
+    @staticmethod
+    def createEmptyFullData(resolution):
+        return np.empty(resolution[0] * resolution[1] * 3, dtype=np.uint8)
 
     def capture(self):
         if 'picamera' in sys.modules:

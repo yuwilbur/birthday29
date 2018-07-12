@@ -40,3 +40,4 @@ class InputThread(threading.Thread):
             period_sync.End()
             period_sync.Sync()
         self._image_process.stop()
+        self._camera_process.stop()
