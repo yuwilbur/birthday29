@@ -18,7 +18,7 @@ class Camera:
     def __init__(self, resolution):
         self._resolution = resolution
         self._raw = self.createEmptyFullData()
-        if not config.STILL_PHOTO and 'picamera' in sys.modules:
+        if True:
             self._camera = picamera.PiCamera()
             self._camera.resolution = resolution
             self._camera.shutter_speed = 500
@@ -48,12 +48,12 @@ class Camera:
         return np.empty(self._resolution[0] * self._resolution[1] * 3, dtype=np.uint8)
 
     def capture(self):
-        if not config.STILL_PHOTO and 'picamera' in sys.modules:
+        if True:
             self._camera.capture(self._raw, use_video_port=True, format='yuv')
         else:
             self._raw = np.load(Camera.FILENAME)
         return self._raw
 
     def close(self):
-        if not config.STILL_PHOTO and 'picamera' in sys.modules:
+        if True:
             self._camera.close()
