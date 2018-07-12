@@ -5,7 +5,9 @@ from .input.input_thread import InputThread
 from .renderer.renderer import PygameRenderer
 from .sync.period_sync import PeriodSync
 
-import sys
+import os
+import signal
+import time
 
 class Main():
     def __init__(self):
@@ -37,6 +39,8 @@ class Main():
     
     def processInputEvent(self, event):
         if event == InputEvent.ESCAPE:
-            sys.exit()
+            while True:
+                os.kill(os.getpid(), signal.SIGINT)
+                time.sleep(0.5)
         if event == InputEvent.Q:
             self._running = False
