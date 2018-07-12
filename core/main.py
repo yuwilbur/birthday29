@@ -1,5 +1,4 @@
 from .input.input_thread import InputThread
-from .camera_thread import CameraThread
 from .common.event import EventDispatcher
 from .common.events import InputEvent
 from .period_sync import PeriodSync
@@ -21,10 +20,6 @@ class Main():
         inputThread = InputThread(event_dispatcher)
         inputThread.setDaemon(True)
         inputThread.start()
-
-        cameraThread = CameraThread(event_dispatcher)
-        cameraThread.setDaemon(True)
-        cameraThread.start()
         
         period_sync = PeriodSync()
         self._running = True
@@ -36,8 +31,6 @@ class Main():
             period_sync.End()
             period_sync.Sync()
 
-        cameraThread.stop()
-        cameraThread.join()
         inputThread.stop()
         inputThread.join()
     

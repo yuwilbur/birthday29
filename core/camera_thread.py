@@ -1,6 +1,6 @@
 from .camera_process import CameraProcess
 from .period_sync import PeriodSync
-from .image_process import ImageProcessThread
+from .image_process import ImageProcess
 import threading
 import time
 
@@ -14,7 +14,7 @@ class CameraThread(threading.Thread):
         self._stop_event = threading.Event()
         self._event_dispatcher = event_dispatcher
         self._camera_process = CameraProcess(self._event_dispatcher)
-        self._image_processor = ImageProcessThread(self._event_dispatcher)
+        self._image_processor = ImageProcess(self._event_dispatcher)
 
     def stop(self):
         self._stop_event.set()

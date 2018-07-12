@@ -1,7 +1,7 @@
-from .common.camera import Camera
-from .common.event import Event
-from .common.events import DrawEvent
-from .common.events import YImageEvent
+from ..common.camera import Camera
+from ..common.event import Event
+from ..common.events import DrawEvent
+from ..common.events import YImageEvent
 import time
 import copy
 

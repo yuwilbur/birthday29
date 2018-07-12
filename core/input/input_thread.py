@@ -1,5 +1,7 @@
 from ..common.events import InputEvent
 from ..period_sync import PeriodSync
+from .image_process import ImageProcess
+from .camera_process import CameraProcess
 import threading
 import pygame
 
@@ -8,11 +10,17 @@ class InputThread(threading.Thread):
         super(InputThread, self).__init__()
         self._stop_event = threading.Event()
         self._event_dispatcher = event_dispatcher
+        self._camera_process = CameraProcess(self._event_dispatcher)
+        self._image_processor = ImageProcess(self._event_dispatcher)
+
+    def stop(self):
+        self._stop_event.set()
 
     def run(self):
         period_sync = PeriodSync()
         while not self._stop_event.is_set():
             period_sync.Start()
+            self._camera_process.update()
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:

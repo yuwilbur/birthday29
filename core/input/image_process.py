@@ -1,4 +1,4 @@
-from .common.events import YImageEvent
+from ..common.events import YImageEvent
 from multiprocessing import Process, Pipe
 import time
 import copy
@@ -27,7 +27,7 @@ def processYImage(pipe):
     
     
 
-class ImageProcessThread():
+class ImageProcess():
     def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher
         self._event_dispatcher.add_event_listener(YImageEvent.TYPE, self.processYImage)
