@@ -4,25 +4,27 @@ from multiprocessing import Process, Pipe
 import time
 import copy
 
+def processYImage2(y, resolution):
+    start = time.time()
+    total = 0
+    width = resolution[0]
+    height = resolution[1]
+    for i in range(0, width - 1):
+        test = i*height
+        for j in range(0, height - 1):
+            if y[j + test] > 0:
+                total += 1
+            # total = total + y[j*resolution[0] + i]
+    print time.time() - start
+
+
 def processYImage(pipe):
     main_pipe, worker_pipe = pipe
     main_pipe.close()
     while True:
         try:
             data = worker_pipe.recv()
-            start = time.time()
-            total = 0
-            y = data[0]
-            resolution = data[1]
-            width = resolution[0]
-            height = resolution[1]
-            for i in range(0, width - 1):
-                test = i*height
-                for j in range(0, height - 1):
-                    if y[j + test] > 0:
-                        total += 1
-                    # total = total + y[j*resolution[0] + i]
-            print time.time() - start
+            processYImage2(data[0], data[1])
         except EOFError:
             break
     
@@ -40,6 +42,7 @@ class ImageProcess():
     def stop(self):
         self._main_pipe.close()
         self._worker_pipe.close()
+        self._processor.terminate()
         self._processor.join()
         
     def processYImage(self, event):

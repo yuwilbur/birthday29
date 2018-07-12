@@ -1,1 +1,1 @@
-STILL_PHOTO = True
+STILL_PHOTO = False
