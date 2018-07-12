@@ -23,6 +23,17 @@ class Camera:
             self._camera.awb_mode = 'off'
             self._camera.awb_gains = 1.0
 
+    def capture(self):
+        if 'picamera' in sys.modules:
+            self._camera.capture(self._raw, use_video_port=True, format='yuv')
+        else:
+            self._raw = np.load(Camera.FILENAME)
+        return self._raw
+
+    def close(self):
+        if 'picamera' in sys.modules:
+            self._camera.close()
+
     @staticmethod
     def rawToGrayscale(raw, grayscale):
         grayscale[0::3] = raw[0:raw.size / 3]
@@ -46,14 +57,3 @@ class Camera:
     @staticmethod
     def createEmptyFullData(resolution):
         return np.empty(resolution[0] * resolution[1] * 3, dtype=np.uint8)
-
-    def capture(self):
-        if 'picamera' in sys.modules:
-            self._camera.capture(self._raw, use_video_port=True, format='yuv')
-        else:
-            self._raw = np.load(Camera.FILENAME)
-        return self._raw
-
-    def close(self):
-        if 'picamera' in sys.modules:
-            self._camera.close()
