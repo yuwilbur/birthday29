@@ -4,7 +4,7 @@ from multiprocessing import Process, Pipe
 import time
 import copy
 
-def processYImage2(y, resolution):
+def processYImage(y, resolution):
     start = time.time()
     total = 0
     width = resolution[0]
@@ -17,36 +17,41 @@ def processYImage2(y, resolution):
             # total = total + y[j*resolution[0] + i]
     print time.time() - start
 
-
-def processYImage(pipe):
-    main_pipe, worker_pipe = pipe
-    main_pipe.close()
+def yImageWork(pipe):
+    main_conn, worker_conn = pipe
+    main_conn.close()
     while True:
         try:
-            data = worker_pipe.recv()
-            processYImage2(data[0], data[1])
+            data = worker_conn.recv()
+            if data == ImageProcess.END_MESSAGE:
+                break;
+            processYImage(data[0], data[1])
+            if not main_conn.poll():
+                worker_conn.send(("1"))
         except EOFError:
             break
-    
-    
 
 class ImageProcess():
+    END_MESSAGE = 'END'
     def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher
-        self._event_dispatcher.add_event_listener(YImageEvent.TYPE, self.processYImage)
-        self._main_pipe, self._worker_pipe = Pipe()
-        self._processor = Process(target=processYImage, args=((self._main_pipe, self._worker_pipe),))
+        self._event_dispatcher.add_event_listener(YImageEvent.TYPE, self.processYImageEvent)
+        self._main_conn, self._worker_conn = Pipe()
+        self._processor = Process(target=yImageWork, args=((self._main_conn, self._worker_conn),))
         self._processor.daemon = True
         self._processor.start()
 
     def stop(self):
-        self._main_pipe.close()
-        self._worker_pipe.close()
-        self._processor.terminate()
+        self._main_conn.send(ImageProcess.END_MESSAGE)
         self._processor.join()
         
-    def processYImage(self, event):
+    def update(self):
+        if self._main_conn.poll():
+            data = self._main_conn.recv()
+            #print data
+
+    def processYImageEvent(self, event):
         resolution = event.data()[1]
         y_data = event.data()[0]
-        if not self._worker_pipe.poll():
-            self._main_pipe.send((copy.deepcopy(y_data), resolution))
+        if not self._worker_conn.poll():
+            self._main_conn.send((copy.deepcopy(y_data), resolution))

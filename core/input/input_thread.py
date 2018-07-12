@@ -12,7 +12,7 @@ class InputThread(threading.Thread):
         self._stop_event = threading.Event()
         self._event_dispatcher = event_dispatcher
         self._camera_process = CameraProcess(self._event_dispatcher)
-        self._image_processor = ImageProcess(self._event_dispatcher)
+        self._image_process = ImageProcess(self._event_dispatcher)
 
     def stop(self):
         self._stop_event.set()
@@ -22,6 +22,7 @@ class InputThread(threading.Thread):
         while not self._stop_event.is_set():
             period_sync.Start()
             self._camera_process.update()
+            self._image_process.update()
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
@@ -38,3 +39,4 @@ class InputThread(threading.Thread):
                         self._event_dispatcher.dispatch_event(InputEvent.LEFT)
             period_sync.End()
             period_sync.Sync()
+        self._image_process.stop()
