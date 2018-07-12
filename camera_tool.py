@@ -1,10 +1,8 @@
-from common.camera import Camera
-from common.debug import Debugger
+from core.common.camera import Camera
+from core.common.debug import Debugger
 import numpy as np
 import pygame
 import picamera
-
-filename = 'testcamera.npy'
 
 class CameraTool:
     def __init__(self):
@@ -60,10 +58,10 @@ class CameraTool:
                         _paused = not _paused
                         break;
                     if event.key == pygame.K_s:
-                        np.save(filename, self.rawData)
+                        np.save(Camera.FILENAME, self.rawData)
                         break;
                     if event.key == pygame.K_l:
-                        self.rawData = np.load(filename)
+                        self.rawData = np.load(Camera.FILENAME)
                         break;
 
 if (__name__ == "__main__"):

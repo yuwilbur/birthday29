@@ -1,4 +1,4 @@
-from common.events import YImageEvent
+from .common.events import YImageEvent
 from multiprocessing import Process, Pipe
 import time
 import copy

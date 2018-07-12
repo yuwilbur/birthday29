@@ -1,13 +1,16 @@
-from inputThread import InputThread
-from cameraThread import CameraThread
-from common.event import EventDispatcher
-from common.events import InputEvent
-from common.periodSync import PeriodSync
-from common.renderer import PygameRenderer
-from common import config
+from .input.inputThread import InputThread
+from .cameraThread import CameraThread
+from .common.event import EventDispatcher
+from .common.events import InputEvent
+from .period_sync import PeriodSync
+from .common.renderer import PygameRenderer
+from .common import config
 import sys
 
-class Birthday29():
+class Main():
+    def __init__(self):
+        self.run()
+
     def run(self):
         config.STILL_PHOTO = True
         event_dispatcher = EventDispatcher()
@@ -43,6 +46,3 @@ class Birthday29():
             sys.exit()
         if event == InputEvent.Q:
             self._running = False
-
-if (__name__ == "__main__"):
-    Birthday29().run()

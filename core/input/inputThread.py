@@ -1,5 +1,5 @@
-from common.events import InputEvent
-from common.periodSync import PeriodSync
+from ..common.events import InputEvent
+from ..period_sync import PeriodSync
 import threading
 import pygame
 

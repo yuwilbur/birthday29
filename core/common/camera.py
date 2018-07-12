@@ -12,7 +12,7 @@ class Camera:
     RESOLUTION_MI = (640, 320)
     RESOLUTION_HI = (1280, 640)
 
-    FILENAME = 'testcamera.npy'
+    FILENAME = './testcamera.npy'
 
     def __init__(self, resolution):
         self._resolution = resolution
