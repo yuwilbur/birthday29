@@ -11,14 +11,18 @@ def cameraWorker(pipe, resolution):
     main_conn, worker_conn = pipe
     camera = Camera(resolution)
     raw = camera.createEmptyFullData(resolution)
+    y = camera.createEmptyYData(resolution)
+    grayscale = camera.createEmptyFullData(resolution)
     while True:
         if worker_conn.poll():
             data = worker_conn.recv()
             if data == CameraProcess.END_MESSAGE:
                 break;
         raw = camera.capture()
+        Camera.rawToY(raw, y)
+        Camera.rawToGrayscale(raw, grayscale)
         if not main_conn.poll():
-            worker_conn.send(raw)
+            worker_conn.send((y, grayscale))
 
 
 class CameraProcess:
@@ -30,9 +34,6 @@ class CameraProcess:
         self._processor = Process(target=cameraWorker, args=((self._main_conn, self._worker_conn),self._resolution,))
         self._processor.daemon = True
         self._processor.start()
-        self._raw = Camera.createEmptyFullData(self._resolution)
-        self._grayscale = Camera.createEmptyFullData(self._resolution)
-        self._y = Camera.createEmptyYData(self._resolution)
 
     def stop(self):
         self._main_conn.send(CameraProcess.END_MESSAGE)
@@ -41,13 +42,7 @@ class CameraProcess:
     def update(self):
         if not self._main_conn.poll():
             return
-
-        self._raw = self._main_conn.recv()
+        data = self._main_conn.recv()
     
-        Camera.rawToY(self._raw, self._y)
-        y_data = (self._y, self._resolution)
-        self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, copy.deepcopy(y_data)))
-        
-        Camera.rawToGrayscale(self._raw, self._grayscale)
-        grayscale_data = (copy.deepcopy(self._grayscale), (0,0), self._resolution)
-        self._event_dispatcher.dispatch_event(Event(DrawEvent.TYPE, grayscale_data))
+        self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (data[0], self._resolution)))
+        self._event_dispatcher.dispatch_event(Event(DrawEvent.TYPE, (data[1], (0,0), self._resolution)))
