@@ -1,6 +1,6 @@
 from ..common.events import YImageEvent
 
-from multiprocessing import Process, Pipe
+from multiprocessing import Process, Pipe, Lock
 import time
 import copy
 
@@ -17,10 +17,12 @@ def processYImage(y, resolution):
             # total = total + y[j*resolution[0] + i]
     return time.time() - start
 
-def yImageWorker(pipe):
+def yImageWorker(lock, pipe):
     main_conn, worker_conn = pipe
     while True:
+        lock.acquire()
         data = worker_conn.recv()
+        lock.release()
         if data == ImageProcess.END_MESSAGE:
             break;
         if not main_conn.poll():
@@ -31,14 +33,22 @@ class ImageProcess():
     def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher
         self._event_dispatcher.add_event_listener(YImageEvent.TYPE, self.processYImageEvent)
+        self._lock = Lock()
         self._main_conn, self._worker_conn = Pipe()
-        self._processor = Process(target=yImageWorker, args=((self._main_conn, self._worker_conn),))
-        self._processor.daemon = True
-        self._processor.start()
+        
+        self._worker1 = Process(target=yImageWorker, args=(self._lock, (self._main_conn, self._worker_conn),))
+        self._worker1.daemon = True
+        self._worker1.start()
+
+        self._worker2 = Process(target=yImageWorker, args=(self._lock, (self._main_conn, self._worker_conn),))
+        self._worker2.daemon = True
+        self._worker2.start()
 
     def stop(self):
         self._main_conn.send(ImageProcess.END_MESSAGE)
-        self._processor.join()
+        self._main_conn.send(ImageProcess.END_MESSAGE)
+        self._worker1.join()
+        self._worker2.join()
         
     def update(self):
         if not self._main_conn.poll():
