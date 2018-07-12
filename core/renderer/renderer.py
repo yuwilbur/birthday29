@@ -1,4 +1,5 @@
-from .events import DrawEvent
+from ..common.events import DrawEvent
+
 import pygame
 
 class PygameRenderer():

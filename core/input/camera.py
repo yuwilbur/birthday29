@@ -1,4 +1,5 @@
-import config
+from ..common import config
+
 import numpy as np
 import copy
 import sys

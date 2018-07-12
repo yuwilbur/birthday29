@@ -1,7 +1,8 @@
 from ..common.events import InputEvent
-from ..period_sync import PeriodSync
-from .image_process import ImageProcess
-from .camera_process import CameraProcess
+from ..input.camera_process import CameraProcess
+from ..input.image_process import ImageProcess
+from ..sync.period_sync import PeriodSync
+
 import threading
 import pygame
 

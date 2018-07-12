@@ -1,4 +1,4 @@
-from .event import Event
+from ..common.event import Event
 
 class YImageEvent():
     TYPE = "YImage"

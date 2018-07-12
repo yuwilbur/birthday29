@@ -1,9 +1,10 @@
-from .input.input_thread import InputThread
+from .common import config
 from .common.event import EventDispatcher
 from .common.events import InputEvent
-from .period_sync import PeriodSync
-from .common.renderer import PygameRenderer
-from .common import config
+from .input.input_thread import InputThread
+from .renderer.renderer import PygameRenderer
+from .sync.period_sync import PeriodSync
+
 import sys
 
 class Main():
