@@ -15,7 +15,7 @@ def processYImage(y, resolution):
             if y[j + test] > 0:
                 total += 1
             # total = total + y[j*resolution[0] + i]
-    print time.time() - start
+    return time.time() - start
 
 def yImageWork(pipe):
     main_conn, worker_conn = pipe
@@ -25,9 +25,9 @@ def yImageWork(pipe):
             data = worker_conn.recv()
             if data == ImageProcess.END_MESSAGE:
                 break;
-            processYImage(data[0], data[1])
+            result = processYImage(data[0], data[1])
             if not main_conn.poll():
-                worker_conn.send(("1"))
+                worker_conn.send(result)
         except EOFError:
             break
 
@@ -48,7 +48,7 @@ class ImageProcess():
     def update(self):
         if self._main_conn.poll():
             data = self._main_conn.recv()
-            #print data
+            print data
 
     def processYImageEvent(self, event):
         resolution = event.data()[1]
