@@ -19,7 +19,8 @@ class GameEngine(threading.Thread):
 		super(GameEngine, self).__init__()
 		self._stop_event = threading.Event()
 		self._event_dispatcher = event_dispatcher
-		self._solids = dict()
+		self._game_objects = dict()
+		self._solid_objects = dict()
 
 	def stop(self):
 		self._stop_event.set()
@@ -28,21 +29,26 @@ class GameEngine(threading.Thread):
 		period_sync = PeriodSync(0.02) # 50Hz
 		while not self._stop_event.is_set():
 			period_sync.Start()
+			for solid in self._solid_objects:
+				break
+			print len(self._solid_objects)
 			#print len(self._solids)
 			period_sync.End()
 			period_sync.Sync()
 
-	def getSolids(self):
-		return self._solids
+	def getGameObjects(self):
+		return self._game_objects
 
 	def createCircle(self, radius):
-		return self.createSolid(Circle(radius))
+		return self.createGameObject(Circle(radius))
 
 	def createRectangle(self, dimensions):
-		return self.createSolid(Rectangle(dimensions))
+		return self.createGameObject(Rectangle(dimensions))
 
-	def createSolid(self, solid):
-		solid_id = len(self._solids)
-		solid.instanceId = solid_id
-		self._solids[solid_id] = solid
-		return solid
+	def createGameObject(self, game_object):
+		game_object_id = len(self._game_objects)
+		game_object.instanceId = game_object_id
+		self._game_objects[game_object_id] = game_object
+		if (isinstance(game_object, Solid)):
+			self._solid_objects[game_object_id] = game_object
+		return game_object

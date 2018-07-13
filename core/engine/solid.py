@@ -1,10 +1,12 @@
+from ..engine.game_object import GameObject
 from ..engine.vector import Vector
 
-class Solid(object):
+class Solid(GameObject):
 	def __init__(self):
-		self.instanceId = 0
+		super(Solid, self).__init__()
 		self.velocity = Vector()
 		self.acceleration = Vector()
 		self.position = Vector()
 		self.rotation = 0
 		self.friction = 0
+		self.material = None

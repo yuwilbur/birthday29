@@ -6,6 +6,7 @@ class GameManager(object):
 		self._event_dispatcher = event_dispatcher
 		self._event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
 		self._game = None
+		self.startGame(TestGame(self._event_dispatcher))
 
 	def stopGame(self):
 		if not self._game == None:

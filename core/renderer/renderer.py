@@ -4,7 +4,9 @@ from ..engine.vector import Vector
 from ..sync.period_sync import PeriodSync
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
+from ..engine.solid import Solid
 from ..renderer.color import Color
+from ..renderer import color # see if there's a better way for this
 
 import pygame
 import threading
@@ -43,21 +45,22 @@ class Renderer(threading.Thread):
         period_sync = PeriodSync()
         while not self._stop_event.is_set():
             period_sync.Start()
-            solids = self._engine.getSolids()
+            solids = self._engine.getGameObjects()
             for solid_id, solid in solids.items():
                 position = solid.position + self._center
-                if type(solid) == Circle:
-                    center = (solid.position.x + self._center.x, solid.position.y + self._center.y)
-                    pygame.draw.circle(self._screen, color.WHITE.toTuple(), center, solid.getRadius())
-                elif type(solid) == Rectangle:
-                    dimensions = solid.getDimensions()
-                    rect = pygame.Rect(0,0,0,0)
-                    rect.width = dimensions[0]
-                    rect.height = dimensions[1]
-                    rect.center = (self._center.x, self._center.y)
-                    pygame.draw.rect(self._screen, color.WHITE.toTuple(), rect)
-                else:
-                    print type(solid)
+                if isinstance(solid, Solid):
+                    if isinstance(solid, Circle):
+                        center = (solid.position.x + self._center.x, solid.position.y + self._center.y)
+                        pygame.draw.circle(self._screen, color.WHITE.toTuple(), center, solid.getRadius())
+                    elif isinstance(solid, Rectangle):
+                        dimensions = solid.getDimensions()
+                        rect = pygame.Rect(0,0,0,0)
+                        rect.width = dimensions[0]
+                        rect.height = dimensions[1]
+                        rect.center = (self._center.x, self._center.y)
+                        pygame.draw.rect(self._screen, color.WHITE.toTuple(), rect)
+                    else:
+                        print type(solid)
             if not self._camera_surface == None:
                 self._screen.blit(self._camera_surface, (0,0), (0, 0, self._camera_surface.get_width(), self._camera_surface.get_height()))
             pygame.display.update()
