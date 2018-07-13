@@ -50,14 +50,14 @@ class Renderer(threading.Thread):
                 position = solid.position + self._center
                 if isinstance(solid, Solid):
                     if isinstance(solid, Circle):
-                        center = (solid.position.x + self._center.x, solid.position.y + self._center.y)
+                        center = (solid.position + self._center).toTuple()
                         pygame.draw.circle(self._screen, color.WHITE.toTuple(), center, solid.getRadius())
                     elif isinstance(solid, Rectangle):
                         dimensions = solid.getDimensions()
                         rect = pygame.Rect(0,0,0,0)
                         rect.width = dimensions[0]
                         rect.height = dimensions[1]
-                        rect.center = (self._center.x, self._center.y)
+                        rect.center = solid.position.toTuple()
                         pygame.draw.rect(self._screen, color.WHITE.toTuple(), rect)
                     else:
                         print type(solid)

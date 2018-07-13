@@ -1,4 +1,4 @@
 class GameObject(object):
-	def __init__(self):
+	def __init__(self, name):
 		self.instanceId = 0
-		self.material = None
+		self.name = name

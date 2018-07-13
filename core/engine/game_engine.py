@@ -2,6 +2,9 @@ from ..sync.period_sync import PeriodSync
 from ..engine.solid import Solid
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
+from ..engine.vector import Vector
+
+import copy
 import threading
 
 class GameEngine(threading.Thread):
@@ -22,6 +25,13 @@ class GameEngine(threading.Thread):
 		self._game_objects = dict()
 		self._solid_objects = dict()
 
+	def checkPhysics(self, solid_l, solid_r):
+		return True
+
+	def runPhysics(self, solid_l, solid_r):
+		print solid_l.name
+		solid_l.position = Vector(400,400)
+
 	def stop(self):
 		self._stop_event.set()
 
@@ -29,15 +39,19 @@ class GameEngine(threading.Thread):
 		period_sync = PeriodSync(0.02) # 50Hz
 		while not self._stop_event.is_set():
 			period_sync.Start()
-			for solid in self._solid_objects:
-				break
-			print len(self._solid_objects)
-			#print len(self._solids)
+			solid_objects = copy.deepcopy(self._solid_objects)	
+			for key_l in solid_objects:
+				for key_r in solid_objects:
+					if self.checkPhysics(solid_objects[key_l], solid_objects[key_r]):
+						self.runPhysics(self._solid_objects[key_l], self._solid_objects[key_r])
 			period_sync.End()
 			period_sync.Sync()
 
 	def getGameObjects(self):
 		return self._game_objects
+
+	def getSolids(self):
+		return self._solid_objects
 
 	def createCircle(self, radius):
 		return self.createGameObject(Circle(radius))
