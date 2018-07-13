@@ -6,7 +6,7 @@ try:
 except ImportError:
     pass
 
-class Camera:
+class Camera(object):
     RESOLUTION_LO = (320, 160)
     RESOLUTION_MI = (640, 320)
     RESOLUTION_HI = (1280, 640)

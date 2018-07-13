@@ -28,7 +28,7 @@ def yImageWorker(lock, pipe):
         if not main_conn.poll():
             worker_conn.send(processYImage(data[0], data[1]))
 
-class ImageProcess():
+class ImageProcess(object):
     END_MESSAGE = 'END'
     def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher

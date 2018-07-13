@@ -12,7 +12,7 @@ import pygame
 import signal
 import time
 
-class Main():
+class Main(object):
     def __init__(self):
         self.run()
 

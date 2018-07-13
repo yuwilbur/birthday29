@@ -1,12 +1,12 @@
 from ..common.event import Event
 
-class YImageEvent():
+class YImageEvent(object):
     TYPE = "YImage"
 
-class RGBImageEvent():
+class RGBImageEvent(object):
     TYPE = "RGBImage"
 
-class InputEvent():
+class InputEvent(object):
     TYPE = "Input"
     ESCAPE = Event(TYPE,'ESCAPE')
     Q = Event(TYPE, 'Q')
@@ -17,6 +17,6 @@ class InputEvent():
     ONE = Event(TYPE, 'ONE')
 
 
-class TestEvent():
+class TestEvent(object):
     TYPE = "Test"
     RIGHT = Event(TYPE,'RIGHT')

@@ -1,7 +1,7 @@
 import pygame
 import time
 
-class Debugger:
+class Debugger(object):
     def __init__(self):
         pygame.font.init()
         self._fontArial = pygame.font.SysFont('Arial', 12)
@@ -16,7 +16,7 @@ class Debugger:
     def createSurface(self):
         return self._fontArial.render(self._log, False, (0, 255, 0))
 
-class PerformanceLogger:
+class PerformanceLogger(object):
     def __init__(self, name):
         self._name = name
         self._log = 0.0

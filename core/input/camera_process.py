@@ -24,7 +24,7 @@ def cameraWorker(pipe, resolution):
         if not main_conn.poll():
             worker_conn.send((y, grayscale))
 
-class CameraProcess:
+class CameraProcess(object):
     END_MESSAGE = 'END'
     def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher
