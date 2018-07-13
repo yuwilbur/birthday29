@@ -4,11 +4,10 @@ from ..engine.vector import Vector
 from ..sync.period_sync import PeriodSync
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
+from ..renderer.color import Color
 
 import pygame
 import threading
-
-WHITE = (255, 255, 255)
 
 class Renderer(threading.Thread):
     __instance = None
@@ -34,6 +33,7 @@ class Renderer(threading.Thread):
         screen_attributes = 0
         display_info = pygame.display.Info()
         self._resolution = (display_info.current_w, display_info.current_h)
+        print self._resolution
         self._screen = pygame.display.set_mode(self._resolution, screen_attributes)
         self._event_dispatcher.add_event_listener(RGBImageEvent.TYPE, self.processRGBImageEvent)
         self._camera_surface = None
@@ -48,14 +48,14 @@ class Renderer(threading.Thread):
                 position = solid.position + self._center
                 if type(solid) == Circle:
                     center = (solid.position.x + self._center.x, solid.position.y + self._center.y)
-                    pygame.draw.circle(self._screen, WHITE, center, solid.getRadius())
+                    pygame.draw.circle(self._screen, color.WHITE.toTuple(), center, solid.getRadius())
                 elif type(solid) == Rectangle:
                     dimensions = solid.getDimensions()
                     rect = pygame.Rect(0,0,0,0)
                     rect.width = dimensions[0]
                     rect.height = dimensions[1]
                     rect.center = (self._center.x, self._center.y)
-                    pygame.draw.rect(self._screen, WHITE, rect)
+                    pygame.draw.rect(self._screen, color.WHITE.toTuple(), rect)
                 else:
                     print type(solid)
             if not self._camera_surface == None:
