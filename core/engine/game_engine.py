@@ -1,5 +1,5 @@
 from ..sync.period_sync import PeriodSync
-
+from ..engine.solid import Solid
 import threading
 
 class GameEngine(threading.Thread):
@@ -7,6 +7,10 @@ class GameEngine(threading.Thread):
 		super(GameEngine, self).__init__()
 		self._stop_event = threading.Event()
 		self._event_dispatcher = event_dispatcher
+		self._solids = dict()
+
+	def add(solid):
+		self._solids['asdf'] = solid
 
 	def stop(self):
 		self._stop_event.set()

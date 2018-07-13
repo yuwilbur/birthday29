@@ -37,6 +37,8 @@ class InputThread(threading.Thread):
                         self._event_dispatcher.dispatch_event(InputEvent.RIGHT)
                     if event.key == pygame.K_LEFT:
                         self._event_dispatcher.dispatch_event(InputEvent.LEFT)
+                    if event.key == pygame.K_1:
+                        self._event_dispatcher.dispatch_event(InputEvent.ONE)
             period_sync.End()
             period_sync.Sync()
         self._image_process.stop()

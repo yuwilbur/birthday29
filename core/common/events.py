@@ -13,6 +13,9 @@ class InputEvent():
     UP = Event(TYPE,'UP')
     DOWN = Event(TYPE,'DOWN')
     LEFT = Event(TYPE,'LEFT')
+    RIGHT = Event(TYPE, 'RIGHT')
+    ONE = Event(TYPE, 'ONE')
+
 
 class TestEvent():
     TYPE = "Test"
