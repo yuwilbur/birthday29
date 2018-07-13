@@ -1,8 +1,8 @@
 from ..common.events import YImageEvent
 
 from multiprocessing import Process, Pipe, Lock
-import time
 import copy
+import time
 
 def processYImage(y, resolution):
     start = time.time()

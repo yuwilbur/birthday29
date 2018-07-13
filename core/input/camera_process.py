@@ -30,13 +30,14 @@ class CameraProcess:
         self._event_dispatcher = event_dispatcher
         self._resolution = Camera.RESOLUTION_LO
         self._main_conn, self._worker_conn = Pipe()
-        self._processor = Process(target=cameraWorker, args=((self._main_conn, self._worker_conn),self._resolution,))
-        self._processor.daemon = True
-        self._processor.start()
+
+        self._worker = Process(target=cameraWorker, args=((self._main_conn, self._worker_conn),self._resolution,))
+        self._worker.daemon = True
+        self._worker.start()
 
     def stop(self):
         self._main_conn.send(CameraProcess.END_MESSAGE)
-        self._processor.join()
+        self._worker.join()
 
     def update(self):
         if not self._main_conn.poll():

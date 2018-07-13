@@ -1,11 +1,19 @@
 from ..common.events import RGBImageEvent
+from ..sync.period_sync import PeriodSync
 
 import pygame
+import threading
 
-class PygameRenderer():
+class Renderer(threading.Thread):
     def __init__(self, event_dispatcher):
+        super(Renderer, self).__init__()
+        self._stop_event = threading.Event()
         self._event_dispatcher = event_dispatcher
-        pygame.init()
+
+    def stop(self):
+        self._stop_event.set()
+
+    def run(self):
         #screen_attributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         screen_attributes = 0
         display_info = pygame.display.Info()
@@ -14,13 +22,14 @@ class PygameRenderer():
         self._event_dispatcher.add_event_listener(RGBImageEvent.TYPE, self.processRGBImageEvent)
         self._surface = None
 
-    def __del__(self):
-        pygame.quit()
-
-    def update(self):
-        if not self._surface == None:
-            self._screen.blit(self._surface, (0,0), (0,0,self._surface.get_width(),self._surface.get_height()))
-        pygame.display.update()
+        period_sync = PeriodSync()
+        while not self._stop_event.is_set():
+            period_sync.Start()
+            if not self._surface == None:
+                self._screen.blit(self._surface, (0,0), (0,0,self._surface.get_width(),self._surface.get_height()))
+            pygame.display.update()
+            period_sync.End()
+            period_sync.Sync()
 
     def processRGBImageEvent(self, event):
             self._surface = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')

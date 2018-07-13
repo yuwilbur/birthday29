@@ -1,5 +1,5 @@
-import numpy as np
 import copy
+import numpy as np
 import sys
 try:
     import picamera
