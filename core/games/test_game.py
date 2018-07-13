@@ -7,8 +7,8 @@ class TestGame(Game):
 		self._engine = GameEngine.getInstance()
 
 	def setup(self):
-		self._ball = self._engine.createCircle(1)
-		self._wall = self._engine.createRectangle((10,10))
+		self._ball = self._engine.createCircle(100)
+		self._wall = self._engine.createRectangle((200,100))
 
 	def update(self):
 		#print '1'

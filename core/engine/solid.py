@@ -1,8 +1,10 @@
+from ..engine.vector import Vector
+
 class Solid(object):
 	def __init__(self):
 		self.instanceId = 0
-		self.velocity = 0
-		self.acceleration = 0
-		self.position = (0, 0)
+		self.velocity = Vector()
+		self.acceleration = Vector()
+		self.position = Vector()
 		self.rotation = 0
 		self.friction = 0

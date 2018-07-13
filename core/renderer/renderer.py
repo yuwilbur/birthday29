@@ -1,11 +1,14 @@
 from ..common.events import RGBImageEvent
 from ..engine.game_engine import GameEngine
+from ..engine.vector import Vector
 from ..sync.period_sync import PeriodSync
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 
 import pygame
 import threading
+
+WHITE = (255, 255, 255)
 
 class Renderer(threading.Thread):
     __instance = None
@@ -34,21 +37,29 @@ class Renderer(threading.Thread):
         self._screen = pygame.display.set_mode(self._resolution, screen_attributes)
         self._event_dispatcher.add_event_listener(RGBImageEvent.TYPE, self.processRGBImageEvent)
         self._camera_surface = None
+        self._center = Vector(self._resolution[0] / 2, self._resolution[1] / 2)
+        print self._center
 
         period_sync = PeriodSync()
         while not self._stop_event.is_set():
             period_sync.Start()
             solids = self._engine.getSolids()
-            print len(solids)
             for solid_id, solid in solids.items():
+                position = solid.position + self._center
                 if type(solid) == Circle:
-                    print 'circle'
+                    center = (solid.position.x + self._center.x, solid.position.y + self._center.y)
+                    pygame.draw.circle(self._screen, WHITE, center, solid.getRadius())
                 elif type(solid) == Rectangle:
-                    print 'rectangle'
+                    dimensions = solid.getDimensions()
+                    rect = pygame.Rect(0,0,0,0)
+                    rect.width = dimensions[0]
+                    rect.height = dimensions[1]
+                    rect.center = (self._center.x, self._center.y)
+                    pygame.draw.rect(self._screen, WHITE, rect)
                 else:
                     print type(solid)
             if not self._camera_surface == None:
-                self._screen.blit(self._camera_surface, (0,0), (0,0,self._camera_surface.get_width(),self._camera_surface.get_height()))
+                self._screen.blit(self._camera_surface, (0,0), (0, 0, self._camera_surface.get_width(), self._camera_surface.get_height()))
             pygame.display.update()
             period_sync.End()
             period_sync.Sync()
