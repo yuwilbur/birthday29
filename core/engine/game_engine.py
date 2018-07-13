@@ -25,17 +25,18 @@ class GameEngine(threading.Thread):
 		self._stop_event.set()
 
 	def run(self):
-		period_sync = PeriodSync()
+		period_sync = PeriodSync(0.02) # 50Hz
 		while not self._stop_event.is_set():
 			period_sync.Start()
+			#print len(self._solids)
 			period_sync.End()
 			period_sync.Sync()
 
+	def getSolids(self):
+		return self._solids
+
 	def createCircle(self, radius):
 		return self.createSolid(Circle(radius))
-
-	def getSolid(self, solid):
-		return self._solids[solid]
 
 	def createRectangle(self, dimensions):
 		return self.createSolid(Rectangle(dimensions))
@@ -44,4 +45,4 @@ class GameEngine(threading.Thread):
 		solid_id = len(self._solids)
 		solid.instanceId = solid_id
 		self._solids[solid_id] = solid
-		return (solid_id, solid)
+		return solid

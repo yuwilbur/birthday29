@@ -3,7 +3,7 @@ import time
 class PeriodSync:
     def __init__(self, period=None):
         if period == None:
-            self._period = 0.033 # 60Hz
+            self._period = 0.033 # 30Hz
         else:
             self._period = period
 

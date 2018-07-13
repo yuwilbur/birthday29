@@ -54,7 +54,7 @@ class ImageProcess(object):
         if not self._main_conn.poll():
             return
         data = self._main_conn.recv()
-        print data
+        #print data
 
     def processYImageEvent(self, event):
         resolution = event.data()[1]
