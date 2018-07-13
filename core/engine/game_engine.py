@@ -26,7 +26,9 @@ class GameEngine(threading.Thread):
 		self._solid_objects = dict()
 
 	def checkPhysics(self, solid_l, solid_r):
-		return True
+		if not solid_l.velocity == Vector.Zero() or not solid_l.acceleration == Vector.Zero():
+			return True
+		return False
 
 	def runPhysics(self, solid_l, solid_r):
 		print solid_l.name

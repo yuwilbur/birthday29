@@ -12,5 +12,12 @@ class Vector(object):
 	def __sub__(self, other):
 		return Vector(self.x - other.x, self.y - other.y)
 
+	def __eq__(self, other):
+		return self.x == other.x and self.y == other.y
+
 	def __repr__(self):
 		return '(' + `self.x` + ',' + `self.y` + ')'
+
+	@staticmethod
+	def Zero():
+		return Vector()

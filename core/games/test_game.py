@@ -1,4 +1,5 @@
 from ..engine.game_engine import GameEngine
+from ..engine.vector import Vector
 from ..games.game import Game
 
 class TestGame(Game):
@@ -8,7 +9,8 @@ class TestGame(Game):
 
 	def setup(self):
 		self._ball = self._engine.createCircle(100)
-		self._wall = self._engine.createRectangle((200,100))
+		self._ball.velocity = Vector(1,0)
+		self._wall = self._engine.createRectangle((100,100))
 
 	def update(self):
 		#print '1'
