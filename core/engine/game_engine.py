@@ -14,11 +14,12 @@ class GameEngine(threading.Thread):
 	def __init__(self, event_dispatcher):
 		if GameEngine.__instance != None:
 			raise Exception("This class is a singleton")
+		GameEngine.__instance = self
+
 		super(GameEngine, self).__init__()
 		self._stop_event = threading.Event()
 		self._event_dispatcher = event_dispatcher
 		self._solids = dict()
-		GameEngine.__instance = self
 
 	def stop(self):
 		self._stop_event.set()
@@ -41,5 +42,6 @@ class GameEngine(threading.Thread):
 
 	def createSolid(self, solid):
 		solid_id = len(self._solids)
+		solid.instanceId = solid_id
 		self._solids[solid_id] = solid
-		return solid_id
+		return (solid_id, solid)

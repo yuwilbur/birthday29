@@ -5,8 +5,18 @@ import pygame
 import threading
 
 class Renderer(threading.Thread):
+    __instance = None
+
+    @staticmethod
+    def getInstance():
+        return Renderer.__instance
+
     def __init__(self, event_dispatcher):
         super(Renderer, self).__init__()
+        if Renderer.__instance != None:
+            raise Exception("This class is a singleton")
+        Renderer.__instance = self
+
         self._stop_event = threading.Event()
         self._event_dispatcher = event_dispatcher
 
