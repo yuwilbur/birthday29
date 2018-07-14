@@ -10,12 +10,6 @@ class GameManager(Manager):
 		self._event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
 		self._game = None
 
-	def setup(self):
-		self.startGame(TestGame(self._event_dispatcher))
-
-	def stop(self):
-		self.stopGame()
-
 	def stopGame(self):
 		if not self._game == None:
 			self._game.stop()
@@ -30,3 +24,9 @@ class GameManager(Manager):
 	def processInputEvent(self, event):
 		if event == InputEvent.ONE:
 			self.startGame(TestGame(self._event_dispatcher))
+
+	def setup(self):
+		self.startGame(TestGame(self._event_dispatcher))
+
+	def stop(self):
+		self.stopGame()

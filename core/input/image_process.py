@@ -44,6 +44,12 @@ class ImageProcess(object):
         self._worker2.daemon = True
         self._worker2.start()
 
+    def processYImageEvent(self, event):
+        resolution = event.data()[1]
+        y_data = event.data()[0]
+        if not self._worker_conn.poll():
+            self._main_conn.send((copy.deepcopy(y_data), resolution))
+
     def stop(self):
         self._main_conn.send(ImageProcess.END_MESSAGE)
         self._main_conn.send(ImageProcess.END_MESSAGE)
@@ -57,9 +63,3 @@ class ImageProcess(object):
             return
         data = self._main_conn.recv()
         #print data
-
-    def processYImageEvent(self, event):
-        resolution = event.data()[1]
-        y_data = event.data()[0]
-        if not self._worker_conn.poll():
-            self._main_conn.send((copy.deepcopy(y_data), resolution))

@@ -21,6 +21,9 @@ class Renderer(Manager):
         self._event_dispatcher = EventDispatcher()
         self._engine = GameEngine()
 
+    def processRGBImageEvent(self, event):
+            self._camera_surface = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
+
     def setup(self):
         #screen_attributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         screen_attributes = 0
@@ -48,9 +51,6 @@ class Renderer(Manager):
         if not self._camera_surface == None:
             self._screen.blit(self._camera_surface, (0,0), (0, 0, self._camera_surface.get_width(), self._camera_surface.get_height()))
         pygame.display.update()
-
-    def processRGBImageEvent(self, event):
-            self._camera_surface = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
 
     
         

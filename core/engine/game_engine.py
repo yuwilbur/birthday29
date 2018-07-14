@@ -37,15 +37,6 @@ class GameEngine(Manager):
 			if isinstance(other, Circle):
 				pass
 
-	def update(self):
-		for key in self._solid_objects:
-				self.runPhysics(self._solid_objects[key])
-		for key_l in self._collider_objects:
-			for key_r in self._collider_objects:
-				if key_l == key_r:
-					break
-				self.runCollision(self._collider_objects[key_l], copy.deepcopy(self._collider_objects[key_r]))
-
 	def getSolids(self):
 		return self._solid_objects
 
@@ -74,3 +65,12 @@ class GameEngine(Manager):
 		if game_object.hasComponent(Collider):
 			self._collider_objects[game_object.instanceId] = game_object
 		return game_object
+
+	def update(self):
+		for key in self._solid_objects:
+				self.runPhysics(self._solid_objects[key])
+		for key_l in self._collider_objects:
+			for key_r in self._collider_objects:
+				if key_l == key_r:
+					break
+				self.runCollision(self._collider_objects[key_l], copy.deepcopy(self._collider_objects[key_r]))
