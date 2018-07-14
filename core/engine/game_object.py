@@ -16,7 +16,4 @@ class GameObject(object):
 		return self._components[component_type.__name__]
 
 	def hasComponent(self, component_type):
-		return isinstance(self.getComponent(component_type), component_type) 
-
-	def getComponents(self):
-		return self._components
+		return isinstance(self.getComponent(component_type), component_type)
