@@ -45,6 +45,7 @@ class Renderer(threading.Thread):
         period_sync = PeriodSync()
         while not self._stop_event.is_set():
             period_sync.Start()
+            self._screen.fill(color.BLACK.toTuple())
             solids = self._engine.getGameObjects()
             for solid_id, solid in solids.items():
                 position = solid.position + self._center

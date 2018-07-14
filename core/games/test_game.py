@@ -11,6 +11,7 @@ class TestGame(Game):
 		self._ball = self._engine.createCircle(100)
 		self._ball.velocity = Vector(1,0)
 		self._wall = self._engine.createRectangle((100,100))
+		self._wall.position = Vector(100,100)
 
 	def update(self):
 		#print '1'

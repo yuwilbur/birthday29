@@ -28,11 +28,23 @@ class GameEngine(threading.Thread):
 	def checkPhysics(self, solid_l, solid_r):
 		if not solid_l.velocity == Vector.Zero() or not solid_l.acceleration == Vector.Zero():
 			return True
+		if not solid_l.hasCollider:
+			return False
 		return False
 
 	def runPhysics(self, solid_l, solid_r):
-		print solid_l.name
-		solid_l.position = Vector(400,400)
+		old_solid_l = copy.deepcopy(solid_l)
+		solid_l.position = solid_l.position + solid_l.velocity
+		if isinstance(solid_l, Rectangle):
+			if isinstance(solid_r, Rectangle):
+				pass
+			elif isinstance(solid_r, Circle):
+				pass
+		elif isinstance(solid_l, Circle):
+			if isinstance(solid_r, Rectangle):
+				pass
+			if isinstance(solid_r, Circle):
+				pass
 
 	def stop(self):
 		self._stop_event.set()
@@ -56,12 +68,12 @@ class GameEngine(threading.Thread):
 		return self._solid_objects
 
 	def createCircle(self, radius):
-		return self.createGameObject(Circle(radius))
+		return self.addGameObject(Circle(radius))
 
 	def createRectangle(self, dimensions):
-		return self.createGameObject(Rectangle(dimensions))
+		return self.addGameObject(Rectangle(dimensions))
 
-	def createGameObject(self, game_object):
+	def addGameObject(self, game_object):
 		game_object_id = len(self._game_objects)
 		game_object.instanceId = game_object_id
 		self._game_objects[game_object_id] = game_object
