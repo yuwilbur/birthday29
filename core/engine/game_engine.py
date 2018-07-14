@@ -85,9 +85,8 @@ class GameEngine(threading.Thread):
 	def addGameObject(self, game_object):
 		game_object.instanceId = len(self._game_objects)
 		self._game_objects[game_object.instanceId] = game_object
-		for component in game_object.getComponents():
-			if component == Solid.__name__:
-				self._solid_objects[game_object.instanceId] = game_object
-			if component == Collider.__name__:
-				self._collider_objects[game_object.instanceId] = game_object
+		if game_object.hasComponent(Solid):
+			self._solid_objects[game_object.instanceId] = game_object
+		if game_object.hasComponent(Collider):
+			self._collider_objects[game_object.instanceId] = game_object
 		return game_object
