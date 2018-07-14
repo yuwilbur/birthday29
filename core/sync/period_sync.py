@@ -13,7 +13,4 @@ class PeriodSync:
         delta = self.PERIOD - (self._end_time - self._start_time)
         if (delta > 0):
             time.sleep(delta)
-
-    def getPeriod(self):
-        return self.PERIOD
     

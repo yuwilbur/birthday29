@@ -10,11 +10,10 @@ from ..sync.period_sync import PeriodSync
 
 import copy
 
-class GameEngine():
+class GameEngine(object):
 	__metaclass__ = Singleton
 
 	def __init__(self):
-		super(GameEngine, self).__init__()
 		self._event_dispatcher = EventDispatcher()
 		self._solid_objects = dict()
 		self._collider_objects = dict()
@@ -36,7 +35,7 @@ class GameEngine():
 			if isinstance(other, Circle):
 				pass
 
-	def update(self, delta_time):
+	def update(self):
 		for key in self._solid_objects:
 				self.runPhysics(self._solid_objects[key])
 		for key_l in self._collider_objects:

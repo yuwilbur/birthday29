@@ -3,7 +3,7 @@ from .common.event import EventDispatcher
 from .common.events import InputEvent
 from .engine.game_engine import GameEngine
 from .games.game_manager import GameManager
-from .input.input_thread import InputThread
+from .input.input_manager import InputManager
 from .renderer.renderer import Renderer
 from .sync.period_sync import PeriodSync
 
@@ -26,10 +26,7 @@ class Main(object):
         event_dispatcher = EventDispatcher()
         event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
 
-        self._inputThread = InputThread()
-        self._inputThread.setDaemon(True)
-        self._inputThread.start()
-
+        inputManager = InputManager()
         gameEngine = GameEngine()
 
         self._renderer = Renderer()
@@ -42,11 +39,12 @@ class Main(object):
         period_sync = PeriodSync()
         while self._running:
             period_sync.Start()
-            gameEngine.update(period_sync.getPeriod())
+            inputManager.update()
+            gameEngine.update()
             period_sync.End()
             period_sync.Sync()
 
-        self._inputThread.join()
+        inputManager.stop()
         self._renderer.join()
 
         pygame.quit()
@@ -59,5 +57,4 @@ class Main(object):
         if event == InputEvent.Q:
             self._running = False
             self._gameManager.stopGame()
-            self._inputThread.stop()
             self._renderer.stop()
