@@ -6,14 +6,16 @@ from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.solid import Solid
 from ..engine.vector import Vector
+from ..sync.manager import Manager
 from ..sync.period_sync import PeriodSync
 
 import copy
 
-class GameEngine(object):
+class GameEngine(Manager):
 	__metaclass__ = Singleton
 
 	def __init__(self):
+		super(GameEngine, self).__init__()
 		self._event_dispatcher = EventDispatcher()
 		self._solid_objects = dict()
 		self._collider_objects = dict()

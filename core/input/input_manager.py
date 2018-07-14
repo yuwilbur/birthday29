@@ -2,12 +2,13 @@ from ..common.event import EventDispatcher
 from ..common.events import InputEvent
 from ..input.camera_process import CameraProcess
 from ..input.image_process import ImageProcess
-from ..sync.period_sync import PeriodSync
+from ..sync.manager import Manager
 
 import pygame
 
-class InputManager(object):
+class InputManager(Manager):
     def __init__(self):
+        super(InputManager, self).__init__()
         self._event_dispatcher = EventDispatcher()
         self._camera_process = CameraProcess(self._event_dispatcher)
         self._image_process = ImageProcess(self._event_dispatcher)
