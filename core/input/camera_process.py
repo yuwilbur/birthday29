@@ -20,6 +20,7 @@ def cameraWorker(pipe, resolution):
         if worker_conn.poll():
             data = worker_conn.recv()
             if data == CameraProcess.END_MESSAGE:
+                worker_conn.send(data)
                 break;
         elif not main_conn.poll():
             worker_conn.send((y, grayscale))
@@ -37,6 +38,11 @@ class CameraProcess(object):
 
     def stop(self):
         self._main_conn.send(CameraProcess.END_MESSAGE)
+        while True:
+            if self._main_conn.poll(0.1):
+                if self._main_conn.recv() == CameraProcess.END_MESSAGE:
+                    break
+            self._main_conn.send(CameraProcess.END_MESSAGE)
         self._worker.join()
 
     def update(self):
