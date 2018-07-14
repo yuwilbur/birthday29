@@ -14,14 +14,14 @@ def cameraWorker(pipe, resolution):
     y = camera.createEmptyYData(resolution)
     grayscale = camera.createEmptyFullData(resolution)
     while True:
+        raw = camera.capture()
+        Camera.rawToY(raw, y)
+        Camera.rawToGrayscale(raw, grayscale)
         if worker_conn.poll():
             data = worker_conn.recv()
             if data == CameraProcess.END_MESSAGE:
                 break;
-        raw = camera.capture()
-        Camera.rawToY(raw, y)
-        Camera.rawToGrayscale(raw, grayscale)
-        if not main_conn.poll():
+        elif not main_conn.poll():
             worker_conn.send((y, grayscale))
 
 class CameraProcess(object):
