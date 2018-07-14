@@ -14,7 +14,15 @@ class InputEvent(object):
     DOWN = Event(TYPE,'DOWN')
     LEFT = Event(TYPE,'LEFT')
     RIGHT = Event(TYPE, 'RIGHT')
-    ONE = Event(TYPE, 'ONE')
+    W = Event(TYPE, 'W')
+    A = Event(TYPE, 'A')
+    S = Event(TYPE, 'S')
+    D = Event(TYPE, 'D')
+    I = Event(TYPE, 'I')
+    J = Event(TYPE, 'J')
+    K = Event(TYPE, 'K')
+    L = Event(TYPE, 'L')
+    ONE = Event(TYPE, '1')
 
 
 class TestEvent(object):
