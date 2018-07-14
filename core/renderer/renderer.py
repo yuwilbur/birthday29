@@ -49,10 +49,10 @@ class Renderer(threading.Thread):
             solids = self._engine.getSolids()
             for solid_id, solid in solids.items():
                 position = (solid.position + self._center).toIntTuple()
-                if isinstance(solid, Circle):
-                    pygame.draw.circle(self._screen, color.WHITE.toTuple(), position, solid.getRadius())
-                elif isinstance(solid, Rectangle):
-                    dimensions = solid.getDimensions()
+                if solid.hasComponent(Circle):
+                    pygame.draw.circle(self._screen, color.WHITE.toTuple(), position, solid.getComponent(Circle).radius)
+                elif solid.hasComponent(Rectangle):
+                    dimensions = solid.getComponent(Rectangle).dimensions
                     rect = pygame.Rect(0,0,0,0)
                     rect.width = dimensions[0]
                     rect.height = dimensions[1]

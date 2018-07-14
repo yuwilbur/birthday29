@@ -1,20 +1,15 @@
 from ..engine.game_object import GameObject
 from ..engine.solid import Solid
+from ..engine.vector import Vector
 
-class Rectangle(GameObject):
-	def __init__(self, dimensions):
-		super(Rectangle, self).__init__("Rectangle")
-		self.addComponent(Solid)
-		self._dimensions = dimensions
+class Rectangle(Solid):
+	def __init__(self):
+		super(Rectangle, self).__init__()
+		self.__class__.__name__ = Solid.__name__
+		self.dimensions = Vector()
 
-	def getDimensions(self):
-		return self._dimensions
-
-class Circle(GameObject):
-	def __init__(self, radius):
-		super(Circle, self).__init__("Circle")
-		self.addComponent(Solid)
-		self._radius = radius
-
-	def getRadius(self):
-		return self._radius
+class Circle(Solid):
+	def __init__(self):
+		super(Circle, self).__init__()
+		self.__class__.__name__ = Solid.__name__
+		self._radius = 0

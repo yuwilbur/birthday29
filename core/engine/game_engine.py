@@ -69,13 +69,15 @@ class GameEngine(threading.Thread):
 		return self._game_objects
 
 	def createCircle(self, radius, collides=True):
-		circle = Circle(radius)
+		circle = GameObject("Circle")
+		circle.addComponent(Circle).radius = radius
 		if collides:
 			circle.addComponent(Collider)
 		return self.addGameObject(circle)
 
 	def createRectangle(self, dimensions, collides=True):
-		rectangle = Rectangle(dimensions)
+		rectangle = GameObject("Rectangle")
+		rectangle.addComponent(Rectangle).dimensions = dimensions
 		if collides:
 			rectangle.addComponent(Collider)
 		return self.addGameObject(rectangle)
