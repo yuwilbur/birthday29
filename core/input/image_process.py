@@ -47,6 +47,8 @@ class ImageProcess(object):
     def stop(self):
         self._main_conn.send(ImageProcess.END_MESSAGE)
         self._main_conn.send(ImageProcess.END_MESSAGE)
+        while self._main_conn.poll():
+            self._main_conn.recv()
         self._worker1.join()
         self._worker2.join()
         
