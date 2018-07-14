@@ -52,10 +52,8 @@ class Renderer(threading.Thread):
                 if solid.hasComponent(Circle):
                     pygame.draw.circle(self._screen, color.WHITE.toTuple(), position, solid.getComponent(Circle).radius)
                 elif solid.hasComponent(Rectangle):
-                    dimensions = solid.getComponent(Rectangle).dimensions
                     rect = pygame.Rect(0,0,0,0)
-                    rect.width = dimensions[0]
-                    rect.height = dimensions[1]
+                    rect.size = solid.getComponent(Rectangle).dimensions
                     rect.center = position
                     pygame.draw.rect(self._screen, color.WHITE.toTuple(), rect)
             if not self._camera_surface == None:

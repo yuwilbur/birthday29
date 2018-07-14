@@ -1,9 +1,9 @@
 from ..sync.period_sync import PeriodSync
 from ..engine.game_object import GameObject
 from ..engine.collider import Collider
-from ..engine.solid import Solid
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
+from ..engine.solid import Solid
 from ..engine.vector import Vector
 
 import copy
