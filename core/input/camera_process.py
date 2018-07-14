@@ -13,19 +13,27 @@ def cameraWorker(pipe, resolution):
     raw = camera.createEmptyFullData(resolution)
     y = camera.createEmptyYData(resolution)
     grayscale = camera.createEmptyFullData(resolution)
+    getGrayscale = True
+    getY = True
     while True:
         raw = camera.capture()
-        Camera.rawToY(raw, y)
-        Camera.rawToGrayscale(raw, grayscale)
         if worker_conn.poll():
             data = worker_conn.recv()
             if data == CameraProcess.END_MESSAGE:
+                worker_conn.send(data)
                 break;
         elif not main_conn.poll():
-            worker_conn.send((y, grayscale))
+            if getGrayscale:
+                Camera.rawToGrayscale(raw, grayscale)
+                worker_conn.send((CameraProcess.RGB_MESSAGE, grayscale))
+            if getY:
+                Camera.rawToY(raw, y)
+                worker_conn.send((CameraProcess.Y_MESSAGE, y))
 
 class CameraProcess(object):
     END_MESSAGE = 'END'
+    Y_MESSAGE = 'Y'
+    RGB_MESSAGE = 'RGB'
     def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher
         self._resolution = Camera.RESOLUTION_LO
@@ -37,14 +45,19 @@ class CameraProcess(object):
 
     def stop(self):
         self._main_conn.send(CameraProcess.END_MESSAGE)
-        while self._main_conn.poll():
-            self._main_conn.recv()
+        while True:
+            if self._main_conn.poll(0.1):
+                if self._main_conn.recv() == CameraProcess.END_MESSAGE:
+                    break
+            self._main_conn.send(CameraProcess.END_MESSAGE)
         self._worker.join()
 
     def update(self):
         if not self._main_conn.poll():
             return
         data = self._main_conn.recv()
-    
-        self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (data[0], self._resolution)))
-        self._event_dispatcher.dispatch_event(Event(RGBImageEvent.TYPE, (data[1], self._resolution)))
+
+        if data[0] == self.Y_MESSAGE:
+            self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (data[1], self._resolution)))
+        elif data[0] == self.RGB_MESSAGE:
+            self._event_dispatcher.dispatch_event(Event(RGBImageEvent.TYPE, (data[1], self._resolution)))
