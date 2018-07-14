@@ -28,9 +28,9 @@ class Main(object):
 
         managers = [
             InputManager(),
+            GameManager(),
             GameEngine(),
             Renderer(),
-            GameManager()
         ]
 
         for manager in managers:
