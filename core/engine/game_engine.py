@@ -1,4 +1,6 @@
 from ..sync.period_sync import PeriodSync
+from ..engine.game_object import GameObject
+from ..engine.collider import Collider
 from ..engine.solid import Solid
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
@@ -9,6 +11,7 @@ import threading
 
 class GameEngine(threading.Thread):
 	__instance = None
+	PERIOD = 0.02 # 50Hz
 
 	@staticmethod
 	def getInstance():
@@ -22,61 +25,67 @@ class GameEngine(threading.Thread):
 		super(GameEngine, self).__init__()
 		self._stop_event = threading.Event()
 		self._event_dispatcher = event_dispatcher
-		self._game_objects = dict()
 		self._solid_objects = dict()
+		self._collider_objects = dict()
+		self._game_objects = dict()
 
-	def checkPhysics(self, solid_l, solid_r):
-		if not solid_l.velocity == Vector.Zero() or not solid_l.acceleration == Vector.Zero():
-			return True
-		if not solid_l.hasCollider:
-			return False
-		return False
+	def runPhysics(self, solid):
+		solid.getComponent(Solid).velocity += solid.getComponent(Solid).acceleration * self.PERIOD
+		solid.position += solid.getComponent(Solid).velocity * self.PERIOD
 
-	def runPhysics(self, solid_l, solid_r):
-		old_solid_l = copy.deepcopy(solid_l)
-		solid_l.position = solid_l.position + solid_l.velocity
-		if isinstance(solid_l, Rectangle):
-			if isinstance(solid_r, Rectangle):
+	def runCollision(self, collider, other):
+		if isinstance(collider, Rectangle):
+			if isinstance(other, Rectangle):
 				pass
-			elif isinstance(solid_r, Circle):
+			elif isinstance(other, Circle):
 				pass
-		elif isinstance(solid_l, Circle):
-			if isinstance(solid_r, Rectangle):
+		elif isinstance(collider, Circle):
+			if isinstance(other, Rectangle):
 				pass
-			if isinstance(solid_r, Circle):
+			if isinstance(other, Circle):
 				pass
 
 	def stop(self):
 		self._stop_event.set()
 
 	def run(self):
-		period_sync = PeriodSync(0.02) # 50Hz
+		period_sync = PeriodSync(self.PERIOD)
 		while not self._stop_event.is_set():
 			period_sync.Start()
-			solid_objects = copy.deepcopy(self._solid_objects)	
-			for key_l in solid_objects:
-				for key_r in solid_objects:
-					if self.checkPhysics(solid_objects[key_l], solid_objects[key_r]):
-						self.runPhysics(self._solid_objects[key_l], self._solid_objects[key_r])
+			for key in self._solid_objects:
+				self.runPhysics(self._solid_objects[key])
+			for key_l in self._collider_objects:
+				for key_r in self._collider_objects:
+					if key_l == key_r:
+						break
+					self.runCollision(self._collider_objects[key_l], copy.deepcopy(self._collider_objects[key_r]))
 			period_sync.End()
 			period_sync.Sync()
-
-	def getGameObjects(self):
-		return self._game_objects
 
 	def getSolids(self):
 		return self._solid_objects
 
-	def createCircle(self, radius):
-		return self.addGameObject(Circle(radius))
+	def getGameObjects(self):
+		return self._game_objects
 
-	def createRectangle(self, dimensions):
-		return self.addGameObject(Rectangle(dimensions))
+	def createCircle(self, radius, collides=True):
+		circle = Circle(radius)
+		if collides:
+			circle.addComponent(Collider)
+		return self.addGameObject(circle)
+
+	def createRectangle(self, dimensions, collides=True):
+		rectangle = Rectangle(dimensions)
+		if collides:
+			rectangle.addComponent(Collider)
+		return self.addGameObject(rectangle)
 
 	def addGameObject(self, game_object):
-		game_object_id = len(self._game_objects)
-		game_object.instanceId = game_object_id
-		self._game_objects[game_object_id] = game_object
-		if (isinstance(game_object, Solid)):
-			self._solid_objects[game_object_id] = game_object
+		game_object.instanceId = len(self._game_objects)
+		self._game_objects[game_object.instanceId] = game_object
+		for component in game_object.getComponents():
+			if component == Solid.__name__:
+				self._solid_objects[game_object.instanceId] = game_object
+			if component == Collider.__name__:
+				self._collider_objects[game_object.instanceId] = game_object
 		return game_object

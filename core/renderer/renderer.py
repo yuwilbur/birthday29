@@ -35,33 +35,29 @@ class Renderer(threading.Thread):
         screen_attributes = 0
         display_info = pygame.display.Info()
         self._resolution = (display_info.current_w, display_info.current_h)
-        print self._resolution
+        print 'Resolution', self._resolution
         self._screen = pygame.display.set_mode(self._resolution, screen_attributes)
         self._event_dispatcher.add_event_listener(RGBImageEvent.TYPE, self.processRGBImageEvent)
         self._camera_surface = None
         self._center = Vector(self._resolution[0] / 2, self._resolution[1] / 2)
-        print self._center
+        print 'Center', self._center
 
         period_sync = PeriodSync()
         while not self._stop_event.is_set():
             period_sync.Start()
             self._screen.fill(color.BLACK.toTuple())
-            solids = self._engine.getGameObjects()
+            solids = self._engine.getSolids()
             for solid_id, solid in solids.items():
-                position = solid.position + self._center
-                if isinstance(solid, Solid):
-                    position = (solid.position + self._center).toTuple()
-                    if isinstance(solid, Circle):
-                        pygame.draw.circle(self._screen, color.WHITE.toTuple(), position, solid.getRadius())
-                    elif isinstance(solid, Rectangle):
-                        dimensions = solid.getDimensions()
-                        rect = pygame.Rect(0,0,0,0)
-                        rect.width = dimensions[0]
-                        rect.height = dimensions[1]
-                        rect.center = position
-                        pygame.draw.rect(self._screen, color.WHITE.toTuple(), rect)
-                    else:
-                        print type(solid)
+                position = (solid.position + self._center).toIntTuple()
+                if isinstance(solid, Circle):
+                    pygame.draw.circle(self._screen, color.WHITE.toTuple(), position, solid.getRadius())
+                elif isinstance(solid, Rectangle):
+                    dimensions = solid.getDimensions()
+                    rect = pygame.Rect(0,0,0,0)
+                    rect.width = dimensions[0]
+                    rect.height = dimensions[1]
+                    rect.center = position
+                    pygame.draw.rect(self._screen, color.WHITE.toTuple(), rect)
             if not self._camera_surface == None:
                 self._screen.blit(self._camera_surface, (0,0), (0, 0, self._camera_surface.get_width(), self._camera_surface.get_height()))
             pygame.display.update()
