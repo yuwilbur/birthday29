@@ -21,6 +21,7 @@ class InputThread(threading.Thread):
             pygame.K_DOWN : InputEvent.DOWN,
             pygame.K_RIGHT : InputEvent.RIGHT,
             pygame.K_LEFT : InputEvent.LEFT,
+            pygame.K_RETURN : InputEvent.ENTER,
             pygame.K_w : InputEvent.W,
             pygame.K_a : InputEvent.A,
             pygame.K_s : InputEvent.S,

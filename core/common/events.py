@@ -14,6 +14,7 @@ class InputEvent(object):
     DOWN = Event(TYPE,'DOWN')
     LEFT = Event(TYPE,'LEFT')
     RIGHT = Event(TYPE, 'RIGHT')
+    ENTER = Event(TYPE, 'ENTER')
     W = Event(TYPE, 'W')
     A = Event(TYPE, 'A')
     S = Event(TYPE, 'S')
