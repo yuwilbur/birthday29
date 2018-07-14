@@ -1,9 +1,10 @@
+from ..common.event import EventDispatcher
 from ..common.events import InputEvent
 from ..games.test_game import TestGame
 
 class GameManager(object):
-	def __init__(self, event_dispatcher):
-		self._event_dispatcher = event_dispatcher
+	def __init__(self):
+		self._event_dispatcher = EventDispatcher()
 		self._event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
 		self._game = None
 		self.startGame(TestGame(self._event_dispatcher))

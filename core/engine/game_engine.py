@@ -1,30 +1,25 @@
-from ..sync.period_sync import PeriodSync
+from ..common.singleton import Singleton
+from ..common.event import EventDispatcher
 from ..engine.game_object import GameObject
 from ..engine.collider import Collider
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.solid import Solid
 from ..engine.vector import Vector
+from ..sync.period_sync import PeriodSync
 
 import copy
 import threading
 
 class GameEngine(threading.Thread):
-	__instance = None
+	__metaclass__ = Singleton
+
 	PERIOD = 0.02 # 50Hz
 
-	@staticmethod
-	def getInstance():
-		return GameEngine.__instance
-
-	def __init__(self, event_dispatcher):
-		if GameEngine.__instance != None:
-			raise Exception("This class is a singleton")
-		GameEngine.__instance = self
-
+	def __init__(self):
 		super(GameEngine, self).__init__()
 		self._stop_event = threading.Event()
-		self._event_dispatcher = event_dispatcher
+		self._event_dispatcher = EventDispatcher()
 		self._solid_objects = dict()
 		self._collider_objects = dict()
 		self._game_objects = dict()

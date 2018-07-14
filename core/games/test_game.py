@@ -6,7 +6,7 @@ from ..engine.solid import Solid
 class TestGame(Game):
 	def __init__(self, event_dispatcher):
 		super(TestGame, self).__init__(event_dispatcher, "TestGame")
-		self._engine = GameEngine.getInstance()
+		self._engine = GameEngine()
 
 	def setup(self):
 		self._ball = self._engine.createCircle(100)

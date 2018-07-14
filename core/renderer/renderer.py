@@ -1,4 +1,6 @@
+from ..common.event import EventDispatcher
 from ..common.events import RGBImageEvent
+from ..common.singleton import Singleton
 from ..engine.game_engine import GameEngine
 from ..engine.vector import Vector
 from ..sync.period_sync import PeriodSync
@@ -12,20 +14,13 @@ import pygame
 import threading
 
 class Renderer(threading.Thread):
-    __instance = None
+    __metaclass__ = Singleton
 
-    @staticmethod
-    def getInstance():
-        return Renderer.__instance
-
-    def __init__(self, event_dispatcher):
+    def __init__(self):
         super(Renderer, self).__init__()
-        if Renderer.__instance != None:
-            raise Exception("This class is a singleton")
-        Renderer.__instance = self
         self._stop_event = threading.Event()
-        self._event_dispatcher = event_dispatcher
-        self._engine = GameEngine.getInstance()
+        self._event_dispatcher = EventDispatcher()
+        self._engine = GameEngine()
 
     def stop(self):
         self._stop_event.set()

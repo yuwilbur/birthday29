@@ -26,19 +26,19 @@ class Main(object):
         event_dispatcher = EventDispatcher()
         event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
 
-        self._inputThread = InputThread(event_dispatcher)
+        self._inputThread = InputThread()
         self._inputThread.setDaemon(True)
         self._inputThread.start()
 
-        self._gameEngine = GameEngine(event_dispatcher)
+        self._gameEngine = GameEngine()
         self._gameEngine.setDaemon(True)
         self._gameEngine.start()
 
-        self._renderer = Renderer(event_dispatcher)
+        self._renderer = Renderer()
         self._renderer.setDaemon(True)
         self._renderer.start()
 
-        self._gameManager = GameManager(event_dispatcher)
+        self._gameManager = GameManager()
 
         self._inputThread.join()
         self._gameEngine.join()

@@ -1,3 +1,5 @@
+from ..common.singleton import Singleton
+
 class Event(object):
     def __init__(self, event_type, data=None):
         self._type = event_type
@@ -13,6 +15,8 @@ class Event(object):
         return self._data
 
 class EventDispatcher(object):
+    __metaclass__ = Singleton
+
     def __init__(self):
         self._events = dict()
 

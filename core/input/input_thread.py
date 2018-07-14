@@ -1,3 +1,4 @@
+from ..common.event import EventDispatcher
 from ..common.events import InputEvent
 from ..input.camera_process import CameraProcess
 from ..input.image_process import ImageProcess
@@ -7,10 +8,10 @@ import threading
 import pygame
 
 class InputThread(threading.Thread):
-    def __init__(self, event_dispatcher):
+    def __init__(self):
         super(InputThread, self).__init__()
         self._stop_event = threading.Event()
-        self._event_dispatcher = event_dispatcher
+        self._event_dispatcher = EventDispatcher()
         self._camera_process = CameraProcess(self._event_dispatcher)
         self._image_process = ImageProcess(self._event_dispatcher)
 
