@@ -1,11 +1,7 @@
 import time
 
 class PeriodSync:
-    def __init__(self, period=None):
-        if period == None:
-            self._period = 0.033 # 30Hz
-        else:
-            self._period = period
+    PERIOD = 0.033 # 30Hz
 
     def Start(self):
         self._start_time = time.time()
@@ -14,7 +10,10 @@ class PeriodSync:
         self._end_time = time.time()
             
     def Sync(self):
-        delta = self._period - (self._end_time - self._start_time)
+        delta = self.PERIOD - (self._end_time - self._start_time)
         if (delta > 0):
             time.sleep(delta)
+
+    def getPeriod(self):
+        return self.PERIOD
     

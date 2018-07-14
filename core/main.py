@@ -30,9 +30,7 @@ class Main(object):
         self._inputThread.setDaemon(True)
         self._inputThread.start()
 
-        self._gameEngine = GameEngine()
-        self._gameEngine.setDaemon(True)
-        self._gameEngine.start()
+        gameEngine = GameEngine()
 
         self._renderer = Renderer()
         self._renderer.setDaemon(True)
@@ -40,8 +38,15 @@ class Main(object):
 
         self._gameManager = GameManager()
 
+        self._running = True
+        period_sync = PeriodSync()
+        while self._running:
+            period_sync.Start()
+            gameEngine.update(period_sync.getPeriod())
+            period_sync.End()
+            period_sync.Sync()
+
         self._inputThread.join()
-        self._gameEngine.join()
         self._renderer.join()
 
         pygame.quit()
@@ -52,7 +57,7 @@ class Main(object):
                 os.kill(os.getpid(), signal.SIGINT)
                 time.sleep(0.5)
         if event == InputEvent.Q:
+            self._running = False
             self._gameManager.stopGame()
             self._inputThread.stop()
-            self._gameEngine.stop()
             self._renderer.stop()
