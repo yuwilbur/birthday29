@@ -67,6 +67,7 @@ class GameEngine(Manager):
 		return game_object
 
 	def update(self):
+		return
 		for key in self._solid_objects:
 				self.runPhysics(self._solid_objects[key])
 		for key_l in self._collider_objects:
