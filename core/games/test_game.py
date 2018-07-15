@@ -12,11 +12,12 @@ class TestGame(Game):
 		self._ball = self._engine.createCircle(100)
 		self._ball.getComponent(Solid).velocity = Vector(100,0)
 		self._ball.position = Vector(-300,20)
-		#self._wall = self._engine.createRectangle((200,100))
-		#self._wall.position = Vector(100,100)
-		self._ball2 = self._engine.createCircle(100)
-		self._ball2.getComponent(Solid).velocity = Vector(-100, 0)
-		self._ball2.position = Vector(300, -20)
+		self._wall = self._engine.createRectangle(Vector(200, 100))
+		self._wall.getComponent(Solid).velocity = Vector(-100,0)
+		self._wall.position = Vector(300,-20)
+		#self._ball2 = self._engine.createCircle(100)
+		#self._ball2.getComponent(Solid).velocity = Vector(-100, 0)
+		#self._ball2.position = Vector(300, -20)
 
 	def update(self):
 		#print '1'
