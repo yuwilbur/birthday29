@@ -18,10 +18,22 @@ class Vector(object):
 	def __mul__(self, other):
 		if isinstance(other, float):
 			return Vector(self.x * other, self.y * other)
+		elif isinstance(other, Vector):
+			return Vector(self.x * other.x, self.y * other.y)
 
 	def __eq__(self, other):
 		return self.x == other.x and self.y == other.y
 
+	@staticmethod
+	def DistanceSqu(self, other):
+		deltaSqu = self - other
+		deltaSqu = deltaSqu * deltaSqu
+		return deltaSqu.x + deltaSqu.y
+
+	@staticmethod
+	def Dot(self, other):
+		return self.x * other.x + self.y * other.y
+	
 	def __repr__(self):
 		return '(' + `self.x` + ', ' + `self.y` + ')'
 

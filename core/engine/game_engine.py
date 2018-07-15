@@ -26,16 +26,18 @@ class GameEngine(Manager):
 		solid.getComponent(Solid).velocity += solid.getComponent(Solid).acceleration * PeriodSync.PERIOD
 		solid.position += solid.getComponent(Solid).velocity * PeriodSync.PERIOD
 
-	def runCollision(self, collider, other):
-		if isinstance(collider, Rectangle):
-			if isinstance(other, Rectangle):
-				pass
-			elif isinstance(other, Circle):
-				pass
-		elif isinstance(collider, Circle):
-			if isinstance(other, Rectangle):
-				pass
-			if isinstance(other, Circle):
+	def isColliding(self, collider, reference):
+		if collider.hasComponent(Circle):
+			if reference.hasComponent(Circle):
+				minDistanceSqu = collider.getComponent(Circle).radius + reference.getComponent(Circle).radius
+				minDistanceSqu *= minDistanceSqu
+				distanceSqu = Vector.DistanceSqu(collider.position, reference.position)
+				return distanceSqu <= minDistanceSqu
+		return False
+
+	def runCollision(self, collider, reference):
+		if isinstance(collider, Circle):
+			if isinstance(reference, Circle):
 				pass
 
 	def getSolids(self):
@@ -67,9 +69,10 @@ class GameEngine(Manager):
 	def update(self):
 		for key in self._solid_objects:
 				self.runPhysics(self._solid_objects[key])
-		collider_objects = copy.deepcopy(self._collider_objects)
-		for key_l in self._collider_objects:
-			for key_r in self._collider_objects:
-				if key_l == key_r:
+		reference_objects = copy.deepcopy(self._collider_objects)
+		for collider in self._collider_objects:
+			for reference in reference_objects:
+				if collider == reference:
 					break
-				self.runCollision(self._collider_objects[key_l], copy.deepcopy(self._collider_objects[key_r]))
+				if self.isColliding(self._collider_objects[collider], reference_objects[reference]):
+					self.runCollision(self._collider_objects[collider], reference_objects[reference])

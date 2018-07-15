@@ -12,4 +12,4 @@ class Circle(Solid):
 	def __init__(self):
 		super(Circle, self).__init__()
 		self.__class__.__name__ = Solid.__name__
-		self._radius = 0
+		self.radius = 0
