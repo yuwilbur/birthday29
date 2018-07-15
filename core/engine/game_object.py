@@ -2,7 +2,7 @@ from ..engine.vector import Vector
 
 class GameObject(object):
 	def __init__(self, name):
-		self.instanceId = 0
+		self.instance_id = 0
 		self.name = name
 		self.position = Vector()
 		self.rotation = 0

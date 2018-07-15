@@ -38,8 +38,7 @@ class Renderer(Manager):
 
     def update(self):
         self._screen.fill(color.BLACK.toTuple())
-        solids = dict()
-        #solids = self._engine.getSolids()
+        solids = self._engine.getSolids()
         for solid_id, solid in solids.items():
             position = (solid.position + self._center).toIntTuple()
             if solid.hasComponent(Circle):

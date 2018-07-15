@@ -10,6 +10,7 @@ from ..sync.manager import Manager
 from ..sync.period_sync import PeriodSync
 
 import copy
+import math
 
 class GameEngine(Manager):
 	__metaclass__ = Singleton
@@ -19,7 +20,7 @@ class GameEngine(Manager):
 		self._event_dispatcher = EventDispatcher()
 		self._solid_objects = dict()
 		self._collider_objects = dict()
-		self._game_objects = dict()
+		self._game_object_instance_id = 0
 		
 	def runPhysics(self, solid):
 		solid.getComponent(Solid).velocity += solid.getComponent(Solid).acceleration * PeriodSync.PERIOD
@@ -40,9 +41,6 @@ class GameEngine(Manager):
 	def getSolids(self):
 		return self._solid_objects
 
-	def getGameObjects(self):
-		return self._game_objects
-
 	def createCircle(self, radius, collides=True):
 		circle = GameObject("Circle")
 		circle.addComponent(Circle).radius = radius
@@ -58,18 +56,18 @@ class GameEngine(Manager):
 		return self.addGameObject(rectangle)
 
 	def addGameObject(self, game_object):
-		game_object.instanceId = len(self._game_objects)
-		self._game_objects[game_object.instanceId] = game_object
+		game_object.instance_id = self._game_object_instance_id
+		self._game_object_instance_id += 1
 		if game_object.hasComponent(Solid):
-			self._solid_objects[game_object.instanceId] = game_object
+			self._solid_objects[game_object.instance_id] = game_object
 		if game_object.hasComponent(Collider):
-			self._collider_objects[game_object.instanceId] = game_object
+			self._collider_objects[game_object.instance_id] = game_object
 		return game_object
 
 	def update(self):
-		return
 		for key in self._solid_objects:
 				self.runPhysics(self._solid_objects[key])
+		collider_objects = copy.deepcopy(self._collider_objects)
 		for key_l in self._collider_objects:
 			for key_r in self._collider_objects:
 				if key_l == key_r:
