@@ -38,8 +38,14 @@ class GameEngine(Manager):
 	def runCollision(self, collider, reference):
 		if collider.hasComponent(Circle):
 			if reference.hasComponent(Circle):
-				collider.position = -collider.getComponent(Solid).velocity*2.0
-				print collider.position
+				x1 = collider.position
+				m1 = collider.getComponent(Solid).mass
+				v1 = collider.getComponent(Solid).velocity
+				x2 = reference.position
+				m2 = reference.getComponent(Solid).mass
+				v2 = reference.getComponent(Solid).velocity
+				velocity = v1 - (x1 - x2) * (2 * m2 / (m1 + m1) * Vector.Dot(v1 - v2, x1 - x2) / Vector.DistanceSqu(x2, x1))
+				collider.getComponent(Solid).velocity = velocity
 
 	def getSolids(self):
 		return self._solid_objects
