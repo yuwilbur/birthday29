@@ -36,9 +36,10 @@ class GameEngine(Manager):
 		return False
 
 	def runCollision(self, collider, reference):
-		if isinstance(collider, Circle):
-			if isinstance(reference, Circle):
-				pass
+		if collider.hasComponent(Circle):
+			if reference.hasComponent(Circle):
+				collider.position = -collider.getComponent(Solid).velocity*2.0
+				print collider.position
 
 	def getSolids(self):
 		return self._solid_objects
@@ -73,6 +74,6 @@ class GameEngine(Manager):
 		for collider in self._collider_objects:
 			for reference in reference_objects:
 				if collider == reference:
-					break
+					continue
 				if self.isColliding(self._collider_objects[collider], reference_objects[reference]):
 					self.runCollision(self._collider_objects[collider], reference_objects[reference])

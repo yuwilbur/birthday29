@@ -9,14 +9,17 @@ class Vector(object):
 	def toIntTuple(self):
 		return (int(self.x), int(self.y))
 
+	def __neg__(self):
+		return Vector(-self.x, -self.y)
+
 	def __add__(self, other):
 		return Vector(self.x + other.x, self.y + other.y)
 
 	def __sub__(self, other):
-		return Vector(self.x - other.x, self.y - other.y)
+		return self + (-other)
 
 	def __mul__(self, other):
-		if isinstance(other, float):
+		if isinstance(other, (int, float)):
 			return Vector(self.x * other, self.y * other)
 		elif isinstance(other, Vector):
 			return Vector(self.x * other.x, self.y * other.y)
