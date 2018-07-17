@@ -59,11 +59,21 @@ class GameEngine(Manager):
 				not (v1.x * (x2.x - x1.x) >= 0)):
 				return
 		else:
+			corners = [
+				x2 + Vector(s2.x, s2.y) / 2,
+				x2 + Vector(-s2.x, s2.y) / 2,
+				x2 + Vector(s2.x, -s2.y) / 2,
+				x2 + Vector(-s2.x, -s2.y) / 2
+			]
+			closest_corner = corners[0]
+			if Vector.DistanceSqu(x1, corners[1]) < Vector.DistanceSqu(x1, closest_corner):
+				closest_corner = corners[1]
+			if Vector.DistanceSqu(x1, corners[2]) < Vector.DistanceSqu(x1, closest_corner):
+				closest_corner = corners[2]
+			if Vector.DistanceSqu(x1, corners[3]) < Vector.DistanceSqu(x1, closest_corner):
+				closest_corner = corners[3]
 			circle_radius_squ = math.pow(s1, 2)
-			if (not (Vector.DistanceSqu(x1, x2 + Vector(s2.x / 2, s2.y / 2)) <= circle_radius_squ or
-				Vector.DistanceSqu(x1, x2 + Vector(s2.x / 2, -s2.y / 2)) <= circle_radius_squ or
-				Vector.DistanceSqu(x1, x2 + Vector(-s2.x / 2, s2.y / 2)) <= circle_radius_squ or
-				Vector.DistanceSqu(x1, x2 + Vector(-s2.x / 2, -s2.y / 2)) <= circle_radius_squ)):
+			if not Vector.DistanceSqu(x1, closest_corner) <= circle_radius_squ:
 				return
 		if (x1.x >= x2.x - s2.x / 2 and x1.x <= x2.x + s2.x / 2):
 			collider.getComponent(Solid).velocity = Vector(v1.x, -v1.y)
