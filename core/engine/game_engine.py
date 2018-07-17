@@ -44,20 +44,21 @@ class GameEngine(Manager):
 	def runCircleRectangleCollision(self, collider, reference):
 		circle = collider.getComponent(Circle)
 		rectangle = reference.getComponent(Rectangle)
-		rectangle_topright = reference.position + (rectangle.dimensions / 2)
-		rectangle_botleft = reference.position - (rectangle.dimensions / 2)
-		if collider.position.x <= rectangle_topright.x and collider.position.x >= rectangle_botleft.x:
-			if not (math.fabs(collider.position.y - reference.position.y) < circle.radius + rectangle.dimensions.y / 2):
+		rectangle_half = rectangle.dimensions / 2
+		if collider.position.x <= reference.position.x + rectangle_half.x and collider.position.x >= reference.position.x - rectangle_half.x:
+			if (not (math.fabs(collider.position.y - reference.position.y) < circle.radius + rectangle.dimensions.y / 2) or
+				not (collider.getComponent(Solid).velocity.y * (reference.position.y - collider.position.y) >= 0)):
 				return
-		elif collider.position.y <= rectangle_topright.y and collider.position.y >= rectangle_botleft.y:
-			if not (math.fabs(collider.position.x - reference.position.x) < circle.radius + rectangle.dimensions.x / 2):
+		elif collider.position.y <= reference.position.y + rectangle_half.y and collider.position.y >= reference.position.y - rectangle_half.y:
+			if (not (math.fabs(collider.position.x - reference.position.x) < circle.radius + rectangle.dimensions.x / 2) or
+				not (collider.getComponent(Solid).velocity.x * (reference.position.x - collider.position.x) >= 0)):
 				return
 		else:
 			circle_radius_squ = math.pow(circle.radius, 2)
-			if not (Vector.DistanceSqu(collider.position, Vector(rectangle_botleft.x, rectangle_botleft.y)) <= circle_radius_squ or
-				Vector.DistanceSqu(collider.position, Vector(rectangle_botleft.x, rectangle_topright.y)) <= circle_radius_squ or
-				Vector.DistanceSqu(collider.position, Vector(rectangle_topright.x, rectangle_botleft.y)) <= circle_radius_squ or
-				Vector.DistanceSqu(collider.position,Vector(rectangle_topright.x, rectangle_topright.y)) <= circle_radius_squ):
+			if (not (Vector.DistanceSqu(collider.position, reference.position + Vector(rectangle_half.x, rectangle_half.y)) <= circle_radius_squ or
+				Vector.DistanceSqu(collider.position, reference.position + Vector(rectangle_half.x, -rectangle_half.y)) <= circle_radius_squ or
+				Vector.DistanceSqu(collider.position, reference.position + Vector(-rectangle_half.x, rectangle_half.y)) <= circle_radius_squ or
+				Vector.DistanceSqu(collider.position, reference.position + Vector(-rectangle_half.x, -rectangle_half.y)) <= circle_radius_squ)):
 				return
 		x1 = collider.position
 		m1 = collider.getComponent(Solid).mass
@@ -114,5 +115,3 @@ class GameEngine(Manager):
 						self.runCircleCircleCollision(collider, reference)
 					if reference.hasComponent(Rectangle):
 						self.runCircleRectangleCollision(collider, reference)
-				#if self.isColliding(collider, reference):
-				#	self.runCollision(collider, reference)

@@ -21,7 +21,7 @@ class Renderer(Manager):
         self._event_dispatcher = EventDispatcher()
         self._engine = GameEngine()
         display_info = pygame.display.Info()
-        self._resolution = Vector(display_info.current_w, display_info.current_h)
+        self._resolution = Vector(display_info.current_w, display_info.current_h - 200)
 
     def processRGBImageEvent(self, event):
             self._camera_surface = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
