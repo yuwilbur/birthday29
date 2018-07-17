@@ -13,7 +13,11 @@ class GameObject(object):
 		return self.getComponent(component_type)
 
 	def getComponent(self, component_type):
-		return self._components[component_type.__name__]
+		key = component_type.__name__
+		if key in self._components:
+			return self._components[component_type.__name__]
+		else:
+			return None
 
 	def hasComponent(self, component_type):
 		return isinstance(self.getComponent(component_type), component_type)

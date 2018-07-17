@@ -10,11 +10,11 @@ class TestGame(Game):
 
 	def setup(self):
 		self._ball = self._engine.createCircle(100)
-		self._ball.getComponent(Solid).velocity = Vector(100,0)
+		self._ball.getComponent(Solid).velocity = Vector(400,100)
 		self._ball.position = Vector(-300,20)
-		self._wall = self._engine.createRectangle(Vector(200, 100))
-		self._wall.getComponent(Solid).velocity = Vector(-100,0)
-		self._wall.position = Vector(300,-20)
+		self._wall = self._engine.createRectangle(Vector(100, 300))
+		#self._wall.getComponent(Solid).velocity = Vector(-200,0)
+		self._wall.position = Vector(0,-20)
 		#self._ball2 = self._engine.createCircle(100)
 		#self._ball2.getComponent(Solid).velocity = Vector(-100, 0)
 		#self._ball2.position = Vector(300, -20)

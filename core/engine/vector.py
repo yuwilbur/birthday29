@@ -24,6 +24,10 @@ class Vector(object):
 		elif isinstance(other, Vector):
 			return Vector(self.x * other.x, self.y * other.y)
 
+	def __div__(self, other):
+		if isinstance(other, (int, float)):
+			return Vector(self.x / other, self.y / other)
+
 	def __eq__(self, other):
 		return self.x == other.x and self.y == other.y
 
