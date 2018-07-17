@@ -28,48 +28,46 @@ class GameEngine(Manager):
 		solid.position += solid.getComponent(Solid).velocity * PeriodSync.PERIOD
 
 	def runCircleCircleCollision(self, collider, reference):
-		min_distance_squ = math.pow(collider.getComponent(Circle).radius + reference.getComponent(Circle).radius, 2)
-		distance_squ = Vector.DistanceSqu(collider.position, reference.position)
-		if (distance_squ > min_distance_squ):
-			return
 		x1 = collider.position
 		m1 = collider.getComponent(Solid).mass
 		v1 = collider.getComponent(Solid).velocity
+		s1 = collider.getComponent(Circle).radius
 		x2 = reference.position
 		m2 = reference.getComponent(Solid).mass
 		v2 = reference.getComponent(Solid).velocity
+		s2 = reference.getComponent(Circle).radius
+		if (Vector.DistanceSqu(x1, x2) > math.pow(s1 + s2, 2)):
+			return
 		velocity = v1 - (x1 - x2) * (2 * m2 / (m1 + m1) * Vector.Dot(v1 - v2, x1 - x2) / Vector.DistanceSqu(x2, x1))
 		collider.getComponent(Solid).velocity = velocity
 
 	def runCircleRectangleCollision(self, collider, reference):
-		circle = collider.getComponent(Circle)
-		rectangle = reference.getComponent(Rectangle)
-		rectangle_half = rectangle.dimensions / 2
-		if collider.position.x <= reference.position.x + rectangle_half.x and collider.position.x >= reference.position.x - rectangle_half.x:
-			if (not (math.fabs(collider.position.y - reference.position.y) < circle.radius + rectangle.dimensions.y / 2) or
-				not (collider.getComponent(Solid).velocity.y * (reference.position.y - collider.position.y) >= 0)):
-				return
-		elif collider.position.y <= reference.position.y + rectangle_half.y and collider.position.y >= reference.position.y - rectangle_half.y:
-			if (not (math.fabs(collider.position.x - reference.position.x) < circle.radius + rectangle.dimensions.x / 2) or
-				not (collider.getComponent(Solid).velocity.x * (reference.position.x - collider.position.x) >= 0)):
-				return
-		else:
-			circle_radius_squ = math.pow(circle.radius, 2)
-			if (not (Vector.DistanceSqu(collider.position, reference.position + Vector(rectangle_half.x, rectangle_half.y)) <= circle_radius_squ or
-				Vector.DistanceSqu(collider.position, reference.position + Vector(rectangle_half.x, -rectangle_half.y)) <= circle_radius_squ or
-				Vector.DistanceSqu(collider.position, reference.position + Vector(-rectangle_half.x, rectangle_half.y)) <= circle_radius_squ or
-				Vector.DistanceSqu(collider.position, reference.position + Vector(-rectangle_half.x, -rectangle_half.y)) <= circle_radius_squ)):
-				return
 		x1 = collider.position
 		m1 = collider.getComponent(Solid).mass
 		v1 = collider.getComponent(Solid).velocity
+		s1 = collider.getComponent(Circle).radius
 		x2 = reference.position
 		m2 = reference.getComponent(Solid).mass
 		v2 = reference.getComponent(Solid).velocity
-		d2 = reference.getComponent(Rectangle).dimensions
-		if (x1.x >= x2.x - d2.x / 2 and x1.x <= x2.x + d2.x / 2):
+		s2 = reference.getComponent(Rectangle).dimensions
+		if x1.x <= x2.x + s2.x / 2 and x1.x >= x2.x - s2.x / 2:
+			if (not (math.fabs(x1.y - x2.y) < s1 + s2.y / 2) or
+				not (v1.y * (x2.y - x1.y) >= 0)):
+				return
+		elif x1.y <= x2.y + s2.y / 2 and x1.y >= x2.y - s2.y / 2:
+			if (not (math.fabs(x1.x - x2.x) < s1 + s2.x / 2) or
+				not (v1.x * (x2.x - x1.x) >= 0)):
+				return
+		else:
+			circle_radius_squ = math.pow(s1, 2)
+			if (not (Vector.DistanceSqu(x1, x2 + Vector(s2.x / 2, s2.y / 2)) <= circle_radius_squ or
+				Vector.DistanceSqu(x1, x2 + Vector(s2.x / 2, -s2.y / 2)) <= circle_radius_squ or
+				Vector.DistanceSqu(x1, x2 + Vector(-s2.x / 2, s2.y / 2)) <= circle_radius_squ or
+				Vector.DistanceSqu(x1, x2 + Vector(-s2.x / 2, -s2.y / 2)) <= circle_radius_squ)):
+				return
+		if (x1.x >= x2.x - s2.x / 2 and x1.x <= x2.x + s2.x / 2):
 			collider.getComponent(Solid).velocity = Vector(v1.x, -v1.y)
-		elif (x1.y >= x2.y - d2.y / 2 and x1.y <= x2.y + d2.y / 2):
+		elif (x1.y >= x2.y - s2.y / 2 and x1.y <= x2.y + s2.y / 2):
 			collider.getComponent(Solid).velocity = Vector(-v1.x, v1.y)
 		else:
 			collider.getComponent(Solid).velocity = -Vector(v1.y, v1.x)
