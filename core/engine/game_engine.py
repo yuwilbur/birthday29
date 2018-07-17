@@ -44,10 +44,10 @@ class GameEngine(Manager):
 				return math.pow(circle.position.x - rectangle.position.x, 2) < math.pow(circle_comp.radius + rectangle_comp.dimensions.x / 2, 2)
 			else:
 				circle_radius_squ = math.pow(circle.getComponent(Circle).radius, 2)
-				return (Vector.DistanceSqu(circle.position, rectangle_botleft + Vector(0,0)) <= circle_radius_squ or
-					Vector.DistanceSqu(circle.position, rectangle_botleft + Vector(0, rectangle_comp.dimensions.y)) <= circle_radius_squ or
-					Vector.DistanceSqu(circle.position, rectangle_botleft + Vector(rectangle_comp.dimensions.x, 0)) <= circle_radius_squ or
-					Vector.DistanceSqu(circle.position, rectangle_botleft + rectangle_comp.dimensions) <= circle_radius_squ)
+				return (Vector.DistanceSqu(circle.position, Vector(rectangle_botleft.x, rectangle_botleft.y)) <= circle_radius_squ or
+					Vector.DistanceSqu(circle.position, Vector(rectangle_botleft.x, rectangle_topright.y)) <= circle_radius_squ or
+					Vector.DistanceSqu(circle.position, Vector(rectangle_topright.x, rectangle_botleft.y)) <= circle_radius_squ or
+					Vector.DistanceSqu(circle.position,Vector(rectangle_topright.x, rectangle_topright.y)) <= circle_radius_squ)
 
 		if collider.hasComponent(Circle):
 			if reference.hasComponent(Circle):
@@ -81,11 +81,11 @@ class GameEngine(Manager):
 			v2 = rectangle.getComponent(Solid).velocity
 			d2 = rectangle.getComponent(Rectangle).dimensions
 			if (x1.x >= x2.x - d2.x / 2 and x1.x <= x2.x + d2.x / 2):
-				print 'go up / down'
 				circle.getComponent(Solid).velocity = Vector(v1.x, -v1.y)
 			elif (x1.y >= x2.y - d2.y / 2 and x1.y <= x2.y + d2.y / 2):
-				print 'go left / right'
 				circle.getComponent(Solid).velocity = Vector(-v1.x, v1.y)
+			else:
+				circle.getComponent(Solid).velocity = -Vector(v1.y, v1.x)
 
 		if collider.hasComponent(Circle):
 			if reference.hasComponent(Circle):

@@ -20,20 +20,23 @@ class Renderer(Manager):
         super(Renderer, self).__init__()
         self._event_dispatcher = EventDispatcher()
         self._engine = GameEngine()
+        display_info = pygame.display.Info()
+        self._resolution = Vector(display_info.current_w, display_info.current_h)
 
     def processRGBImageEvent(self, event):
             self._camera_surface = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
 
+    def getResolution(self):
+        return self._resolution
+
     def setup(self):
+        print 'Resolution', self._resolution
         #screen_attributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         screen_attributes = 0
-        display_info = pygame.display.Info()
-        self._resolution = (display_info.current_w, display_info.current_h)
-        print 'Resolution', self._resolution
-        self._screen = pygame.display.set_mode(self._resolution, screen_attributes)
+        self._screen = pygame.display.set_mode(self._resolution.toIntTuple(), screen_attributes)
         self._event_dispatcher.add_event_listener(RGBImageEvent.TYPE, self.processRGBImageEvent)
         self._camera_surface = None
-        self._center = Vector(self._resolution[0] / 2, self._resolution[1] / 2)
+        self._center = self._resolution / 2
         print 'Center', self._center
 
     def update(self):
