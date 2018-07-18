@@ -23,7 +23,12 @@ class Renderer(Manager):
         self._event_dispatcher = EventDispatcher()
         self._engine = GameEngine()
         display_info = pygame.display.Info()
-        self._resolution = Vector(display_info.current_w, display_info.current_h - 200)
+        resolution = Vector(display_info.current_w, display_info.current_h)
+        resolution.x = 1280
+        resolution.y = 720
+        self._info_width = 160
+        self._game_resolution = resolution - Vector(self._info_width * 2, 0)
+        self._resolution = resolution
 
     def processGrayscaleImageEvent(self, event):
         resolution = (event.data()[0].shape[0], event.data()[0].shape[1])
@@ -32,6 +37,9 @@ class Renderer(Manager):
 
     def getResolution(self):
         return self._resolution
+
+    def getGameResolution(self):
+        return self._game_resolution
 
     def setup(self):
         print 'Resolution', self._resolution
