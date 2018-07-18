@@ -17,6 +17,8 @@ class Camera(object):
     def __init__(self, resolution):
         self._resolution = resolution
         self._raw = self.createImage(self._resolution, 3)
+        self._raw = self._raw.flatten()
+        self._y_shape = (self._resolution[0], self._resolution[1], 1)
         if 'picamera' in sys.modules:
             self._camera = picamera.PiCamera()
             self._camera.resolution = resolution
@@ -29,7 +31,8 @@ class Camera(object):
             self._camera.capture(self._raw, use_video_port=True, format='yuv')
         else:
             self._raw = np.load(Camera.FILENAME)
-        return self._raw.flatten()[0:self._raw.size/3].reshape((self._resolution[0], self._resolution[1], 1))
+            self._raw = self._raw.flatten()
+        return self._raw[0:self._raw.size/3].reshape(self._y_shape)
 
     def close(self):
         if 'picamera' in sys.modules:
