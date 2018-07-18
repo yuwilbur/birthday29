@@ -55,7 +55,11 @@ class Camera(object):
 
     @staticmethod
     def rawToY(raw, Y):
+        Y.data = Y.data.reshape(Y.data.size)
+        raw.data = raw.data.reshape(raw.data.size)
         Y.data[0::1] = raw.data[0:raw.data.size / 3]
+        Y.data = Y.data.reshape((Y.resolution[0], Y.resolution[1], 1))
+        raw.data = raw.data.reshape((raw.resolution[0], raw.resolution[1], 3))
 
     @staticmethod
     def YToGrayscale(Y, grayscale):
@@ -65,6 +69,7 @@ class Camera(object):
 
     @staticmethod
     def monoToStereo(mono, stereo):
-        (stereo[0].data, stereo[1].data) = np.split(mono.data, 2)
+        pass
+        #(stereo[0].data, stereo[1].data) = np.split(mono.data, 2)
         #stereo[0].data = mono.data[0:mono.data.size / 2]
         #stereo[1].data = mono.data[0:mono.data.size / 2]
