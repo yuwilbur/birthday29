@@ -1,5 +1,5 @@
-from core.common.camera import Camera
-from core.common.camera import Image
+from core.input.camera import Camera
+from core.input.camera import Image
 from core.common.debug import Debugger
 import numpy as np
 import pygame
@@ -17,11 +17,11 @@ class CameraTool:
             self.camera.close()
         self.imageResolution = resolution
         self.camera = Camera(self.imageResolution)
-        self.rawData = Image(self.imageResolution)
-        self.processedData = Image(self.imageResolution)
+        self.rawData = Image(self.imageResolution, 3)
+        self.processedData = Image(self.imageResolution, 3)
 
     def run(self):
-        #screenAttributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
+        screenAttributes = pygame.HWSURFACE | pygame.DOUBLEBUF
         screen = pygame.display.set_mode(self.displayResolution, screenAttributes)
         debugger = Debugger()
 
@@ -30,9 +30,9 @@ class CameraTool:
         _paused = False
         while _running:
             if not _paused:
-                self.camera.capture(self.rawData)
+                self.rawData.data = self.camera.capture()
             Camera.rawToGrayscale(self.rawData, self.processedData)
-            surface = pygame.image.frombuffer(self.processedData, self.imageResolution, 'RGB')
+            surface = pygame.image.frombuffer(self.processedData.data, self.processedData.resolution, 'RGB')
             debugger.clear()
             debugger.append('[P]ause | [S]ave | [L]oad | ' + str(self.imageResolution[0]) + 'x' + str(self.imageResolution[1]))
             surface = pygame.transform.scale(surface, self.displayResolution)
@@ -59,10 +59,10 @@ class CameraTool:
                         _paused = not _paused
                         break;
                     if event.key == pygame.K_s:
-                        np.save(Camera.FILENAME, self.rawData)
+                        np.save(Camera.FILENAME, self.rawData.data)
                         break;
                     if event.key == pygame.K_l:
-                        self.rawData = np.load(Camera.FILENAME)
+                        self.rawData.data = np.load(Camera.FILENAME)
                         break;
 
 if (__name__ == "__main__"):

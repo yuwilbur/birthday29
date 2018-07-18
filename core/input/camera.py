@@ -8,6 +8,7 @@ except ImportError:
 
 class Image(object):
     def __init__(self, resolution, bits):
+        super(Image, self).__init__()
         self.resolution = resolution
         self.bits = bits
         self.data = np.empty((resolution[0], resolution[1], bits), dtype=np.uint8)
@@ -31,10 +32,12 @@ class Camera(object):
 
     def capture(self):
         if 'picamera' in sys.modules:
-            self._camera.capture(self._raw, use_video_port=True, format='yuv')
+            self._raw.data = self._raw.data.reshape(self._resolution[0] * self._resolution[1] * 3)
+            self._camera.capture(self._raw.data, use_video_port=True, format='yuv')
+            self._raw.data = self._raw.data.reshape((self._resolution[0], self._resolution[1], 3))
         else:
-            self._raw = np.load(Camera.FILENAME)
-        return self._raw
+            self._raw.data = np.load(Camera.FILENAME)
+        return self._raw.data
 
     def close(self):
         if 'picamera' in sys.modules:
@@ -42,9 +45,13 @@ class Camera(object):
 
     @staticmethod
     def rawToGrayscale(raw, grayscale):
+        grayscale.data = grayscale.data.reshape(grayscale.data.size)
+        raw.data = raw.data.reshape(raw.data.size)
         grayscale.data[0::3] = raw.data[0:raw.data.size / 3]
         grayscale.data[1::3] = raw.data[0:raw.data.size / 3]
         grayscale.data[2::3] = raw.data[0:raw.data.size / 3]
+        grayscale.data = grayscale.data.reshape((grayscale.resolution[0], grayscale.resolution[1], 3))
+        raw.data = raw.data.reshape((raw.resolution[0], raw.resolution[1], 3))
 
     @staticmethod
     def rawToY(raw, Y):
