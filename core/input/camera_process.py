@@ -1,34 +1,34 @@
 from ..common.event import Event
 from ..common.events import RGBImageEvent
 from ..common.events import YImageEvent
+from ..input.camera import Image
 from ..input.camera import Camera
 
 from multiprocessing import Process, Pipe
 import time
 import copy
+import numpy as np
 
 def cameraWorker(pipe, resolution):
     main_conn, worker_conn = pipe
     camera = Camera(resolution)
-    raw = camera.createEmptyFullData(resolution)
-    y = camera.createEmptyYData(resolution)
-    grayscale = camera.createEmptyFullData(resolution)
+    raw = Image(resolution, 3)
+    grayscale = Image(resolution, 3)
+    y = Image(resolution, 1)
     getGrayscale = True
     getY = True
     while True:
-        raw = camera.capture()
+        raw.data = camera.capture()
         if worker_conn.poll():
             data = worker_conn.recv()
             if data == CameraProcess.END_MESSAGE:
                 worker_conn.send(data)
                 break;
         elif not main_conn.poll():
-            if getGrayscale:
-                Camera.rawToGrayscale(raw, grayscale)
-                worker_conn.send((CameraProcess.RGB_MESSAGE, grayscale))
-            if getY:
-                Camera.rawToY(raw, y)
-                worker_conn.send((CameraProcess.Y_MESSAGE, y))
+            Camera.rawToY(raw, y)
+            Camera.rawToGrayscale(raw, grayscale)
+            #worker_conn.send((CameraProcess.Y_MESSAGE, y))
+            worker_conn.send((CameraProcess.Y_MESSAGE, grayscale))
 
 class CameraProcess(object):
     END_MESSAGE = 'END'
@@ -42,6 +42,12 @@ class CameraProcess(object):
         self._worker = Process(target=cameraWorker, args=((self._main_conn, self._worker_conn),self._resolution,))
         self._worker.daemon = True
         self._worker.start()
+
+        #mono_data_size = self._resolution[0] * self._resolution[1] / 2
+        #mono_resolution = (resolution[0] / 2, resolution[1])
+        #self._stereo_data = Image(resolution)
+        #self._stereo_rgb = (np.empty(mono_data_size, dtype=np.uint8), np.empty(mono_data_size, dtype=np.uint8))
+        #self._full_data = np.empty(mono_data_size * 6, dtype=np.uint8)
 
     def stop(self):
         self._main_conn.send(CameraProcess.END_MESSAGE)
@@ -57,7 +63,12 @@ class CameraProcess(object):
             return
         data = self._main_conn.recv()
 
-        if data[0] == self.Y_MESSAGE:
-            self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (data[1], self._resolution)))
-        elif data[0] == self.RGB_MESSAGE:
-            self._event_dispatcher.dispatch_event(Event(RGBImageEvent.TYPE, (data[1], self._resolution)))
+        #Camera.monoToStereo(data[1], self._stereo_data)
+
+        #Camera.YToGrayscale(data[1], self._full_data)
+        self._event_dispatcher.dispatch_event(Event(RGBImageEvent.TYPE, (data[1].data, data[1].resolution)))
+
+        #if data[0] == self.Y_MESSAGE:
+        #    self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (data[1], self._resolution)))
+        #elif data[0] == self.RGB_MESSAGE:
+        #    self._event_dispatcher.dispatch_event(Event(RGBImageEvent.TYPE, (data[1], self._resolution)))
