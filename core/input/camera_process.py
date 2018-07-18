@@ -1,6 +1,8 @@
 from ..common.event import Event
 from ..common.events import RGBImageEvent
 from ..common.events import YImageEvent
+from ..common.events import TestEvent
+from ..common.events import GrayscaleImageEvent
 from ..input.camera import Image
 from ..input.camera import Camera
 
@@ -12,11 +14,15 @@ import numpy as np
 def cameraWorker(pipe, resolution):
     main_conn, worker_conn = pipe
     camera = Camera(resolution)
+    mono_resolution = (resolution[0] / 2, resolution[1])
     raw = Image(resolution, 3)
-    grayscale = Image(resolution, 3)
-    y = Image(resolution, 1)
+    raw_split = (Image(mono_resolution, 3), Image(mono_resolution, 3))
+    y = (Image(mono_resolution, 1), Image(mono_resolution, 1))
+    grayscale = (Image(mono_resolution, 3), Image(mono_resolution, 3))
+    full_grayscale = Image(resolution, 3)
     getGrayscale = True
     getY = True
+    getFullGrayscale = True
     while True:
         raw.data = camera.capture()
         if worker_conn.poll():
@@ -25,17 +31,24 @@ def cameraWorker(pipe, resolution):
                 worker_conn.send(data)
                 break;
         elif not main_conn.poll():
+            Camera.monoToStereo(raw, raw_split)
             if getGrayscale:
-                Camera.rawToGrayscale(raw, grayscale)
+                Camera.rawToGrayscale(raw_split[0], grayscale[0])
+                Camera.rawToGrayscale(raw_split[1], grayscale[1])
                 worker_conn.send((CameraProcess.RGB_MESSAGE, grayscale))
             if getY:
-                Camera.rawToY(raw, y)
+                Camera.rawToY(raw_split[0], y[0])
+                Camera.rawToY(raw_split[1], y[1])
                 worker_conn.send((CameraProcess.Y_MESSAGE, y))
+            if getFullGrayscale:
+                Camera.rawToGrayscale(raw, full_grayscale)
+                worker_conn.send((CameraProcess.FULL_MESSAGE, full_grayscale))
 
 class CameraProcess(object):
     END_MESSAGE = 'END'
     Y_MESSAGE = 'Y'
     RGB_MESSAGE = 'RGB'
+    FULL_MESSAGE = 'FULL'
     def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher
         self._resolution = Camera.RESOLUTION_LO
@@ -60,6 +73,11 @@ class CameraProcess(object):
         data = self._main_conn.recv()
 
         if data[0] == self.Y_MESSAGE:
-            self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (data[1].data, data[1].resolution)))
+            #self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (data[1].data, data[1].resolution)))
+            pass
         elif data[0] == self.RGB_MESSAGE:
-            self._event_dispatcher.dispatch_event(Event(RGBImageEvent.TYPE, (data[1].data, data[1].resolution)))
+            self._event_dispatcher.dispatch_event(GrayscaleImageEvent((data[1][0].data, data[1][0].resolution)))
+            pass
+        elif data[0] == self.FULL_MESSAGE:
+            self._event_dispatcher.dispatch_event(TestEvent((data[1].data, data[1].resolution)))
+            pass

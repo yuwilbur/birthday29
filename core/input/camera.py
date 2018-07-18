@@ -58,4 +58,6 @@ class Camera(object):
 
     @staticmethod
     def monoToStereo(mono, stereo):
-        stereo = np.split(mono, 2)
+        (stereo[0].data, stereo[1].data) = np.split(mono.data, 2)
+        #stereo[0].data = mono.data[0:mono.data.size / 2]
+        #stereo[1].data = mono.data[0:mono.data.size / 2]

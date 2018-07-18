@@ -1,5 +1,7 @@
 from ..common.event import EventDispatcher
 from ..common.events import RGBImageEvent
+from ..common.events import GrayscaleImageEvent
+from ..common.events import TestEvent
 from ..common.singleton import Singleton
 from ..engine.game_engine import GameEngine
 from ..engine.vector import Vector
@@ -23,8 +25,11 @@ class Renderer(Manager):
         display_info = pygame.display.Info()
         self._resolution = Vector(display_info.current_w, display_info.current_h - 200)
 
-    def processRGBImageEvent(self, event):
-            self._camera_surface = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
+    def processGrayscaleImageEvent(self, event):
+        self._camera_surface[0] = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
+
+    def processTestEvent(self, event):
+        self._camera_surface[1] = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
 
     def getResolution(self):
         return self._resolution
@@ -34,8 +39,9 @@ class Renderer(Manager):
         #screen_attributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         screen_attributes = 0
         self._screen = pygame.display.set_mode(self._resolution.toIntTuple(), screen_attributes)
-        self._event_dispatcher.add_event_listener(RGBImageEvent.TYPE, self.processRGBImageEvent)
-        self._camera_surface = None
+        self._event_dispatcher.add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
+        self._event_dispatcher.add_event_listener(TestEvent.TYPE, self.processTestEvent)
+        self._camera_surface = [None,None]
         self._center = self._resolution / 2
         print 'Center', self._center
 
@@ -51,8 +57,14 @@ class Renderer(Manager):
                 rect.size = solid.getComponent(Rectangle).dimensions.toIntTuple()
                 rect.center = position
                 pygame.draw.rect(self._screen, solid.getComponent(Material).color.toTuple(), rect)
-        if not self._camera_surface == None:
-            self._screen.blit(self._camera_surface, (0,0), (0, 0, self._camera_surface.get_width(), self._camera_surface.get_height()))
+        if not self._camera_surface[0] == None:
+            size = (0, 0, self._camera_surface[0].get_width(), self._camera_surface[0].get_height())
+            position = (0, self._resolution.y - self._camera_surface[0].get_height())
+            self._screen.blit(self._camera_surface[0], position, size)
+        if not self._camera_surface[1] == None:
+            size = (0, 0, self._camera_surface[1].get_width(), self._camera_surface[1].get_height())
+            position = (self._resolution.x - self._camera_surface[1].get_width(), self._resolution.y - self._camera_surface[1].get_height())
+            self._screen.blit(self._camera_surface[1], position, size)
         pygame.display.update()
 
     
