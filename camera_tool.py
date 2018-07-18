@@ -1,4 +1,5 @@
 from core.common.camera import Camera
+from core.common.camera import Image
 from core.common.debug import Debugger
 import numpy as np
 import pygame
@@ -16,11 +17,11 @@ class CameraTool:
             self.camera.close()
         self.imageResolution = resolution
         self.camera = Camera(self.imageResolution)
-        self.rawData = self.camera.createEmptyFullData()
-        self.processedData = self.camera.createEmptyFullData()
+        self.rawData = Image(self.imageResolution)
+        self.processedData = Image(self.imageResolution)
 
     def run(self):
-        screenAttributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
+        #screenAttributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         screen = pygame.display.set_mode(self.displayResolution, screenAttributes)
         debugger = Debugger()
 

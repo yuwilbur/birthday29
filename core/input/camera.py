@@ -10,7 +10,7 @@ class Image(object):
     def __init__(self, resolution, bits):
         self.resolution = resolution
         self.bits = bits
-        self.data = np.empty(resolution[0] * resolution[1] * bits, dtype=np.uint8)
+        self.data = np.empty((resolution[0], resolution[1], bits), dtype=np.uint8)
 
 class Camera(object):
     RESOLUTION_LO = (320, 160)
