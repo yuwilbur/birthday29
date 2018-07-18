@@ -16,15 +16,16 @@ class TestGame(Game):
 		event_dispatcher = EventDispatcher()
 		event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
 
-		self._p1 = self._engine.createRectangle(Vector(50,400))
-		self._p1.position = Vector(-600, 0)
-		self._p2 = self._engine.createRectangle(Vector(50, 400))
-		self._p2.position = Vector(600, 0)
+		resolution = Renderer().getGameResolution()
 
-		self._ball = self._engine.createCircle(100)
+		self._p1 = self._engine.createRectangle(Vector(25, 200))
+		self._p1.position = Vector(-300, 0)
+		self._p2 = self._engine.createRectangle(Vector(25, 200))
+		self._p2.position = Vector(300, 0)
+
+		self._ball = self._engine.createCircle(50)
 		self._ball.getComponent(Solid).velocity = Vector(400,100)
 
-		resolution = Renderer().getResolution()
 		thickness = 50
 		self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, -resolution.y / 2)
 		self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, resolution.y / 2)

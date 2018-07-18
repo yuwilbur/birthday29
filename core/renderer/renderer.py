@@ -23,9 +23,8 @@ class Renderer(Manager):
         self._event_dispatcher = EventDispatcher()
         self._engine = GameEngine()
         display_info = pygame.display.Info()
-        resolution = Vector(display_info.current_w, display_info.current_h)
-        resolution.x = 1280
-        resolution.y = 720
+        #resolution = Vector(display_info.current_w, display_info.current_h)
+        resolution = Vector(1280, 720)
         self._info_width = 160
         self._game_resolution = resolution - Vector(self._info_width * 2, 0)
         self._resolution = resolution
@@ -63,6 +62,8 @@ class Renderer(Manager):
                 rect.size = solid.getComponent(Rectangle).dimensions.toIntTuple()
                 rect.center = position
                 pygame.draw.rect(self._screen, solid.getComponent(Material).color.toTuple(), rect)
+        pygame.draw.rect(self._screen, color.BLACK.toTuple(), pygame.Rect(0,0,self._info_width,self._resolution.y))
+        pygame.draw.rect(self._screen, color.BLACK.toTuple(), pygame.Rect(self._resolution.x - self._info_width,0,self._resolution.x,self._resolution.y))
         if not self._camera_surface[0] == None:
             size = (0, 0, self._camera_surface[0].get_width(), self._camera_surface[0].get_height())
             position = (0, self._resolution.y - self._camera_surface[0].get_height())
