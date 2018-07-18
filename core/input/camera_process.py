@@ -15,12 +15,10 @@ def cameraWorker(pipe, resolution):
     camera = Camera(resolution)
     mono_resolution = (resolution[0] / 2, resolution[1])
     y_mono = Camera.createImage(resolution, 1)
-    y_stereo = (Camera.createImage(mono_resolution, 1), Camera.createImage(mono_resolution, 1))
-    grayscale_mono = Camera.createImage(resolution, 3)
-    grayscale_stereo = (Camera.createImage(mono_resolution, 3), Camera.createImage(mono_resolution, 3))
-    getGrayscale = False
+    y_stereo = [Camera.createImage(mono_resolution, 1), Camera.createImage(mono_resolution, 1)]
+    grayscale_stereo = [Camera.createImage(mono_resolution, 3), Camera.createImage(mono_resolution, 3)]
+    getGrayscale = True
     getY = False
-    getFullGrayscale = True
     while True:
         y_mono = camera.capture()
         if worker_conn.poll():
@@ -30,17 +28,12 @@ def cameraWorker(pipe, resolution):
                 break;
         elif not main_conn.poll():
             Camera.monoToStereo(y_mono, y_stereo)
-            if getGrayscale:
-                Camera.rawToGrayscale(raw_split[0], grayscale[0])
-                Camera.rawToGrayscale(raw_split[1], grayscale[1])
-                worker_conn.send((CameraProcess.RGB_MESSAGE, grayscale))
             if getY:
-                Camera.rawToY(raw_split[0], y[0])
-                Camera.rawToY(raw_split[1], y[1])
-                worker_conn.send((CameraProcess.Y_MESSAGE, y))
-            if getFullGrayscale:
-                Camera.yToGrayscale(y_mono, grayscale_mono)
-                worker_conn.send((CameraProcess.FULL_MESSAGE, grayscale_mono))
+                worker_conn.send((CameraProcess.Y_MESSAGE, y_stereo))
+            if getGrayscale:
+                Camera.yToGrayscale(y_stereo[0], grayscale_stereo[0])
+                Camera.yToGrayscale(y_stereo[1], grayscale_stereo[1])
+                worker_conn.send((CameraProcess.RGB_MESSAGE, grayscale_stereo))
 
 class CameraProcess(object):
     END_MESSAGE = 'END'
@@ -74,10 +67,6 @@ class CameraProcess(object):
             #self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (datay, data[1].resolution)))
             pass
         elif data[0] == self.RGB_MESSAGE:
-            width, height, channels = data[1][0].shape
-            self._event_dispatcher.dispatch_event(GrayscaleImageEvent((data[1][0], (width, height))))
-            pass
-        elif data[0] == self.FULL_MESSAGE:
-            width, height, channels = data[1].shape
-            self._event_dispatcher.dispatch_event(TestEvent((data[1], (width, height))))
+            #width, height, channels = data[1][0].shape
+            self._event_dispatcher.dispatch_event(GrayscaleImageEvent(data[1]))
             pass

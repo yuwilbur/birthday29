@@ -10,6 +10,7 @@ class Camera(object):
     RESOLUTION_LO = (320, 160)
     RESOLUTION_MI = (640, 320)
     RESOLUTION_HI = (1280, 640)
+    TEST = True
 
     FILENAME = './testcamera.npy'
 
@@ -46,7 +47,5 @@ class Camera(object):
 
     @staticmethod
     def monoToStereo(mono, stereo):
-        pass
-        #(stereo[0].data, stereo[1].data) = np.hsplit(mono.data, 2)
-        #stereo[0].data = mono.data[0:mono.data.size / 2]
-        #stereo[1].data = mono.data[0:mono.data.size / 2]
+        mono = mono.reshape((160,320,1))
+        stereo[0], stereo[1] = np.hsplit(mono, 2)

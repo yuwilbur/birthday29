@@ -26,10 +26,9 @@ class Renderer(Manager):
         self._resolution = Vector(display_info.current_w, display_info.current_h - 200)
 
     def processGrayscaleImageEvent(self, event):
-        self._camera_surface[0] = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
-
-    def processTestEvent(self, event):
-        self._camera_surface[1] = pygame.image.frombuffer(event.data()[0], event.data()[1], 'RGB')
+        resolution = (event.data()[0].shape[0], event.data()[0].shape[1])
+        self._camera_surface[0] = pygame.image.frombuffer(event.data()[0], resolution, 'RGB')
+        self._camera_surface[1] = pygame.image.frombuffer(event.data()[1], resolution, 'RGB')
 
     def getResolution(self):
         return self._resolution
@@ -40,7 +39,6 @@ class Renderer(Manager):
         screen_attributes = 0
         self._screen = pygame.display.set_mode(self._resolution.toIntTuple(), screen_attributes)
         self._event_dispatcher.add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
-        self._event_dispatcher.add_event_listener(TestEvent.TYPE, self.processTestEvent)
         self._camera_surface = [None,None]
         self._center = self._resolution / 2
         print 'Center', self._center
