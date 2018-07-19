@@ -25,6 +25,7 @@ class Camera(object):
             self._camera.shutter_speed = 500
             self._camera.awb_mode = 'off'
             self._camera.awb_gains = 1.0
+            self._camera.vflip = True
 
     def capture(self):
         if 'picamera' in sys.modules:
