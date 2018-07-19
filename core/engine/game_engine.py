@@ -5,6 +5,8 @@ from ..engine.collider import Collider
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.solid import Solid
+from ..engine.ui import TextBox
+from ..engine.ui import UI
 from ..engine.vector import Vector
 from ..sync.manager import Manager
 from ..sync.period_sync import PeriodSync
@@ -21,6 +23,7 @@ class GameEngine(Manager):
 		self._event_dispatcher = EventDispatcher()
 		self._solid_objects = dict()
 		self._collider_objects = dict()
+		self._ui_objects = dict()
 		self._game_object_instance_id = 0
 		
 	def runPhysics(self, solid):
@@ -86,6 +89,9 @@ class GameEngine(Manager):
 	def getSolids(self):
 		return self._solid_objects
 
+	def getUIs(self):
+		return self._ui_objects
+
 	def createCircle(self, radius, collides=True):
 		circle = GameObject("Circle")
 		circle.addComponent(Circle).radius = radius
@@ -102,6 +108,11 @@ class GameEngine(Manager):
 		rectangle.addComponent(Material)
 		return self.addGameObject(rectangle)
 
+	def createTextBox(self):
+		text_box = GameObject("TextBox")
+		text_box.addComponent(TextBox)
+		return self.addGameObject(text_box)
+
 	def addGameObject(self, game_object):
 		game_object.instance_id = self._game_object_instance_id
 		self._game_object_instance_id += 1
@@ -109,6 +120,8 @@ class GameEngine(Manager):
 			self._solid_objects[game_object.instance_id] = game_object
 		if game_object.hasComponent(Collider):
 			self._collider_objects[game_object.instance_id] = game_object
+		if game_object.hasComponent(UI):
+			self._ui_objects[game_object.instance_id] = game_object
 		return game_object
 
 	def update(self):

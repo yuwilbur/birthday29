@@ -10,6 +10,7 @@ from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.solid import Solid
 from ..engine.material import Material
+from ..engine.ui import UI
 from ..renderer import color
 from ..sync.manager import Manager
 
@@ -20,7 +21,6 @@ class Renderer(Manager):
     class PlayerInfo(object):
         def __init__(self):
             self.camera_surface = None
-            self.text_surface = None
 
     def __init__(self):
         super(Renderer, self).__init__()
@@ -35,44 +35,6 @@ class Renderer(Manager):
         self._info_width = 160
         self._game_resolution = resolution - Vector(self._info_width * 2, 0)
         self._resolution = resolution
-        pygame.font.init()
-        self._font = pygame.font.SysFont('Arial', 30)
-
-    def drawText(self, surface, text, color, rect, font, aa=False, bkg=None):
-        rect = pygame.Rect(rect)
-        y = rect.top
-        lineSpacing = -2
-
-        # get the height of the font
-        fontHeight = font.size("Tg")[1]
-
-        while text:
-            i = 1
-
-            # determine if the row of text will be outside our area
-            if y + fontHeight > rect.bottom:
-                break
-
-            # determine maximum width of line
-            while font.size(text[:i])[0] < rect.width and i < len(text):
-                i += 1
-
-            # if we've wrapped the text, then adjust the wrap to the last word      
-            if i < len(text): 
-                i = text.rfind(" ", 0, i) + 1
-
-            # render the line and blit it to the surface
-            if bkg:
-                image = font.render(text[:i], 1, color, bkg)
-                image.set_colorkey(bkg)
-            else:
-                image = font.render(text[:i], aa, color)
-
-            surface.blit(image, (rect.left, y))
-            y += fontHeight + lineSpacing
-
-            # remove the text we just blitted
-            text = text[i:]
 
     def processGrayscaleImageEvent(self, event):
         resolution = (event.data()[0].shape[0], event.data()[0].shape[1])
@@ -94,7 +56,6 @@ class Renderer(Manager):
         self._p1_info = Renderer.PlayerInfo()
         self._p2_info = Renderer.PlayerInfo()
         self._p1_info.text_surface = pygame.Surface((self._info_width, self._text_height))
-        self.drawText(self._p1_info.text_surface, "test asdfas sadf asdf sadf asd asdf", (255,255,255), pygame.Rect(0,0,self._info_width,1000), self._font)
         self._center = self._resolution / 2
         print 'Center', self._center
 
@@ -122,11 +83,12 @@ class Renderer(Manager):
             size = (0, 0, dimensions[0], dimensions[1])
             position = (self._resolution.x - dimensions[0], self._resolution.y - dimensions[1])
             self._screen.blit(self._p2_info.camera_surface, position, size)
-        if not self._p1_info.text_surface == None:
-            dimensions = (self._info_width, self._text_height)
-            size = (0, 0, dimensions[0], dimensions[1])
-            position = (0, self._resolution.y - self._camera_height - self._text_height)
-            self._screen.blit(self._p1_info.text_surface, position, size)
+        uis = self._engine.getUIs()
+        for ui_id, ui in uis.items():
+            surface = ui.getComponent(UI).getSurface()
+            if surface == None:
+                continue
+            self._screen.blit(surface, (0,0), (0, 0, surface.get_width(), surface.get_height()))
         pygame.display.update()
 
     

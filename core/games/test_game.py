@@ -1,6 +1,7 @@
 from ..engine.game_engine import GameEngine
 from ..engine.vector import Vector
 from ..games.game import Game
+from ..engine.ui import TextBox
 from ..engine.solid import Solid
 from ..common.event import EventDispatcher
 from ..common.events import InputEvent
@@ -31,6 +32,11 @@ class TestGame(Game):
 		self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, resolution.y / 2)
 		self._engine.createRectangle(Vector(thickness, resolution.y)).position = Vector(-resolution.x / 2, 0)
 		self._engine.createRectangle(Vector(thickness, resolution.y)).position = Vector(resolution.x / 2, 0)
+
+		test = self._engine.createTextBox()
+		test.getComponent(TextBox).width = 160
+		test.getComponent(TextBox).height = 100
+		test.getComponent(TextBox).text = "TEST1 TEST2 TEST3 TEST4 TEST5"
 
 	def update(self):
 		return
