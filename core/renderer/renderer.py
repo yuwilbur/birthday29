@@ -38,8 +38,8 @@ class Renderer(Manager):
         pygame.font.init()
         self._font = pygame.font.SysFont('Arial', 30)
 
-    def drawText(surface, text, color, rect, font, aa=False, bkg=None):
-        rect = Rect(rect)
+    def drawText(self, surface, text, color, rect, font, aa=False, bkg=None):
+        rect = pygame.Rect(rect)
         y = rect.top
         lineSpacing = -2
 
@@ -50,7 +50,7 @@ class Renderer(Manager):
             i = 1
 
             # determine if the row of text will be outside our area
-            if y + fontHeight < rect.bottom:
+            if y + fontHeight > rect.bottom:
                 break
 
             # determine maximum width of line
@@ -93,6 +93,8 @@ class Renderer(Manager):
         self._event_dispatcher.add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
         self._p1_info = Renderer.PlayerInfo()
         self._p2_info = Renderer.PlayerInfo()
+        self._p1_info.text_surface = pygame.Surface((self._info_width, self._text_height))
+        self.drawText(self._p1_info.text_surface, "test asdfas sadf asdf sadf asd asdf", (255,255,255), pygame.Rect(0,0,self._info_width,1000), self._font)
         self._center = self._resolution / 2
         print 'Center', self._center
 
@@ -120,6 +122,11 @@ class Renderer(Manager):
             size = (0, 0, dimensions[0], dimensions[1])
             position = (self._resolution.x - dimensions[0], self._resolution.y - dimensions[1])
             self._screen.blit(self._p2_info.camera_surface, position, size)
+        if not self._p1_info.text_surface == None:
+            dimensions = (self._info_width, self._text_height)
+            size = (0, 0, dimensions[0], dimensions[1])
+            position = (0, self._resolution.y - self._camera_height - self._text_height)
+            self._screen.blit(self._p1_info.text_surface, position, size)
         pygame.display.update()
 
     
