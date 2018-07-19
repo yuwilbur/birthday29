@@ -1,13 +1,13 @@
 from ..engine.game_engine import GameEngine
 from ..engine.vector import Vector
-from ..games.game import Game
+from ..games.yu_game import YuGameBase
 from ..engine.ui import TextBox
 from ..engine.solid import Solid
 from ..common.event import EventDispatcher
 from ..common.events import InputEvent
 from ..renderer.renderer import Renderer
 
-class TestGame(Game):
+class TestGame(YuGameBase):
 	DELTA = 10
 	def __init__(self, name):
 		super(TestGame, self).__init__("TestGame")
