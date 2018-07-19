@@ -1,23 +1,23 @@
 from ..engine.game_engine import GameEngine
 from ..engine.vector import Vector
-from ..games.yu_game import YuGameBase
+from ..games.yu_game import YuGame
 from ..engine.ui import TextBox
 from ..engine.solid import Solid
 from ..common.event import EventDispatcher
 from ..common.events import InputEvent
-from ..renderer.renderer import Renderer
 
-class TestGame(YuGameBase):
+class TestGame(YuGame):
 	DELTA = 10
 	def __init__(self, name):
 		super(TestGame, self).__init__("TestGame")
 		self._engine = GameEngine()
 
 	def setup(self):
+		super(TestGame, self).setup()
 		event_dispatcher = EventDispatcher()
 		event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
 
-		resolution = Renderer().getGameResolution()
+		resolution = self._resolution
 
 		self._p1 = self._engine.createRectangle(Vector(25, 200))
 		self._p1.position = Vector(-300, 0)

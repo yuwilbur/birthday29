@@ -33,7 +33,6 @@ class Renderer(Manager):
         self._controls_height = 160
         self._camera_height = 160
         self._info_width = 160
-        self._game_resolution = resolution - Vector(self._info_width * 2, 0)
         self._resolution = resolution
 
     def processGrayscaleImageEvent(self, event):
@@ -43,9 +42,6 @@ class Renderer(Manager):
 
     def getResolution(self):
         return self._resolution
-
-    def getGameResolution(self):
-        return self._game_resolution
 
     def setup(self):
         print 'Resolution', self._resolution
