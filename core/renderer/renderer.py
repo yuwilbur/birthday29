@@ -29,7 +29,9 @@ class Renderer(Manager):
         display_info = pygame.display.Info()
         #resolution = Vector(display_info.current_w, display_info.current_h)
         resolution = Vector(1280, 720)
-        self._info_height = 160
+        self._text_height = 200
+        self._controls_height = 160
+        self._camera_height = 160
         self._info_width = 160
         self._game_resolution = resolution - Vector(self._info_width * 2, 0)
         self._resolution = resolution
@@ -109,12 +111,12 @@ class Renderer(Manager):
         pygame.draw.rect(self._screen, color.BLACK.toTuple(), pygame.Rect(0,0,self._info_width,self._resolution.y))
         pygame.draw.rect(self._screen, color.BLACK.toTuple(), pygame.Rect(self._resolution.x - self._info_width,0,self._resolution.x,self._resolution.y))
         if not self._p1_info.camera_surface == None:
-            dimensions = (self._info_width, self._info_height)
+            dimensions = (self._info_width, self._camera_height)
             size = (0, 0, dimensions[0], dimensions[1])
             position = (0, self._resolution.y - dimensions[1])
             self._screen.blit(self._p1_info.camera_surface, position, size)
         if not self._p2_info.camera_surface == None:
-            dimensions = (self._info_width, self._info_height)
+            dimensions = (self._info_width, self._camera_height)
             size = (0, 0, dimensions[0], dimensions[1])
             position = (self._resolution.x - dimensions[0], self._resolution.y - dimensions[1])
             self._screen.blit(self._p2_info.camera_surface, position, size)
