@@ -88,7 +88,8 @@ class Renderer(Manager):
             surface = ui.getComponent(UI).getSurface()
             if surface == None:
                 continue
-            self._screen.blit(surface, (0,0), (0, 0, surface.get_width(), surface.get_height()))
+            position = (ui.position - Vector(surface.get_width() / 2, surface.get_height() / 2)).toIntTuple()
+            self._screen.blit(surface, position, (0, 0, surface.get_width(), surface.get_height()))
         pygame.display.update()
 
     

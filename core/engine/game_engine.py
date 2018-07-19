@@ -24,6 +24,7 @@ class GameEngine(Manager):
 		self._solid_objects = dict()
 		self._collider_objects = dict()
 		self._ui_objects = dict()
+		self._image_objects = dict()
 		self._game_object_instance_id = 0
 		
 	def runPhysics(self, solid):
@@ -91,6 +92,10 @@ class GameEngine(Manager):
 
 	def getUIs(self):
 		return self._ui_objects
+
+	def createImage(self):
+		image
+		return self.addGameObject(image)
 
 	def createCircle(self, radius, collides=True):
 		circle = GameObject("Circle")

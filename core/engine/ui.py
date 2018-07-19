@@ -17,11 +17,10 @@ class TextBox(UI):
 		self.height = 0
 		self.color = color.RED
 		self.font_type = 'Arial'
-		self.font_size = 30
+		self.font_size = 24
 
 	def createSurface(self):
 		surface = pygame.Surface((self.width, self.height))
-		lineSpacing = -2
 		pygame.font.init()
 		font = pygame.font.SysFont(self.font_type, self.font_size)
 		font_height = font.size("Tg")[1]
@@ -43,7 +42,7 @@ class TextBox(UI):
 				i = text.rfind(" ", 0, i) + 1
 
 			surface.blit(font.render(text[:i], True, self.color.toTuple()), (0, y))
-			y += font_height + lineSpacing
+			y += font_height
 
 			# remove the text we just blitted
 			text = text[i:]

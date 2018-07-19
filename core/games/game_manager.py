@@ -11,15 +11,15 @@ class GameManager(Manager):
 		self._game = None
 
 	def stopGame(self):
-		if not self._game == None:
-			self._game.stop()
-			self._game.join()
+		if self._game == None:
+			return
+		self._game.stop()
+		self._game = None
 
 	def startGame(self, game):
 		self.stopGame()
 		self._game = game
-		self._game.setDaemon(True)
-		self._game.start()
+		self._game.setup()
 
 	def processInputEvent(self, event):
 		if event == InputEvent.ONE:
@@ -27,6 +27,11 @@ class GameManager(Manager):
 
 	def setup(self):
 		self.startGame(TestGame(self._event_dispatcher))
+
+	def update(self):
+		if self._game == None:
+			return
+		self._game.update()
 
 	def stop(self):
 		self.stopGame()

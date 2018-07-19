@@ -9,8 +9,8 @@ from ..renderer.renderer import Renderer
 
 class TestGame(Game):
 	DELTA = 10
-	def __init__(self, event_dispatcher):
-		super(TestGame, self).__init__(event_dispatcher, "TestGame")
+	def __init__(self, name):
+		super(TestGame, self).__init__("TestGame")
 		self._engine = GameEngine()
 
 	def setup(self):
@@ -37,8 +37,12 @@ class TestGame(Game):
 		test.getComponent(TextBox).width = 160
 		test.getComponent(TextBox).height = 100
 		test.getComponent(TextBox).text = "TEST1 TEST2 TEST3 TEST4 TEST5"
+		test.position = Vector(80,50)
 
 	def update(self):
+		return
+
+	def stop(self):
 		return
 
 	def processInputEvent(self, event):
