@@ -1,4 +1,5 @@
 from ..engine.vector import Vector
+#from ..engine.game_engine import GameEngine
 
 class GameObject(object):
 	def __init__(self, name):
@@ -7,6 +8,7 @@ class GameObject(object):
 		self.position = Vector()
 		self.rotation = 0
 		self._components = dict()
+		#self._game_engine = GameEngine()
 
 	def addComponent(self, component_type):
 		self._components[component_type.__name__] = component_type()

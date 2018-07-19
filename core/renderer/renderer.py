@@ -24,13 +24,11 @@ class Renderer(Manager):
 
     def __init__(self):
         super(Renderer, self).__init__()
-        self._event_dispatcher = EventDispatcher()
         self._engine = GameEngine()
         display_info = pygame.display.Info()
         #resolution = Vector(display_info.current_w, display_info.current_h)
         resolution = Vector(1280, 720)
         self._text_height = 200
-        self._controls_height = 160
         self._camera_height = 160
         self._info_width = 160
         self._resolution = resolution
@@ -48,7 +46,7 @@ class Renderer(Manager):
         #screen_attributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         screen_attributes = 0
         self._screen = pygame.display.set_mode(self._resolution.toIntTuple(), screen_attributes)
-        self._event_dispatcher.add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
+        EventDispatcher().add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
         self._p1_info = Renderer.PlayerInfo()
         self._p2_info = Renderer.PlayerInfo()
         self._p1_info.text_surface = pygame.Surface((self._info_width, self._text_height))

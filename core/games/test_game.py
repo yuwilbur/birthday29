@@ -13,9 +13,8 @@ class TestGame(YuGame):
 		self._engine = GameEngine()
 
 	def setup(self):
-		super(TestGame, self).setup()
-		event_dispatcher = EventDispatcher()
-		event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
+		super(TestGame, self).setup() 
+		EventDispatcher().add_event_listener(InputEvent.TYPE, self.processInputEvent)
 
 		resolution = self._resolution
 

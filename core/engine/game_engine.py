@@ -11,6 +11,7 @@ from ..engine.vector import Vector
 from ..sync.manager import Manager
 from ..sync.period_sync import PeriodSync
 from ..engine.material import Material
+from ..engine.game_object_manager import GameObjectManager
 
 import copy
 import math
@@ -20,6 +21,7 @@ class GameEngine(Manager):
 
 	def __init__(self):
 		super(GameEngine, self).__init__()
+		self._game_object_manager = GameObjectManager()
 		self._event_dispatcher = EventDispatcher()
 		self._solid_objects = dict()
 		self._collider_objects = dict()
@@ -93,8 +95,13 @@ class GameEngine(Manager):
 	def getUIs(self):
 		return self._ui_objects
 
-	def createImage(self):
-		image
+	def createImage(self, data):
+		image = GameObject("Image")
+		#image = pygame.image.frombuffer(buffer, (buffer.shape[0], buffer.shape[1]),'RGB')
+		image.addComponent(Image).image = data
+        #resolution = (event.data()[0].shape[0], event.data()[0].shape[1])
+        #self._p1_info.camera_surface = pygame.image.frombuffer(event.data()[0], resolution, 'RGB')
+        #self._p2_info.camera_surface = pygame.image.frombuffer(event.data()[1], resolution, 'RGB')
 		return self.addGameObject(image)
 
 	def createCircle(self, radius, collides=True):
@@ -127,6 +134,8 @@ class GameEngine(Manager):
 			self._collider_objects[game_object.instance_id] = game_object
 		if game_object.hasComponent(UI):
 			self._ui_objects[game_object.instance_id] = game_object
+		#if game_object.hasComponent(Image):
+		#	self._image_objects[game_object.instance_id] = _game_object_instance_id
 		return game_object
 
 	def update(self):
