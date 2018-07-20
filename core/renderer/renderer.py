@@ -57,14 +57,16 @@ class Renderer(Manager):
         self._screen.fill(color.BLACK.toTuple())
         solids = self._engine.getSolids()
         for solid_id, solid in solids.items():
-            position = (solid.position + self._center).toIntTuple()
-            if solid.hasComponent(Circle):
-                pygame.draw.circle(self._screen, solid.getComponent(Material).color.toTuple(), position, solid.getComponent(Circle).radius)
-            elif solid.hasComponent(Rectangle):
+            position = (solid.getGameObject().position + self._center).toIntTuple()
+            if solid.getGameObject().hasComponent(Circle):
+                #pygame.draw.circle(self._screen, solid.getGameObject().getComponent(Material).color.toTuple(), position, solid.getGameObject().getComponent(Circle).radius)
+                pygame.draw.circle(self._screen, color.WHITE.toTuple(), position, solid.getGameObject().getComponent(Circle).radius)
+            elif solid.getGameObject().hasComponent(Rectangle):
                 rect = pygame.Rect(0,0,0,0)
-                rect.size = solid.getComponent(Rectangle).dimensions.toIntTuple()
+                rect.size = solid.getGameObject().getComponent(Rectangle).dimensions.toIntTuple()
                 rect.center = position
-                pygame.draw.rect(self._screen, solid.getComponent(Material).color.toTuple(), rect)
+                #pygame.draw.rect(self._screen, solid.getGameObject().getComponent(Material).color.toTuple(), rect)
+                pygame.draw.rect(self._screen, color.WHITE.toTuple(), rect)
         pygame.draw.rect(self._screen, color.BLACK.toTuple(), pygame.Rect(0,0,self._info_width,self._resolution.y))
         pygame.draw.rect(self._screen, color.BLACK.toTuple(), pygame.Rect(self._resolution.x - self._info_width,0,self._resolution.x,self._resolution.y))
         if not self._p1_info.camera_surface == None:

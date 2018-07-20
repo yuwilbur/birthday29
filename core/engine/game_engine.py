@@ -90,11 +90,7 @@ class GameEngine(Manager):
 			collider.getComponent(Solid).velocity = -Vector(v1.y, v1.x)
 
 	def getSolids(self):
-		game_object_ids = GameObjectManager().getComponents(Solid)
-		test = dict()
-		for game_object_id in game_object_ids:
-			test[game_object_id] = GameObjectManager().getGameObject(game_object_id)
-		return test
+		return GameObjectManager().getComponents(Solid)
 
 	# def getUIs(self):
 	# 	return dict()
