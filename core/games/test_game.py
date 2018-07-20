@@ -3,8 +3,10 @@ from ..engine.vector import Vector
 from ..games.yu_game import YuGame
 from ..engine.ui import TextBox
 from ..engine.solid import Solid
+from ..engine.primitive import Rectangle
 from ..common.event import EventDispatcher
 from ..common.events import InputEvent
+from ..engine.game_object import GameObject
 
 class TestGame(YuGame):
 	DELTA = 10
@@ -18,19 +20,24 @@ class TestGame(YuGame):
 
 		resolution = self._resolution
 
-		self._p1 = self._engine.createRectangle(Vector(25, 200))
-		self._p1.position = Vector(-300, 0)
-		self._p2 = self._engine.createRectangle(Vector(25, 200))
-		self._p2.position = Vector(300, 0)
+		self._p1 = GameObject()
+		self._p1.addComponent(Rectangle)
+		self._p1.position = Vector(-300,0)
+		self._p1.getComponent(Rectangle).dimensions = Vector(25, 200)
 
-		self._ball = self._engine.createCircle(50)
-		self._ball.getComponent(Solid).velocity = Vector(400,100)
+		#self._p1 = self._engine.createRectangle(Vector(25, 200))
+		#self._p1.position = Vector(-300, 0)
+		#self._p2 = self._engine.createRectangle(Vector(25, 200))
+		#self._p2.position = Vector(300, 0)
 
-		thickness = 50
-		self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, -resolution.y / 2)
-		self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, resolution.y / 2)
-		self._engine.createRectangle(Vector(thickness, resolution.y)).position = Vector(-resolution.x / 2, 0)
-		self._engine.createRectangle(Vector(thickness, resolution.y)).position = Vector(resolution.x / 2, 0)
+		#self._ball = self._engine.createCircle(50)
+		#self._ball.getComponent(Solid).velocity = Vector(400,100)
+
+		#thickness = 50
+		#self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, -resolution.y / 2)
+		#self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, resolution.y / 2)
+		#self._engine.createRectangle(Vector(thickness, resolution.y)).position = Vector(-resolution.x / 2, 0)
+		#self._engine.createRectangle(Vector(thickness, resolution.y)).position = Vector(resolution.x / 2, 0)
 
 		#test = self._engine.createTextBox()
 		#test.getComponent(TextBox).width = 160

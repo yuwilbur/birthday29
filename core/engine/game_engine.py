@@ -90,53 +90,57 @@ class GameEngine(Manager):
 			collider.getComponent(Solid).velocity = -Vector(v1.y, v1.x)
 
 	def getSolids(self):
-		return dict()
+		game_object_ids = GameObjectManager().getComponents(Solid)
+		test = dict()
+		for game_object_id in game_object_ids:
+			test[game_object_id] = GameObjectManager().getGameObject(game_object_id)
+		return test
 
-	def getUIs(self):
-		return dict()
+	# def getUIs(self):
+	# 	return dict()
 
-	def createImage(self, data):
-		image = GameObject("Image")
-		#image = pygame.image.frombuffer(buffer, (buffer.shape[0], buffer.shape[1]),'RGB')
-		image.addComponent(Image).image = data
-        #resolution = (event.data()[0].shape[0], event.data()[0].shape[1])
-        #self._p1_info.camera_surface = pygame.image.frombuffer(event.data()[0], resolution, 'RGB')
-        #self._p2_info.camera_surface = pygame.image.frombuffer(event.data()[1], resolution, 'RGB')
-		return self.addGameObject(image)
+	# def createImage(self, data):
+	# 	image = GameObject("Image")
+	# 	#image = pygame.image.frombuffer(buffer, (buffer.shape[0], buffer.shape[1]),'RGB')
+	# 	image.addComponent(Image).image = data
+ #        #resolution = (event.data()[0].shape[0], event.data()[0].shape[1])
+ #        #self._p1_info.camera_surface = pygame.image.frombuffer(event.data()[0], resolution, 'RGB')
+ #        #self._p2_info.camera_surface = pygame.image.frombuffer(event.data()[1], resolution, 'RGB')
+	# 	return self.addGameObject(image)
 
-	def createCircle(self, radius, collides=True):
-		circle = GameObject("Circle")
-		circle.addComponent(Circle).radius = radius
-		if collides:
-			circle.addComponent(Collider)
-		circle.addComponent(Material)
-		return self.addGameObject(circle)
+	# def createCircle(self, radius, collides=True):
+	# 	circle = GameObject("Circle")
+	# 	circle.addComponent(Circle).radius = radius
+	# 	if collides:
+	# 		circle.addComponent(Collider)
+	# 	circle.addComponent(Material)
+	# 	return self.addGameObject(circle)
 
-	def createRectangle(self, dimensions, collides=True):
-		rectangle = GameObject("Rectangle")
-		rectangle.addComponent(Rectangle).dimensions = dimensions
-		if collides:
-			rectangle.addComponent(Collider)
-		rectangle.addComponent(Material)
-		return self.addGameObject(rectangle)
+	# def createRectangle(self, dimensions, collides=True):
+	# 	rectangle = GameObject("Rectangle")
+	# 	rectangle.addComponent(Rectangle).dimensions = dimensions
+	# 	if collides:
+	# 		rectangle.addComponent(Collider)
+	# 	rectangle.addComponent(Material)
+	# 	return self.addGameObject(rectangle)
 
-	def createTextBox(self):
-		text_box = GameObject("TextBox")
-		text_box.addComponent(TextBox)
-		return self.addGameObject(text_box)
+	# def createTextBox(self):
+	# 	text_box = GameObject("TextBox")
+	# 	text_box.addComponent(TextBox)
+	# 	return self.addGameObject(text_box)
 
-	def addGameObject(self, game_object):
-		game_object.instance_id = self._game_object_instance_id
-		self._game_object_instance_id += 1
-		if game_object.hasComponent(Solid):
-			self._solid_objects[game_object.instance_id] = game_object
-		if game_object.hasComponent(Collider):
-			self._collider_objects[game_object.instance_id] = game_object
-		if game_object.hasComponent(UI):
-			self._ui_objects[game_object.instance_id] = game_object
-		#if game_object.hasComponent(Image):
-		#	self._image_objects[game_object.instance_id] = _game_object_instance_id
-		return game_object
+	# def addGameObject(self, game_object):
+	# 	game_object.instance_id = self._game_object_instance_id
+	# 	self._game_object_instance_id += 1
+	# 	if game_object.hasComponent(Solid):
+	# 		self._solid_objects[game_object.instance_id] = game_object
+	# 	if game_object.hasComponent(Collider):
+	# 		self._collider_objects[game_object.instance_id] = game_object
+	# 	if game_object.hasComponent(UI):
+	# 		self._ui_objects[game_object.instance_id] = game_object
+	# 	#if game_object.hasComponent(Image):
+	# 	#	self._image_objects[game_object.instance_id] = _game_object_instance_id
+	# 	return game_object
 
 	def update(self):
 		for key in self._solid_objects:

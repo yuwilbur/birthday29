@@ -2,9 +2,8 @@ from ..engine.vector import Vector
 from ..engine.game_object_manager import GameObjectManager
 
 class GameObject(object):
-	def __init__(self, name):
+	def __init__(self):
 		self.instance_id = -1
-		self.name = name
 		self.position = Vector()
 		self.rotation = 0
 		self._components = dict()
