@@ -1,9 +1,13 @@
 from ..renderer import color
+from ..engine.component import Component
 
 from abc import abstractmethod
 import pygame
 
-class UI(object):
+class UI(Component):
+	def __init__(self, game_object_id):
+		super(UI, self).__init__(game_object_id)
+
 	@abstractmethod
 	def getSurface(self):
 		pass

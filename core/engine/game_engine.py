@@ -90,10 +90,10 @@ class GameEngine(Manager):
 			collider.getComponent(Solid).velocity = -Vector(v1.y, v1.x)
 
 	def getSolids(self):
-		return self._solid_objects
+		return dict()
 
 	def getUIs(self):
-		return self._ui_objects
+		return dict()
 
 	def createImage(self, data):
 		image = GameObject("Image")
