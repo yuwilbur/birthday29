@@ -24,27 +24,26 @@ class TestGame(YuGame):
 
 		resolution = self._resolution
 
-		self._p1 = GameObject()
+		self._p1 = GameObject("p1")
 		self._p1.addComponent(Rectangle)
 		self._p1.addComponent(Material)
 		self._p1.addComponent(Collider)
 		self._p1.getComponent(Transform).position = Vector(-300,0)
 		self._p1.getComponent(Rectangle).dimensions = Vector(25, 200)
 
-		self._p2 = GameObject()
+		self._p2 = GameObject("p2")
 		self._p2.addComponent(Rectangle)
 		self._p2.addComponent(Material)
 		self._p2.addComponent(Collider)
 		self._p2.getComponent(Transform).position = Vector(300, 0)
 		self._p2.getComponent(Rectangle).dimensions = Vector(25, 200) 
 
-		self._ball = GameObject()
+		self._ball = GameObject("ball")
 		self._ball.addComponent(Circle)
 		self._ball.addComponent(Material)
 		self._ball.addComponent(Collider)
 		self._ball.getComponent(Circle).radius = 50
 		self._ball.getComponent(Solid).velocity = Vector(400, 100)
-		#self._ball.getComponent(Solid).velocity = Vector(400,100)
 
 		#thickness = 50
 		#self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, -resolution.y / 2)

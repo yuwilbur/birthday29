@@ -36,8 +36,8 @@ class Renderer(Manager):
 
     def processGrayscaleImageEvent(self, event):
         resolution = (event.data()[0].shape[0], event.data()[0].shape[1])
-        self._p1_info.camera_surface = pygame.image.frombuffer(event.data()[0], resolution, 'RGB')
-        self._p2_info.camera_surface = pygame.image.frombuffer(event.data()[1], resolution, 'RGB')
+        #self._p1_info.camera_surface = pygame.image.frombuffer(event.data()[0], resolution, 'RGB')
+        #self._p2_info.camera_surface = pygame.image.frombuffer(event.data()[1], resolution, 'RGB')
 
     def getResolution(self):
         return self._resolution
@@ -78,13 +78,13 @@ class Renderer(Manager):
             size = (0, 0, dimensions[0], dimensions[1])
             position = (self._resolution.x - dimensions[0], self._resolution.y - dimensions[1])
             self._screen.blit(self._p2_info.camera_surface, position, size)
-        # uis = self._engine.getUIs()
-        # for ui_id, ui in uis.items():
-        #     surface = ui.getComponent(UI).getSurface()
-        #     if surface == None:
-        #         continue
-        #     position = (ui.position - Vector(surface.get_width() / 2, surface.get_height() / 2)).toIntTuple()
-        #     self._screen.blit(surface, position, (0, 0, surface.get_width(), surface.get_height()))
+        uis = self._engine.getObjectsWithType(UI)
+        for ui_id, ui in uis.items():
+            surface = ui.getComponent(UI).getSurface()
+            if surface == None:
+                continue
+            position = (ui.getComponent(Transform).position - Vector(surface.get_width() / 2, surface.get_height() / 2)).toIntTuple()
+            self._screen.blit(surface, position, (0, 0, surface.get_width(), surface.get_height()))
         pygame.display.update()
 
     

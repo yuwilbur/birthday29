@@ -2,8 +2,9 @@ from ..engine.transform import Transform
 from ..engine.game_object_manager import GameObjectManager
 
 class GameObject(object):
-	def __new__(cls):
+	def __new__(cls, name = ""):
 		self = super(GameObject, cls).__new__(cls)
+		self.name = name
 		self.instance_id = -1
 		GameObjectManager().addGameObject(self)
 		self.addComponent(Transform)

@@ -14,9 +14,9 @@ class GameObjectManager(object):
 		self._game_objects[game_object] = game_object
 
 	def addComponent(self, game_object, component_type):
-		component = component_type(game_object)
 		if not game_object in self._game_objects:
 			raise ValueError('GameObject has not been constructed yet.')
+		component = component_type(game_object)	
 		component_id = component_type.__name__
 		if not component_id in self._components:
 			self._components[component_id] = dict()
@@ -26,13 +26,15 @@ class GameObjectManager(object):
 	def getComponents(self, component_type):
 		component_id = component_type.__name__
 		if not component_id in self._components:
-			return None
+			self._components[component_id] = dict()
 		return self._components[component_id]
 
 	def getComponent(self, game_object, component_type):
 		if not game_object in self._game_objects:
 			raise ValueError('GameObject has not been constructed yet.')
 		component_id = component_type.__name__
-		if not component_id in self._components or not game_object in self._components[component_id]:
+		if not component_id in self._components:
+			self._components[component_id] = dict()
+		if not game_object in self._components[component_id]:
 			return None
 		return self._components[component_id][game_object]

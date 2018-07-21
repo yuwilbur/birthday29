@@ -5,12 +5,24 @@ from abc import abstractmethod
 import pygame
 
 class UI(Component):
-	def __init__(self, game_object_id):
-		super(UI, self).__init__(game_object_id)
+	def __init__(self, game_object):
+		super(UI, self).__init__(game_object)
 
 	@abstractmethod
 	def getSurface(self):
 		pass
+
+class Image(UI):
+	def __init__(self, game_object):
+		super(Image, self).__init__(game_object)
+		self.__class__.__name__ = UI.__name__
+		self._surface = None
+
+	def fromNumpy(self, data):
+		self._surface = pygame.image.frombuffer(data, data.shape[0:2], 'RGB')
+
+	def getSurface(self):
+		return self._surface
 
 class TextBox(UI):
 	def __init__(self):
