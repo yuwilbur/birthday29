@@ -1,1 +1,1 @@
-STILL_PHOTO = False
+FULL_SCREEN = False

@@ -1,5 +1,5 @@
 from ..common.event import EventDispatcher
-from ..common.events import GrayscaleImageEvent
+from ..common.events import *
 from ..games.game import Game
 from ..renderer.renderer import Renderer
 from ..engine.vector import Vector
@@ -20,6 +20,9 @@ class YuGame(Game):
 	def processGrayscaleImageEvent(self, event):
 		self._p1_info.camera.getComponent(Image).fromNumpy(event.data()[0])
 		self._p2_info.camera.getComponent(Image).fromNumpy(event.data()[1])
+
+	def processInputEvent(self, event):
+		return
 
 	def __init__(self, name):
 		super(YuGame, self).__init__(name)
@@ -50,5 +53,6 @@ class YuGame(Game):
 		self._p2_info.text.getComponent(TextBox).height = self._text_height
 		self._p2_info.text.getComponent(TextBox).text = "Player 2"
 		EventDispatcher().add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
+		EventDispatcher().add_event_listener(InputEvent.TYPE, self.processInputEvent)
         
 

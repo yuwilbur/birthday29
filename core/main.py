@@ -13,12 +13,8 @@ import signal
 import time
 
 class Main(object):
-    def __init__(self):
-        self.setupConfig()
-        self.run()
-
-    def setupConfig(self):
-        config.STILL_PHOTO = False
+    def setFullScreen(self, enable):
+        config.FULL_SCREEN = enable
 
     def run(self):
         pygame.init()

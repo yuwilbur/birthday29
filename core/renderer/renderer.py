@@ -2,6 +2,7 @@ from ..common.event import EventDispatcher
 from ..common.events import RGBImageEvent
 from ..common.events import GrayscaleImageEvent
 from ..common.events import TestEvent
+from ..common import config
 from ..common.singleton import Singleton
 from ..engine.game_engine import GameEngine
 from ..engine.vector import Vector
@@ -44,8 +45,9 @@ class Renderer(Manager):
 
     def setup(self):
         print 'Resolution', self._resolution
-        #screen_attributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         screen_attributes = 0
+        if config.FULL_SCREEN:
+            screen_attributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         self._screen = pygame.display.set_mode(self._resolution.toIntTuple(), screen_attributes)
         EventDispatcher().add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
         self._p1_info = Renderer.PlayerInfo()
