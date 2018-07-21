@@ -17,6 +17,7 @@ class YuGame(Game):
 
 	def processGrayscaleImageEvent(self, event):
 		self._p1_info.camera.getComponent(Image).fromNumpy(event.data()[0])
+		self._p2_info.camera.getComponent(Image).fromNumpy(event.data()[1])
 
 	def __init__(self, name):
 		super(YuGame, self).__init__(name)
@@ -29,11 +30,15 @@ class YuGame(Game):
 		full_resolution = Renderer().getResolution()
 		self._text_height = full_resolution.y - self._camera_height - self._controls_height
 		self._resolution = full_resolution - Vector(self._info_width * 2, 0)
-		text_position = Vector(self._info_width / 2, self._text_height / 2)
-		controls_position = Vector(self._info_width / 2, self._text_height + self._controls_height / 2)
-		camera_position = Vector(self._info_width / 2, self._text_height + self._controls_height + self._camera_height / 2)
+		text_y = self._text_height / 2
+		controls_y = self._text_height + self._controls_height / 2
+		camera_y = self._text_height + self._controls_height + self._camera_height / 2
+		p1_x = self._info_width / 2
+		p2_x = full_resolution.x - self._info_width / 2
 		self._p1_info = YuGame.PlayerInfo()
-		self._p1_info.camera.getComponent(Transform).position = camera_position
+		self._p1_info.camera.getComponent(Transform).position = Vector(p1_x, camera_y)
+		self._p2_info = YuGame.PlayerInfo()
+		self._p2_info.camera.getComponent(Transform).position = Vector(p2_x, camera_y)
 		EventDispatcher().add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
         
 
