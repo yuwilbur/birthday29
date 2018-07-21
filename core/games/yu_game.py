@@ -5,12 +5,14 @@ from ..renderer.renderer import Renderer
 from ..engine.vector import Vector
 from ..engine.game_object import GameObject
 from ..engine.ui import Image
+from ..engine.ui import TextBox
 from ..engine.transform import Transform
 
 class YuGame(Game):
 	class PlayerInfo(object):
 		def __init__(self):
-			self.info = GameObject("info")
+			self.text = GameObject("text")
+			self.text.addComponent(TextBox)
 			self.controls = GameObject("controls")
 			self.camera = GameObject("camera")
 			self.camera.addComponent(Image)
@@ -37,8 +39,16 @@ class YuGame(Game):
 		p2_x = full_resolution.x - self._info_width / 2
 		self._p1_info = YuGame.PlayerInfo()
 		self._p1_info.camera.getComponent(Transform).position = Vector(p1_x, camera_y)
+		self._p1_info.text.getComponent(Transform).position = Vector(p1_x, text_y)
+		self._p1_info.text.getComponent(TextBox).width = self._info_width
+		self._p1_info.text.getComponent(TextBox).height = self._text_height
+		self._p1_info.text.getComponent(TextBox).text = "Player 1"
 		self._p2_info = YuGame.PlayerInfo()
 		self._p2_info.camera.getComponent(Transform).position = Vector(p2_x, camera_y)
+		self._p2_info.text.getComponent(Transform).position = Vector(p2_x, text_y)
+		self._p2_info.text.getComponent(TextBox).width = self._info_width
+		self._p2_info.text.getComponent(TextBox).height = self._text_height
+		self._p2_info.text.getComponent(TextBox).text = "Player 2"
 		EventDispatcher().add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
         
 

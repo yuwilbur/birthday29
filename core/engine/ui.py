@@ -25,8 +25,8 @@ class Image(UI):
 		return self._surface
 
 class TextBox(UI):
-	def __init__(self):
-		super(TextBox, self).__init__()
+	def __init__(self, game_object):
+		super(TextBox, self).__init__(game_object)
 		self.__class__.__name__ = UI.__name__
 		self.text = ""
 		self.width = 0
@@ -35,7 +35,7 @@ class TextBox(UI):
 		self.font_type = 'Arial'
 		self.font_size = 24
 
-	def createSurface(self):
+	def getSurface(self):
 		surface = pygame.Surface((self.width, self.height))
 		pygame.font.init()
 		font = pygame.font.SysFont(self.font_type, self.font_size)
@@ -63,6 +63,3 @@ class TextBox(UI):
 			# remove the text we just blitted
 			text = text[i:]
 		return surface
-
-	def getSurface(self):
-		return self.createSurface()
