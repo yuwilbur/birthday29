@@ -4,62 +4,63 @@ from multiprocessing import Process, Pipe, Lock
 import copy
 import time
 
-def processYImage(y, resolution):
+def processYImage(y):
     start = time.time()
     total = 0
-    width = resolution[0]
-    height = resolution[1]
+    width = y.shape[0]
+    height = y.shape[1]
     for i in range(0, width - 1):
-        test = i*height
         for j in range(0, height - 1):
-            if y[j + test] > 0:
+            if y[j][i] > 0:
                 total += 1
             # total = total + y[j*resolution[0] + i]
     return time.time() - start
 
-def yImageWorker(lock, pipe):
+def yImageWorker(pipe):
     main_conn, worker_conn = pipe
     while True:
-        lock.acquire()
         data = worker_conn.recv()
-        lock.release()
         if data == ImageProcess.END_MESSAGE:
             break;
         if not main_conn.poll():
-            worker_conn.send(processYImage(data[0], data[1]))
+            worker_conn.send(processYImage(data))
 
 class ImageProcess(object):
     END_MESSAGE = 'END'
     def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher
         self._event_dispatcher.add_event_listener(YImageEvent.TYPE, self.processYImageEvent)
-        self._lock = Lock()
-        self._main_conn, self._worker_conn = Pipe()
         
-        self._worker1 = Process(target=yImageWorker, args=(self._lock, (self._main_conn, self._worker_conn),))
+        self._main1_conn, self._worker1_conn = Pipe()
+        self._worker1 = Process(target=yImageWorker, args=((self._main1_conn, self._worker1_conn),))
         self._worker1.daemon = True
         self._worker1.start()
 
-        self._worker2 = Process(target=yImageWorker, args=(self._lock, (self._main_conn, self._worker_conn),))
+        self._main2_conn, self._worker2_conn = Pipe()
+        self._worker2 = Process(target=yImageWorker, args=((self._main2_conn, self._worker2_conn),))
         self._worker2.daemon = True
         self._worker2.start()
 
     def processYImageEvent(self, event):
-        resolution = event.data()[1]
-        y_data = event.data()[0]
-        if not self._worker_conn.poll():
-            self._main_conn.send((copy.deepcopy(y_data), resolution))
+        if not self._worker1_conn.poll():
+            self._main1_conn.send(event.data()[0])
+        if not self._worker2_conn.poll():
+            self._main2_conn.send(event.data()[1])
 
     def stop(self):
-        self._main_conn.send(ImageProcess.END_MESSAGE)
-        self._main_conn.send(ImageProcess.END_MESSAGE)
-        while self._main_conn.poll():
-            self._main_conn.recv()
+        self._main1_conn.send(ImageProcess.END_MESSAGE)
+        while self._main1_conn.poll():
+            self._main1_conn.recv()
+        self._main2_conn.send(ImageProcess.END_MESSAGE)
+        while self._main2_conn.poll():
+            self._main2_conn.recv()
         self._worker1.join()
         self._worker2.join()
         
     def update(self):
-        if not self._main_conn.poll():
-            return
-        data = self._main_conn.recv()
-        #print data
+        if self._main1_conn.poll():
+            data = self._main1_conn.recv()
+            print 'p1: ', data
+        if self._main2_conn.poll():
+            data = self._main2_conn.recv()
+            print 'p2: ', data
