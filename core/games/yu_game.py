@@ -24,6 +24,12 @@ class YuGame(Game):
 	def processInputEvent(self, event):
 		return
 
+	def getFullResolution(self):
+		return self._full_resolution
+
+	def getResolution(self):
+		return self._resolution
+
 	def __init__(self, name):
 		super(YuGame, self).__init__(name)
 		self._info_width = 160
@@ -32,14 +38,14 @@ class YuGame(Game):
 		self._text_height = 0
 
 	def setup(self):
-		full_resolution = Renderer().getResolution()
-		self._text_height = full_resolution.y - self._camera_height - self._controls_height
-		self._resolution = full_resolution - Vector(self._info_width * 2, 0)
+		self._full_resolution = Renderer().getResolution()
+		self._resolution = self._full_resolution - Vector(self._info_width * 2, 0)
+		self._text_height = self._full_resolution.y - self._camera_height - self._controls_height
 		text_y = self._text_height / 2
 		controls_y = self._text_height + self._controls_height / 2
 		camera_y = self._text_height + self._controls_height + self._camera_height / 2
 		p1_x = self._info_width / 2
-		p2_x = full_resolution.x - self._info_width / 2
+		p2_x = self._full_resolution.x - self._info_width / 2
 		self._p1_info = YuGame.PlayerInfo()
 		self._p1_info.camera.getComponent(Transform).position = Vector(p1_x, camera_y)
 		self._p1_info.text.getComponent(Transform).position = Vector(p1_x, text_y)

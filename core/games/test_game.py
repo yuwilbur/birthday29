@@ -22,8 +22,6 @@ class TestGame(YuGame):
 		super(TestGame, self).setup() 
 		EventDispatcher().add_event_listener(InputEvent.TYPE, self.processInputEvent)
 
-		resolution = self._resolution
-
 		self._p1 = GameObject("p1")
 		self._p1.addComponent(Rectangle)
 		self._p1.addComponent(Material)
@@ -45,7 +43,15 @@ class TestGame(YuGame):
 		self._ball.getComponent(Circle).radius = 50
 		self._ball.getComponent(Solid).velocity = Vector(400, 100)
 
-		#thickness = 50
+		resolution = self.getResolution()
+		thickness = 50
+		self._wall1 = GameObject()
+		self._wall1.addComponent(Rectangle)
+		self._wall1.addComponent(Material)
+		self._wall1.addComponent(Collider)
+		self._wall1.getComponent(Transform).position = Vector(0, -resolution.y / 2)
+		self._wall1.getComponent(Rectangle).dimensions = Vector(resolution.x, thickness)
+
 		#self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, -resolution.y / 2)
 		#self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, resolution.y / 2)
 		#self._engine.createRectangle(Vector(thickness, resolution.y)).position = Vector(-resolution.x / 2, 0)

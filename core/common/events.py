@@ -1,15 +1,14 @@
 from ..common.event import Event
 
-class YImageEvent(object):
+class YImageEvent(Event):
     TYPE = "YImage"
+    def __init__(self, data):
+        super(YImageEvent, self).__init__(self.TYPE, data)
 
 class GrayscaleImageEvent(Event):
     TYPE = "GrayscaleImage"
     def __init__(self, data):
         super(GrayscaleImageEvent, self).__init__(self.TYPE, data)
-
-class RGBImageEvent(object):
-    TYPE = "RGBImage"
 
 class InputEvent(object):
     TYPE = "Input"
@@ -29,7 +28,6 @@ class InputEvent(object):
     K = Event(TYPE, 'K')
     L = Event(TYPE, 'L')
     ONE = Event(TYPE, '1')
-
 
 class TestEvent(Event):
     TYPE = "Test"

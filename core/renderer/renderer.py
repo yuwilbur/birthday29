@@ -1,7 +1,3 @@
-from ..common.event import EventDispatcher
-from ..common.events import RGBImageEvent
-from ..common.events import GrayscaleImageEvent
-from ..common.events import TestEvent
 from ..common import config
 from ..common.singleton import Singleton
 from ..engine.game_engine import GameEngine
@@ -28,17 +24,11 @@ class Renderer(Manager):
         super(Renderer, self).__init__()
         self._engine = GameEngine()
         display_info = pygame.display.Info()
-        #resolution = Vector(display_info.current_w, display_info.current_h)
         resolution = Vector(1280, 720)
         self._text_height = 200
         self._camera_height = 160
         self._info_width = 160
         self._resolution = resolution
-
-    def processGrayscaleImageEvent(self, event):
-        resolution = (event.data()[0].shape[0], event.data()[0].shape[1])
-        #self._p1_info.camera_surface = pygame.image.frombuffer(event.data()[0], resolution, 'RGB')
-        #self._p2_info.camera_surface = pygame.image.frombuffer(event.data()[1], resolution, 'RGB')
 
     def getResolution(self):
         return self._resolution
@@ -49,7 +39,6 @@ class Renderer(Manager):
         if config.FULL_SCREEN:
             screen_attributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         self._screen = pygame.display.set_mode(self._resolution.toIntTuple(), screen_attributes)
-        EventDispatcher().add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
         self._p1_info = Renderer.PlayerInfo()
         self._p2_info = Renderer.PlayerInfo()
         self._p1_info.text_surface = pygame.Surface((self._info_width, self._text_height))

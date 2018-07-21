@@ -1,5 +1,4 @@
 from ..common.event import Event
-from ..common.events import RGBImageEvent
 from ..common.events import YImageEvent
 from ..common.events import TestEvent
 from ..common.events import GrayscaleImageEvent
@@ -64,9 +63,6 @@ class CameraProcess(object):
         data = self._main_conn.recv()
 
         if data[0] == self.Y_MESSAGE:
-            #self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (datay, data[1].resolution)))
-            pass
+            self._event_dispatcher.dispatch_event(Event(YImageEvent.TYPE, (datay, data[1].resolution)))
         elif data[0] == self.RGB_MESSAGE:
-            #width, height, channels = data[1][0].shape
             self._event_dispatcher.dispatch_event(GrayscaleImageEvent(data[1]))
-            pass
