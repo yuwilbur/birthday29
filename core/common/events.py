@@ -1,5 +1,7 @@
 from ..common.event import Event
 
+import time
+
 class YImageEvent(Event):
     TYPE = "YImage"
     def __init__(self, data):
@@ -9,6 +11,13 @@ class GrayscaleImageEvent(Event):
     TYPE = "GrayscaleImage"
     def __init__(self, data):
         super(GrayscaleImageEvent, self).__init__(self.TYPE, data)
+
+class LatencyEvent(Event):
+    TYPE = "LatencyEvent"
+    P1_PROCESSING = "P1Processing"
+    P2_PROCESSING = "P2Processing"
+    def __init__(self, latency_type):
+        super(LatencyEvent, self).__init__(self.TYPE, (latency_type, time.time()))
 
 class InputEvent(object):
     TYPE = "Input"

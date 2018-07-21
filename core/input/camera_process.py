@@ -1,4 +1,3 @@
-from ..common.event import Event
 from ..common.events import YImageEvent
 from ..common.events import TestEvent
 from ..common.events import GrayscaleImageEvent
@@ -28,7 +27,7 @@ def cameraWorker(pipe, resolution):
                 break;
         elif not main_conn.poll():
             Camera.monoToStereo(y_mono, y_stereo)
-            worker_conn.send((CameraProcess.NORMAL_MESSAGE, y_stereo))
+            worker_conn.send((CameraProcess.NORMAL_MESSAGE, (time.time(), y_stereo)))
 
 class CameraProcess(object):
     END_MESSAGE = 'END'
@@ -60,8 +59,9 @@ class CameraProcess(object):
             self._y_stereo = data[1][0]
             self._grayscale_stereo = data[1][1]
         elif data[0] == CameraProcess.NORMAL_MESSAGE:
-            self._y_stereo = data[1]
+            timestamp = data[1][0]
+            self._y_stereo = data[1][1]
             Camera.yToGrayscale(self._y_stereo[0], self._grayscale_stereo[0])
             Camera.yToGrayscale(self._y_stereo[1], self._grayscale_stereo[1])
             self._event_dispatcher.dispatch_event(GrayscaleImageEvent(self._grayscale_stereo))
-            self._event_dispatcher.dispatch_event(YImageEvent(self._y_stereo))
+            self._event_dispatcher.dispatch_event(YImageEvent((timestamp, self._y_stereo)))

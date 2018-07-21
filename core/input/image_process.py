@@ -1,10 +1,11 @@
-from ..common.events import YImageEvent
-
+from ..common.event import EventDispatcher
+from ..common.events import *
 from multiprocessing import Process, Pipe, Lock
 import copy
 import time
 
 def processYImage(y):
+    return
     start = time.time()
     total = 0
     width = y.shape[0]
@@ -23,7 +24,7 @@ def yImageWorker(pipe):
         if data == ImageProcess.END_MESSAGE:
             break;
         if not main_conn.poll():
-            worker_conn.send(processYImage(data))
+            worker_conn.send((data[0], processYImage(data[1])))
 
 class ImageProcess(object):
     END_MESSAGE = 'END'
@@ -43,9 +44,9 @@ class ImageProcess(object):
 
     def processYImageEvent(self, event):
         if not self._worker1_conn.poll():
-            self._main1_conn.send(event.data()[0])
+            self._main1_conn.send((event.data()[0], event.data()[1][0]))
         if not self._worker2_conn.poll():
-            self._main2_conn.send(event.data()[1])
+            self._main2_conn.send((event.data()[0], event.data()[1][1]))
 
     def stop(self):
         self._main1_conn.send(ImageProcess.END_MESSAGE)
@@ -60,7 +61,8 @@ class ImageProcess(object):
     def update(self):
         if self._main1_conn.poll():
             data = self._main1_conn.recv()
-            print 'p1: ', data
+            EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P1_PROCESSING))
+            #print 'p1: ', data
         if self._main2_conn.poll():
             data = self._main2_conn.recv()
-            print 'p2: ', data
+            #print 'p2: ', data

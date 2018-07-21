@@ -24,6 +24,13 @@ class YuGame(Game):
 	def processInputEvent(self, event):
 		return
 
+	def processLatencyEvent(self, event):
+		data = event.data()
+		latency = str((time.time() - data[1]) * 1000)
+		if data[0] == LatencyEvent.P1_PROCESSING:
+			print latency
+			#self._p1_info.text.getComponent(TextBox).text = data[1]
+
 	def getFullResolution(self):
 		return self._full_resolution
 
@@ -51,7 +58,6 @@ class YuGame(Game):
 		self._p1_info.text.getComponent(Transform).position = Vector(p1_x, text_y)
 		self._p1_info.text.getComponent(TextBox).width = self._info_width
 		self._p1_info.text.getComponent(TextBox).height = self._text_height
-		self._p1_info.text.getComponent(TextBox).text = "Player 1"
 		self._p2_info = YuGame.PlayerInfo()
 		self._p2_info.camera.getComponent(Transform).position = Vector(p2_x, camera_y)
 		self._p2_info.text.getComponent(Transform).position = Vector(p2_x, text_y)
@@ -60,5 +66,6 @@ class YuGame(Game):
 		self._p2_info.text.getComponent(TextBox).text = "Player 2"
 		EventDispatcher().add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
 		EventDispatcher().add_event_listener(InputEvent.TYPE, self.processInputEvent)
+		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.processLatencyEvent)
         
 
