@@ -9,9 +9,8 @@ class GameObjectManager(object):
 		self._unique_id = 0
 
 	def addGameObject(self, game_object):
-		if game_object.instance_id == -1:
-			game_object.instance_id = self._unique_id
-			self._unique_id += 1
+		game_object.instance_id = self._unique_id
+		self._unique_id += 1
 		self._game_objects[game_object] = game_object
 
 	def addComponent(self, game_object, component_type):

@@ -25,14 +25,14 @@ class GameEngine(Manager):
 		
 	def runPhysics(self, solid):
 		solid.getComponent(Solid).velocity += solid.getComponent(Solid).acceleration * PeriodSync.PERIOD
-		solid.position += solid.getComponent(Solid).velocity * PeriodSync.PERIOD
+		solid.getGameObject().position += solid.getComponent(Solid).velocity * PeriodSync.PERIOD
 
 	def runCircleCircleCollision(self, collider, reference):
-		x1 = collider.position
+		x1 = collider.getGameObject().position
 		m1 = collider.getComponent(Solid).mass
 		v1 = collider.getComponent(Solid).velocity
 		s1 = collider.getComponent(Circle).radius
-		x2 = reference.position
+		x2 = reference.getGameObject().position
 		m2 = reference.getComponent(Solid).mass
 		v2 = reference.getComponent(Solid).velocity
 		s2 = reference.getComponent(Circle).radius
@@ -42,11 +42,11 @@ class GameEngine(Manager):
 		collider.getComponent(Solid).velocity = velocity
 
 	def runCircleRectangleCollision(self, collider, reference):
-		x1 = collider.position
+		x1 = collider.getGameObject().position
 		m1 = collider.getComponent(Solid).mass
 		v1 = collider.getComponent(Solid).velocity
 		s1 = collider.getComponent(Circle).radius
-		x2 = reference.position
+		x2 = reference.getGameObject().position
 		m2 = reference.getComponent(Solid).mass
 		v2 = reference.getComponent(Solid).velocity
 		s2 = reference.getComponent(Rectangle).dimensions
@@ -87,17 +87,18 @@ class GameEngine(Manager):
 		return GameObjectManager().getComponents(component_type)
 
 	def update(self):
-		pass
-		# collider_objects = GameObjectManager().getComponents(Collider)
-		# for (key, value) in collider_objects:
-		# 	self.runPhysics(value)
-		# reference_objects = copy.deepcopy(collider_objects)
-		# for (collider_key, collider) in collider_objects.items():
-		# 	for (reference_key, reference) in reference_objects.items():
-		# 		if collider_key == reference_key:
-		# 			continue
-		# 		if collider.hasComponent(Circle):
-		# 			if reference.hasComponent(Circle):
-		# 				self.runCircleCircleCollision(collider, reference)
-		# 			if reference.hasComponent(Rectangle):
-		# 				self.runCircleRectangleCollision(collider, reference)
+		collider_objects = GameObjectManager().getComponents(Collider)
+		if collider_objects == None:
+			return
+		for (key, value) in collider_objects.items():
+			self.runPhysics(value)
+		reference_objects = copy.deepcopy(collider_objects)
+		for (collider_key, collider) in collider_objects.items():
+			for (reference_key, reference) in reference_objects.items():
+				if collider_key == reference_key:
+					continue
+				if collider.hasComponent(Circle):
+					if reference.hasComponent(Circle):
+						self.runCircleCircleCollision(collider, reference)
+					if reference.hasComponent(Rectangle):
+						self.runCircleRectangleCollision(collider, reference)

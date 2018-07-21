@@ -4,10 +4,12 @@ from ..games.yu_game import YuGame
 from ..engine.ui import TextBox
 from ..engine.solid import Solid
 from ..engine.primitive import Rectangle
+from ..engine.primitive import Circle
 from ..engine.material import Material
 from ..common.event import EventDispatcher
 from ..common.events import InputEvent
 from ..engine.game_object import GameObject
+from ..engine.collider import Collider
 
 class TestGame(YuGame):
 	DELTA = 10
@@ -24,15 +26,23 @@ class TestGame(YuGame):
 		self._p1 = GameObject()
 		self._p1.addComponent(Rectangle)
 		self._p1.addComponent(Material)
+		self._p1.addComponent(Collider)
 		self._p1.position = Vector(-300,0)
 		self._p1.getComponent(Rectangle).dimensions = Vector(25, 200)
 
-		#self._p1 = self._engine.createRectangle(Vector(25, 200))
-		#self._p1.position = Vector(-300, 0)
-		#self._p2 = self._engine.createRectangle(Vector(25, 200))
-		#self._p2.position = Vector(300, 0)
+		self._p2 = GameObject()
+		self._p2.addComponent(Rectangle)
+		self._p2.addComponent(Material)
+		self._p2.addComponent(Collider)
+		self._p2.position = Vector(300, 0)
+		self._p2.getComponent(Rectangle).dimensions = Vector(25, 200) 
 
-		#self._ball = self._engine.createCircle(50)
+		self._ball = GameObject()
+		self._ball.addComponent(Circle)
+		self._ball.addComponent(Material)
+		self._ball.addComponent(Collider)
+		self._ball.getComponent(Circle).radius = 50
+		self._ball.getComponent(Solid).velocity = Vector(400, 100)
 		#self._ball.getComponent(Solid).velocity = Vector(400,100)
 
 		#thickness = 50
