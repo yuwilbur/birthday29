@@ -7,6 +7,7 @@ from ..engine.primitive import Rectangle
 from ..engine.solid import Solid
 from ..engine.ui import TextBox
 from ..engine.ui import UI
+from ..engine.transform import Transform
 from ..engine.vector import Vector
 from ..sync.manager import Manager
 from ..sync.period_sync import PeriodSync
@@ -25,14 +26,14 @@ class GameEngine(Manager):
 		
 	def runPhysics(self, solid):
 		solid.getComponent(Solid).velocity += solid.getComponent(Solid).acceleration * PeriodSync.PERIOD
-		solid.getGameObject().position += solid.getComponent(Solid).velocity * PeriodSync.PERIOD
+		solid.getComponent(Transform).position += solid.getComponent(Solid).velocity * PeriodSync.PERIOD
 
 	def runCircleCircleCollision(self, collider, reference):
-		x1 = collider.getGameObject().position
+		x1 = collider.getComponent(Transform).position
 		m1 = collider.getComponent(Solid).mass
 		v1 = collider.getComponent(Solid).velocity
 		s1 = collider.getComponent(Circle).radius
-		x2 = reference.getGameObject().position
+		x2 = reference.getComponent(Transform).position
 		m2 = reference.getComponent(Solid).mass
 		v2 = reference.getComponent(Solid).velocity
 		s2 = reference.getComponent(Circle).radius
@@ -42,11 +43,11 @@ class GameEngine(Manager):
 		collider.getComponent(Solid).velocity = velocity
 
 	def runCircleRectangleCollision(self, collider, reference):
-		x1 = collider.getGameObject().position
+		x1 = collider.getComponent(Transform).position
 		m1 = collider.getComponent(Solid).mass
 		v1 = collider.getComponent(Solid).velocity
 		s1 = collider.getComponent(Circle).radius
-		x2 = reference.getGameObject().position
+		x2 = reference.getComponent(Transform).position
 		m2 = reference.getComponent(Solid).mass
 		v2 = reference.getComponent(Solid).velocity
 		s2 = reference.getComponent(Rectangle).dimensions

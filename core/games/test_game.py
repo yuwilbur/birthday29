@@ -10,6 +10,7 @@ from ..common.event import EventDispatcher
 from ..common.events import InputEvent
 from ..engine.game_object import GameObject
 from ..engine.collider import Collider
+from ..engine.transform import Transform
 
 class TestGame(YuGame):
 	DELTA = 10
@@ -27,14 +28,14 @@ class TestGame(YuGame):
 		self._p1.addComponent(Rectangle)
 		self._p1.addComponent(Material)
 		self._p1.addComponent(Collider)
-		self._p1.position = Vector(-300,0)
+		self._p1.getComponent(Transform).position = Vector(-300,0)
 		self._p1.getComponent(Rectangle).dimensions = Vector(25, 200)
 
 		self._p2 = GameObject()
 		self._p2.addComponent(Rectangle)
 		self._p2.addComponent(Material)
 		self._p2.addComponent(Collider)
-		self._p2.position = Vector(300, 0)
+		self._p2.getComponent(Transform).position = Vector(300, 0)
 		self._p2.getComponent(Rectangle).dimensions = Vector(25, 200) 
 
 		self._ball = GameObject()

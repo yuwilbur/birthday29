@@ -5,6 +5,7 @@ from ..common.events import TestEvent
 from ..common.singleton import Singleton
 from ..engine.game_engine import GameEngine
 from ..engine.vector import Vector
+from ..engine.transform import Transform
 from ..sync.period_sync import PeriodSync
 from ..engine.primitive import Solid
 from ..engine.primitive import Circle
@@ -57,7 +58,7 @@ class Renderer(Manager):
         self._screen.fill(color.BLACK.toTuple())
         materials = self._engine.getObjectsWithType(Material)
         for material_id, material in materials.items():
-            position = (material.getGameObject().position + self._center).toIntTuple()
+            position = (material.getComponent(Transform).position + self._center).toIntTuple()
             if material.hasComponent(Circle):
                 pygame.draw.circle(self._screen, material.color.toTuple(), position, material.getComponent(Circle).radius)
             elif material.hasComponent(Rectangle):
