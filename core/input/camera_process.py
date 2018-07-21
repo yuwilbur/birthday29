@@ -8,6 +8,8 @@ from multiprocessing import Process, Pipe
 import time
 import copy
 import numpy as np
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def cameraWorker(pipe, resolution):
     main_conn, worker_conn = pipe
