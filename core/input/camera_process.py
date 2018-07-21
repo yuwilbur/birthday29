@@ -18,8 +18,7 @@ def cameraWorker(pipe, resolution):
     y_mono = Camera.createImage(resolution, 1)
     y_stereo = [Camera.createImage(mono_resolution, 1), Camera.createImage(mono_resolution, 1)]
     grayscale_stereo = [Camera.createImage(mono_resolution, 3), Camera.createImage(mono_resolution, 3)]
-    getGrayscale = True
-    getY = True
+    worker_conn.send((CameraProcess.INIT_MESSAGE, (y_stereo, grayscale_stereo)))
     while True:
         y_mono = camera.capture()
         if worker_conn.poll():
@@ -29,17 +28,12 @@ def cameraWorker(pipe, resolution):
                 break;
         elif not main_conn.poll():
             Camera.monoToStereo(y_mono, y_stereo)
-            if getY:
-                worker_conn.send((CameraProcess.Y_MESSAGE, y_stereo))
-            if getGrayscale:
-                Camera.yToGrayscale(y_stereo[0], grayscale_stereo[0])
-                Camera.yToGrayscale(y_stereo[1], grayscale_stereo[1])
-                worker_conn.send((CameraProcess.GRAYSCALE_MESSAGE, grayscale_stereo))
+            worker_conn.send((CameraProcess.NORMAL_MESSAGE, y_stereo))
 
 class CameraProcess(object):
     END_MESSAGE = 'END'
-    Y_MESSAGE = 'Y'
-    GRAYSCALE_MESSAGE ='GRAY'
+    INIT_MESSAGE = 'INIT'
+    NORMAL_MESSAGE = 'NORMAL'
     def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher
         self._resolution = Camera.RESOLUTION_LO
@@ -62,8 +56,12 @@ class CameraProcess(object):
         if not self._main_conn.poll():
             return
         data = self._main_conn.recv()
-
-        if data[0] == self.Y_MESSAGE:
-            self._event_dispatcher.dispatch_event(YImageEvent(data[1]))
-        elif data[0] == self.GRAYSCALE_MESSAGE:
-            self._event_dispatcher.dispatch_event(GrayscaleImageEvent(data[1]))
+        if data[0] == CameraProcess.INIT_MESSAGE:
+            self._y_stereo = data[1][0]
+            self._grayscale_stereo = data[1][1]
+        elif data[0] == CameraProcess.NORMAL_MESSAGE:
+            self._y_stereo = data[1]
+            Camera.yToGrayscale(self._y_stereo[0], self._grayscale_stereo[0])
+            Camera.yToGrayscale(self._y_stereo[1], self._grayscale_stereo[1])
+            self._event_dispatcher.dispatch_event(GrayscaleImageEvent(self._grayscale_stereo))
+            self._event_dispatcher.dispatch_event(YImageEvent(self._y_stereo))
