@@ -12,23 +12,17 @@ class GameObjectManager(object):
 		if game_object.instance_id == -1:
 			game_object.instance_id = self._unique_id
 			self._unique_id += 1
-		self._game_objects[game_object.instance_id] = game_object
+		self._game_objects[game_object] = game_object
 
-	def getGameObject(self, game_object_id):
-		if game_object_id in self._game_objects:
-			return self._game_objects[game_object_id]
-		return None
-
-	def addComponent(self, game_object_id, component_type):
-		component = component_type(game_object_id)
-		if not game_object_id in self._game_objects:
+	def addComponent(self, game_object, component_type):
+		component = component_type(game_object)
+		if not game_object in self._game_objects:
 			raise ValueError('GameObject has not been constructed yet.')
 		component_id = component_type.__name__
 		if not component_id in self._components:
 			self._components[component_id] = dict()
-		self._components[component_id][game_object_id] = component
-		# print '1', component_id, ' ', type(self._components[component_id])
-		return self.getComponent(game_object_id, component_type)
+		self._components[component_id][game_object] = component
+		return self.getComponent(game_object, component_type)
 
 	def getComponents(self, component_type):
 		component_id = component_type.__name__
@@ -36,11 +30,10 @@ class GameObjectManager(object):
 			return None
 		return self._components[component_id]
 
-	def getComponent(self, game_object_id, component_type):
-		if not game_object_id in self._game_objects:
+	def getComponent(self, game_object, component_type):
+		if not game_object in self._game_objects:
 			raise ValueError('GameObject has not been constructed yet.')
 		component_id = component_type.__name__
-		if not component_id in self._components or not game_object_id in self._components[component_id]:
+		if not component_id in self._components or not game_object in self._components[component_id]:
 			return None
-		#print '2', component_id, ' ', type(self._components[component_id])
-		return self._components[component_id][game_object_id]
+		return self._components[component_id][game_object]

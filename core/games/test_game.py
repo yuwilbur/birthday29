@@ -4,6 +4,7 @@ from ..games.yu_game import YuGame
 from ..engine.ui import TextBox
 from ..engine.solid import Solid
 from ..engine.primitive import Rectangle
+from ..engine.material import Material
 from ..common.event import EventDispatcher
 from ..common.events import InputEvent
 from ..engine.game_object import GameObject
@@ -22,6 +23,7 @@ class TestGame(YuGame):
 
 		self._p1 = GameObject()
 		self._p1.addComponent(Rectangle)
+		self._p1.addComponent(Material)
 		self._p1.position = Vector(-300,0)
 		self._p1.getComponent(Rectangle).dimensions = Vector(25, 200)
 

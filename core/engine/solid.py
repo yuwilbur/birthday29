@@ -1,5 +1,4 @@
 from ..engine.vector import Vector
-from ..engine.material import Material
 from ..engine.component import Component
 
 class Solid(Component):

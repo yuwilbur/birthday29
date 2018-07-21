@@ -22,12 +22,6 @@ class GameEngine(Manager):
 	def __init__(self):
 		super(GameEngine, self).__init__()
 		self._game_object_manager = GameObjectManager()
-		self._event_dispatcher = EventDispatcher()
-		self._solid_objects = dict()
-		self._collider_objects = dict()
-		self._ui_objects = dict()
-		self._image_objects = dict()
-		self._game_object_instance_id = 0
 		
 	def runPhysics(self, solid):
 		solid.getComponent(Solid).velocity += solid.getComponent(Solid).acceleration * PeriodSync.PERIOD
@@ -89,65 +83,21 @@ class GameEngine(Manager):
 		else:
 			collider.getComponent(Solid).velocity = -Vector(v1.y, v1.x)
 
-	def getSolids(self):
-		return GameObjectManager().getComponents(Solid)
-
-	# def getUIs(self):
-	# 	return dict()
-
-	# def createImage(self, data):
-	# 	image = GameObject("Image")
-	# 	#image = pygame.image.frombuffer(buffer, (buffer.shape[0], buffer.shape[1]),'RGB')
-	# 	image.addComponent(Image).image = data
- #        #resolution = (event.data()[0].shape[0], event.data()[0].shape[1])
- #        #self._p1_info.camera_surface = pygame.image.frombuffer(event.data()[0], resolution, 'RGB')
- #        #self._p2_info.camera_surface = pygame.image.frombuffer(event.data()[1], resolution, 'RGB')
-	# 	return self.addGameObject(image)
-
-	# def createCircle(self, radius, collides=True):
-	# 	circle = GameObject("Circle")
-	# 	circle.addComponent(Circle).radius = radius
-	# 	if collides:
-	# 		circle.addComponent(Collider)
-	# 	circle.addComponent(Material)
-	# 	return self.addGameObject(circle)
-
-	# def createRectangle(self, dimensions, collides=True):
-	# 	rectangle = GameObject("Rectangle")
-	# 	rectangle.addComponent(Rectangle).dimensions = dimensions
-	# 	if collides:
-	# 		rectangle.addComponent(Collider)
-	# 	rectangle.addComponent(Material)
-	# 	return self.addGameObject(rectangle)
-
-	# def createTextBox(self):
-	# 	text_box = GameObject("TextBox")
-	# 	text_box.addComponent(TextBox)
-	# 	return self.addGameObject(text_box)
-
-	# def addGameObject(self, game_object):
-	# 	game_object.instance_id = self._game_object_instance_id
-	# 	self._game_object_instance_id += 1
-	# 	if game_object.hasComponent(Solid):
-	# 		self._solid_objects[game_object.instance_id] = game_object
-	# 	if game_object.hasComponent(Collider):
-	# 		self._collider_objects[game_object.instance_id] = game_object
-	# 	if game_object.hasComponent(UI):
-	# 		self._ui_objects[game_object.instance_id] = game_object
-	# 	#if game_object.hasComponent(Image):
-	# 	#	self._image_objects[game_object.instance_id] = _game_object_instance_id
-	# 	return game_object
+	def getObjectsWithType(self, component_type):
+		return GameObjectManager().getComponents(component_type)
 
 	def update(self):
-		for key in self._solid_objects:
-				self.runPhysics(self._solid_objects[key])
-		reference_objects = copy.deepcopy(self._collider_objects)
-		for (collider_key, collider) in self._collider_objects.items():
-			for (reference_key, reference) in reference_objects.items():
-				if collider_key == reference_key:
-					continue
-				if collider.hasComponent(Circle):
-					if reference.hasComponent(Circle):
-						self.runCircleCircleCollision(collider, reference)
-					if reference.hasComponent(Rectangle):
-						self.runCircleRectangleCollision(collider, reference)
+		pass
+		# collider_objects = GameObjectManager().getComponents(Collider)
+		# for (key, value) in collider_objects:
+		# 	self.runPhysics(value)
+		# reference_objects = copy.deepcopy(collider_objects)
+		# for (collider_key, collider) in collider_objects.items():
+		# 	for (reference_key, reference) in reference_objects.items():
+		# 		if collider_key == reference_key:
+		# 			continue
+		# 		if collider.hasComponent(Circle):
+		# 			if reference.hasComponent(Circle):
+		# 				self.runCircleCircleCollision(collider, reference)
+		# 			if reference.hasComponent(Rectangle):
+		# 				self.runCircleRectangleCollision(collider, reference)

@@ -6,6 +6,7 @@ from ..common.singleton import Singleton
 from ..engine.game_engine import GameEngine
 from ..engine.vector import Vector
 from ..sync.period_sync import PeriodSync
+from ..engine.primitive import Solid
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.solid import Solid
@@ -55,15 +56,15 @@ class Renderer(Manager):
 
     def update(self):
         self._screen.fill(color.BLACK.toTuple())
-        solids = self._engine.getSolids()
+        solids = self._engine.getObjectsWithType(Material)
         for solid_id, solid in solids.items():
             position = (solid.getGameObject().position + self._center).toIntTuple()
-            if solid.getGameObject().hasComponent(Circle):
+            if solid.hasComponent(Circle):
                 #pygame.draw.circle(self._screen, solid.getGameObject().getComponent(Material).color.toTuple(), position, solid.getGameObject().getComponent(Circle).radius)
-                pygame.draw.circle(self._screen, color.WHITE.toTuple(), position, solid.getGameObject().getComponent(Circle).radius)
-            elif solid.getGameObject().hasComponent(Rectangle):
+                pygame.draw.circle(self._screen, color.WHITE.toTuple(), position, solid.getComponent(Circle).radius)
+            elif solid.hasComponent(Rectangle):
                 rect = pygame.Rect(0,0,0,0)
-                rect.size = solid.getGameObject().getComponent(Rectangle).dimensions.toIntTuple()
+                rect.size = solid.getComponent(Rectangle).dimensions.toIntTuple()
                 rect.center = position
                 #pygame.draw.rect(self._screen, solid.getGameObject().getComponent(Material).color.toTuple(), rect)
                 pygame.draw.rect(self._screen, color.WHITE.toTuple(), rect)
