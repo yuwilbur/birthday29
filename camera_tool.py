@@ -15,20 +15,27 @@ class CameraTool:
     def __init__(self):
         pygame.init()
         displayInfo = pygame.display.Info()
-        self.camera = self.createCamera(self.RESOLUTION_LO)
+        self.camera = None
+        self.createCamera(self.RESOLUTION_LO)
         self.displayResolution = (displayInfo.current_w, displayInfo.current_h)
         pygame.font.init()
         self.font = pygame.font.SysFont('Arial', 30)
 
     def createCamera(self, resolution):
         self.resolution = resolution
-        self.rawData = np.empty((self.resolution[0], self.resolution[1], 3), dtype=np.uint8)
-        self.processedData = copy.deepcopy(self.rawData)
+        self.rawData = np.empty((self.resolution[0] * self.resolution[1] * 3), dtype=np.uint8)
+        self.processedData = np.empty((self.resolution[0], self.resolution[1], 3), dtype=np.uint8)
+        self.y_shape = (self.resolution[0], self.resolution[1], 1)
         if not 'picamera' in sys.modules:
             return
-        if self.camera is not None:
+        if not self.camera == None:
             self.camera.close()
-        self.camera = Camera(self.resolution)
+        self.camera = picamera.PiCamera()
+        self.camera.resolution = resolution
+        self.camera.shutter_speed = 1500
+        self.camera.awb_mode = 'off'
+        self.camera.awb_gains = 1.0
+        self.camera.vflip = True
 
     def run(self):
         screenAttributes = pygame.HWSURFACE | pygame.DOUBLEBUF
@@ -37,7 +44,9 @@ class CameraTool:
         _paused = False
         while _running:
             if not _paused and not self.camera == None:
-                self.camera.capture(self._raw, use_video_port=True, format='yuv')
+                self.rawData = np.empty((self.resolution[0] * self.resolution[1] * 3), dtype=np.uint8)
+                self.camera.capture(self.rawData, use_video_port=True, format='yuv')
+                self.rawData = self.rawData[0:self.rawData.size / 3].reshape(self.y_shape)
             self.processedData[:,:,0] = self.rawData[:,:,0]
             self.processedData[:,:,1] = self.rawData[:,:,0]
             self.processedData[:,:,2] = self.rawData[:,:,0]
@@ -54,22 +63,22 @@ class CameraTool:
                         _running = False
                         break;
                     if event.key == pygame.K_1:
-                        self.createCamera(Camera.RESOLUTION_LO)
+                        self.createCamera(self.RESOLUTION_LO)
                         break;
                     if event.key == pygame.K_2:
-                        self.createCamera(Camera.RESOLUTION_MI)
+                        self.createCamera(self.RESOLUTION_MI)
                         break;
                     if event.key == pygame.K_3:
-                        self.createCamera(Camera.RESOLUTION_HI)
+                        self.createCamera(self.RESOLUTION_HI)
                         break;
                     if event.key == pygame.K_p:
                         _paused = not _paused
                         break;
                     if event.key == pygame.K_s:
-                        np.save(Camera.FILENAME, self.rawData)
+                        np.save('./testcamera.npy', self.rawData)
                         break;
                     if event.key == pygame.K_l:
-                        self.rawData = np.load(Camera.FILENAME)
+                        self.rawData = np.load('./testcamera.npy')
                         break;
 
 if (__name__ == "__main__"):
