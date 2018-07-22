@@ -1,8 +1,9 @@
-from ..renderer import color
+#from ..renderer import color
 from ..engine.component import Component
 
 from abc import abstractmethod
 import pygame
+from pygame.color import Color
 
 class UI(Component):
 	def __init__(self, game_object):
@@ -31,12 +32,12 @@ class TextBox(UI):
 		self.text = ""
 		self.width = 0
 		self.height = 0
-		self.color = color.RED
+		self.color = Color(255, 0, 0, 0)
 		self.font_type = 'Arial'
 		self.font_size = 24
 
 	def getSurface(self):
-		surface = pygame.Surface((self.width, self.height))
+		surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 		pygame.font.init()
 		font = pygame.font.SysFont(self.font_type, self.font_size)
 		font_height = font.size("Tg")[1]
@@ -56,8 +57,7 @@ class TextBox(UI):
 			# if we've wrapped the text, then adjust the wrap to the last word      
 			if i < len(text): 
 				i = text.rfind(" ", 0, i) + 1
-
-			surface.blit(font.render(text[:i], True, self.color.toTuple()), (0, y))
+			surface.blit(font.render(text[:i], True, self.color), (0, y))
 			y += font_height
 
 			# remove the text we just blitted

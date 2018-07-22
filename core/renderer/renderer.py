@@ -9,10 +9,10 @@ from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.material import Material
 from ..engine.ui import UI
-from ..renderer import color
 from ..sync.manager import Manager
 
 import pygame
+from pygame.color import Color
 
 class Renderer(Manager):
     __metaclass__ = Singleton
@@ -46,19 +46,19 @@ class Renderer(Manager):
         print 'Center', self._center
 
     def update(self):
-        self._screen.fill(color.BLACK.toTuple())
+        self._screen.fill(Color(0, 0, 0))
         materials = self._engine.getObjectsWithType(Material)
         for material_id, material in materials.items():
             position = (material.getComponent(Transform).position + self._center).toIntTuple()
             if material.hasComponent(Circle):
-                pygame.draw.circle(self._screen, material.color.toTuple(), position, material.getComponent(Circle).radius)
+                pygame.draw.circle(self._screen, material.color, position, material.getComponent(Circle).radius)
             elif material.hasComponent(Rectangle):
                 rect = pygame.Rect(0,0,0,0)
                 rect.size = material.getComponent(Rectangle).dimensions.toIntTuple()
                 rect.center = position
-                pygame.draw.rect(self._screen,  material.color.toTuple(), rect)
-        pygame.draw.rect(self._screen, color.BLACK.toTuple(), pygame.Rect(0,0,self._info_width,self._resolution.y))
-        pygame.draw.rect(self._screen, color.BLACK.toTuple(), pygame.Rect(self._resolution.x - self._info_width,0,self._resolution.x,self._resolution.y))
+                pygame.draw.rect(self._screen,  material.color, rect)
+        pygame.draw.rect(self._screen, Color(0, 0, 0), pygame.Rect(0,0,self._info_width,self._resolution.y))
+        pygame.draw.rect(self._screen, Color(0, 0, 0), pygame.Rect(self._resolution.x - self._info_width,0,self._resolution.x,self._resolution.y))
         if not self._p1_info.camera_surface == None:
             dimensions = (self._info_width, self._camera_height)
             size = (0, 0, dimensions[0], dimensions[1])
