@@ -1,7 +1,6 @@
 from ..sync.period_sync import PeriodSync
 
 from abc import abstractmethod
-import threading
 
 class Game(object):
 	def __init__(self, name):
