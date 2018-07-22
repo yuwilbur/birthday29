@@ -18,8 +18,8 @@ class YuGame(Game):
 			self.camera.addComponent(Image)
 
 	def processGrayscaleImageEvent(self, event):
-		self._p1_info.camera.getComponent(Image).fromNumpy(event.data()[0])
-		self._p2_info.camera.getComponent(Image).fromNumpy(event.data()[1])
+		self._p1_info.camera.getComponent(Image).fromNumpy(event.data()[0].data)
+		self._p2_info.camera.getComponent(Image).fromNumpy(event.data()[1].data)
 
 	def processInputEvent(self, event):
 		return

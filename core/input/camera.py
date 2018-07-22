@@ -16,8 +16,7 @@ class Camera(object):
 
     def __init__(self, resolution):
         self._resolution = resolution
-        self._raw = self.createImage(self._resolution, 3)
-        self._raw = self._raw.flatten()
+        self._raw = np.empty((resolution[0] * resolution[1] * 3), dtype=np.uint8)
         self._y_shape = (self._resolution[0], self._resolution[1], 1)
         if 'picamera' in sys.modules:
             self._camera = picamera.PiCamera()
@@ -38,18 +37,3 @@ class Camera(object):
     def close(self):
         if 'picamera' in sys.modules:
             self._camera.close()
-
-    @staticmethod
-    def createImage(resolution, bits):
-        return np.empty((resolution[0], resolution[1], bits), dtype=np.uint8)
-
-    @staticmethod
-    def yToGrayscale(y, grayscale):
-        grayscale[:,:,0] = y[:,:,0]
-        grayscale[:,:,1] = y[:,:,0]
-        grayscale[:,:,2] = y[:,:,0]
-
-    @staticmethod
-    def monoToStereo(mono, stereo):
-        mono = mono.reshape((160,320,1))
-        stereo[0], stereo[1] = np.hsplit(mono, 2)

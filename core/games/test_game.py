@@ -71,22 +71,22 @@ class TestGame(YuGame):
 
 	def processInputEvent(self, event):
 		if event == InputEvent.W:
-			self._p1.position.y -= self.DELTA
+			self._p1.getComponent(Transform).position.y -= self.DELTA
 			return
 		elif event == InputEvent.A:
 			return
 		elif event == InputEvent.S:
-			self._p1.position.y += self.DELTA
+			self._p1.getComponent(Transform).position.y += self.DELTA
 			return
 		elif event == InputEvent.D:
 			return
 		elif event == InputEvent.I:
-			self._p2.position.y -= self.DELTA
+			self._p2.getComponent(Transform).position.y -= self.DELTA
 			return
 		elif event == InputEvent.J:
 			return
 		elif event == InputEvent.K:
-			self._p2.position.y += self.DELTA
+			self._p2.getComponent(Transform).position.y += self.DELTA
 			return
 		elif event == InputEvent.L:
 			return
