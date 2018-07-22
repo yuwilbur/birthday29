@@ -43,11 +43,20 @@ class ImageProcess(object):
         self._worker2.daemon = True
         self._worker2.start()
 
+        self._switch = True
+
     def processYImageEvent(self, event):
-        if not self._worker1_conn.poll():
-            self._main1_conn.send(event.data()[0])
-        if not self._worker2_conn.poll():
-            self._main2_conn.send(event.data()[1])
+        if self._switch:
+            if not self._worker1_conn.poll():
+                self._main1_conn.send(event.data()[0])
+            if not self._worker2_conn.poll():
+                self._main2_conn.send(event.data()[1])
+        else:
+            if not self._worker2_conn.poll():
+                self._main2_conn.send(event.data()[1])
+            if not self._worker1_conn.poll():
+                self._main1_conn.send(event.data()[0])
+        self._switch = not self._switch
 
     def stop(self):
         self._main1_conn.send(ImageProcess.END_MESSAGE)
