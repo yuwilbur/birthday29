@@ -29,10 +29,9 @@ class Camera(object):
     def capture(self):
         if 'picamera' in sys.modules:
             self._camera.capture(self._raw, use_video_port=True, format='yuv')
+            return self._raw[0:self._raw.size/3].reshape(self._y_shape)
         else:
-            self._raw = np.load(Camera.FILENAME)
-            self._raw = self._raw.flatten()
-        return self._raw[0:self._raw.size/3].reshape(self._y_shape)
+            return np.load(Camera.FILENAME)
 
     def close(self):
         if 'picamera' in sys.modules:
