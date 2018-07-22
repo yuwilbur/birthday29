@@ -28,9 +28,12 @@ class YuGame(Game):
 
 	def processLatencyEvent(self, event):
 		data = event.data()
-		latency = str((time.time() - data[1]) * 1000)
-		if data[0] == LatencyEvent.P1_PROCESSING:
+		latency = str(int((time.time() - data[1]) * 1000))
+		latency_type = data[0]
+		if latency_type == LatencyEvent.P1_PROCESSING:
 			self._p1_info.text.getComponent(TextBox).text = latency
+		elif latency_type == LatencyEvent.P2_PROCESSING:
+			self._p2_info.text.getComponent(TextBox).text = latency
 
 	def getFullResolution(self):
 		return self._full_resolution

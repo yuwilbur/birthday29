@@ -63,7 +63,6 @@ class ImageProcess(object):
         if self._main1_conn.poll():
             data = self._main1_conn.recv()
             EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P1_PROCESSING, data[0]))
-            #print 'p1: ', data
         if self._main2_conn.poll():
             data = self._main2_conn.recv()
-            #print 'p2: ', data
+            EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P2_PROCESSING, data[0]))
