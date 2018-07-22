@@ -65,4 +65,4 @@ class CameraProcess(object):
             self._y_stereo[0].scale(self._grayscale_stereo[0], 3)
             self._y_stereo[1].scale(self._grayscale_stereo[1], 3)
             self._event_dispatcher.dispatch_event(GrayscaleImageEvent(self._grayscale_stereo))
-            #self._event_dispatcher.dispatch_event(YImageEvent(self._y_stereo))
+            self._event_dispatcher.dispatch_event(YImageEvent(self._y_stereo))

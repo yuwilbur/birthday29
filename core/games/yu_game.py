@@ -8,6 +8,8 @@ from ..engine.ui import Image
 from ..engine.ui import TextBox
 from ..engine.transform import Transform
 
+import time
+
 class YuGame(Game):
 	class PlayerInfo(object):
 		def __init__(self):
@@ -28,8 +30,7 @@ class YuGame(Game):
 		data = event.data()
 		latency = str((time.time() - data[1]) * 1000)
 		if data[0] == LatencyEvent.P1_PROCESSING:
-			print latency
-			#self._p1_info.text.getComponent(TextBox).text = data[1]
+			self._p1_info.text.getComponent(TextBox).text = latency
 
 	def getFullResolution(self):
 		return self._full_resolution
