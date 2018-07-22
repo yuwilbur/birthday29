@@ -4,9 +4,9 @@ from ..common.events import *
 from multiprocessing import Process, Pipe, Lock
 import copy
 import time
+import numpy as np
 
 def processYImage(y):
-    return
     start = time.time()
     total = 0
     width = y.shape[0]
@@ -16,6 +16,7 @@ def processYImage(y):
             if y[j][i] > 0:
                 total += 1
             # total = total + y[j*resolution[0] + i]
+    #print np.amax(y)
     return time.time() - start
 
 def yImageWorker(pipe):
@@ -56,7 +57,7 @@ class ImageProcess(object):
                 self._main2_conn.send(event.data()[1])
             if not self._worker1_conn.poll():
                 self._main1_conn.send(event.data()[0])
-        self._switch = not self._switch
+        #self._switch = not self._switch
 
     def stop(self):
         self._main1_conn.send(ImageProcess.END_MESSAGE)
