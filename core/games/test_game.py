@@ -45,23 +45,18 @@ class TestGame(YuGame):
 
 		resolution = self.getResolution()
 		thickness = 50
-		self._wall1 = GameObject()
-		self._wall1.addComponent(Rectangle)
-		self._wall1.addComponent(Material)
-		self._wall1.addComponent(Collider)
-		self._wall1.getComponent(Transform).position = Vector(0, -resolution.y / 2)
-		self._wall1.getComponent(Rectangle).dimensions = Vector(resolution.x, thickness)
 
-		#self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, -resolution.y / 2)
-		#self._engine.createRectangle(Vector(resolution.x, thickness)).position = Vector(0, resolution.y / 2)
-		#self._engine.createRectangle(Vector(thickness, resolution.y)).position = Vector(-resolution.x / 2, 0)
-		#self._engine.createRectangle(Vector(thickness, resolution.y)).position = Vector(resolution.x / 2, 0)
-
-		#test = self._engine.createTextBox()
-		#test.getComponent(TextBox).width = 160
-		#test.getComponent(TextBox).height = 100
-		#test.getComponent(TextBox).text = "TEST1 TEST2 TEST3 TEST4 TEST5"
-		#test.position = Vector(80,50)
+		def createWall(position, dimensions):
+			wall = GameObject()
+			wall.addComponent(Rectangle)
+			wall.addComponent(Material)
+			wall.addComponent(Collider)
+			wall.getComponent(Transform).position = position
+			wall.getComponent(Rectangle).dimensions = dimensions
+		createWall(Vector(0, -resolution.y / 2), Vector(resolution.x, thickness))
+		createWall(Vector(0, resolution.y / 2), Vector(resolution.x, thickness))
+		createWall(Vector(-resolution.x / 2, 0), Vector(thickness, resolution.y))
+		createWall(Vector(resolution.x / 2, 0), Vector(thickness, resolution.y))
 
 	def update(self):
 		return
