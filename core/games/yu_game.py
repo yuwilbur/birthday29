@@ -45,9 +45,9 @@ class YuGame(Game):
 		p1_raw.scale3(stereo[0])
 		p2_raw.scale3(stereo[1])
 		for pixel in self._p1_info.processed:
-			stereo[0].data[pixel[0]][pixel[1]][0::2] = 0
+			stereo[0].data[pixel[0]][pixel[1]][0] = 0
 		for pixel in self._p2_info.processed:
-			stereo[1].data[pixel[0]][pixel[1]][0::2] = 0
+			stereo[1].data[pixel[0]][pixel[1]][1] = 0
 		self._p1_info.camera.getComponent(Image).fromNumpy(stereo[0].data)
 		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
 		
