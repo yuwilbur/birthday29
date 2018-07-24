@@ -20,7 +20,7 @@ class Image(UI):
 		self._surface = None
 
 	def fromNumpy(self, data):
-		self._surface = pygame.image.frombuffer(data.data, data.data.shape[0:2], 'RGB')
+		self._surface = pygame.image.frombuffer(data, data.shape[0:2], 'RGB')
 
 	def getSurface(self):
 		return self._surface

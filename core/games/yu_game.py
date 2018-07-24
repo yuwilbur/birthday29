@@ -21,13 +21,6 @@ class YuGame(Game):
 			self.camera.addComponent(Image)
 			self.processed = []
 
-	def processGrayscaleImageEvent(self, event):
-		self._p1_info.camera.getComponent(Image).fromNumpy(event.data()[0].data)
-		self._p2_info.camera.getComponent(Image).fromNumpy(event.data()[1].data)
-
-	def processInputEvent(self, event):
-		return
-
 	def processLatencyEvent(self, event):
 		data = event.data()
 		latency = str(int((time.time() - data[1]) * 1000))
@@ -49,7 +42,7 @@ class YuGame(Game):
 			p2_raw.data[pixel[0]][pixel[1]] = 0
 		stereo = [Frame(), Frame()]
 		p2_raw.scale3(stereo[1])
-		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1])
+		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
         #self._y_stereo[1].scale(self._grayscale_stereo[1], 3)
 		#self._p1_info.camera.getComponent(Image).fromNumpy(event.data()[0].data)
 		#self._p2_info.camera.getComponent(Image).fromNumpy(event.data()[1].data)
@@ -88,8 +81,6 @@ class YuGame(Game):
 		self._p2_info.text.getComponent(TextBox).height = self._text_height
 		self._p2_info.text.getComponent(TextBox).text = "Player 2"
 		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.processYImageEvent)
-		EventDispatcher().add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
-		EventDispatcher().add_event_listener(InputEvent.TYPE, self.processInputEvent)
 		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.processLatencyEvent)
 		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.processCameraResultEvent)
 
