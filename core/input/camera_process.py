@@ -1,6 +1,4 @@
-from ..common.events import YImageEvent
-from ..common.events import TestEvent
-from ..common.events import GrayscaleImageEvent
+from ..common.events import *
 from ..input.camera import Camera
 from ..input.frame import Frame
 

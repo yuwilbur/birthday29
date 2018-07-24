@@ -10,11 +10,6 @@ class YImageEvent(Event):
     def __init__(self, data):
         super(YImageEvent, self).__init__(self.TYPE, data)
 
-class GrayscaleImageEvent(Event):
-    TYPE = "GrayscaleImage"
-    def __init__(self, data):
-        super(GrayscaleImageEvent, self).__init__(self.TYPE, data)
-
 class LatencyEvent(Event):
     TYPE = "LatencyEvent"
     P1_PROCESSING = "P1Processing"
