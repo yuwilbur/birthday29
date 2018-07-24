@@ -14,13 +14,15 @@ def heavyWork():
     return total
 
 def processYImage(y):
-    candidates = np.argwhere(y > 100)
-    if len(candidates) > 100:
-        heavyWork()
+    candidates = np.argwhere(y > 200)
+    #print len(candidates)
+    #print len(candidates)
     #total = 0
     #for candidate in candidates:
     #    total += y[candidate[0]][candidate[1]]
-    return len(candidates)
+    return copy.deepcopy(candidates)
+    #return len(candidates)
+    #return 0
 
 def yImageWorker(pipe):
     main_conn, worker_conn = pipe
@@ -49,10 +51,10 @@ class ImageProcess(object):
         self._worker2.start()
 
     def processYImageEvent(self, event):
-        if not self._worker1_conn.poll():
-           self._main1_conn.send(event.data()[0])
-        if not self._worker2_conn.poll():
-           self._main2_conn.send(event.data()[1])
+        if not self._main1_conn.poll():
+            self._main1_conn.send(event.data()[0])
+        if not self._main2_conn.poll():
+            self._main2_conn.send(event.data()[1])
 
     def stop(self):
         self._main1_conn.send(ImageProcess.END_MESSAGE)
@@ -68,6 +70,9 @@ class ImageProcess(object):
         if self._main1_conn.poll():
             data = self._main1_conn.recv()
             EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P1_PROCESSING, data[0]))
+            #EventDispatcher().dispatch_event(CameraResultEvent(data[1]))
         if self._main2_conn.poll():
             data = self._main2_conn.recv()
             EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P2_PROCESSING, data[0]))
+            EventDispatcher().dispatch_event(CameraResultEvent(data[1]))
+            #print len(data[1])

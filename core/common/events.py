@@ -1,5 +1,10 @@
 from ..common.event import Event
 
+class CameraResultEvent(Event):
+    TYPE = "CameraResultEvent"
+    def __init__(self, data):
+        super(CameraResultEvent, self).__init__(self.TYPE, data)
+
 class YImageEvent(Event):
     TYPE = "YImage"
     def __init__(self, data):

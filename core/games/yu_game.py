@@ -7,6 +7,7 @@ from ..engine.game_object import GameObject
 from ..engine.ui import Image
 from ..engine.ui import TextBox
 from ..engine.transform import Transform
+from ..input.frame import Frame
 
 import time
 
@@ -18,6 +19,7 @@ class YuGame(Game):
 			self.controls = GameObject("controls")
 			self.camera = GameObject("camera")
 			self.camera.addComponent(Image)
+			self.processed = []
 
 	def processGrayscaleImageEvent(self, event):
 		self._p1_info.camera.getComponent(Image).fromNumpy(event.data()[0].data)
@@ -35,6 +37,23 @@ class YuGame(Game):
 		elif latency_type == LatencyEvent.P2_PROCESSING:
 			self._p2_info.text.getComponent(TextBox).text = latency
 
+	def processCameraResultEvent(self, event):
+		self._p2_info.processed = event.data()
+		pass
+
+	def processYImageEvent(self, event):
+		p1_raw = event.data()[0]
+		print len(self._p2_info.processed)
+		p2_raw = event.data()[1]
+		for pixel in self._p2_info.processed:
+			p2_raw.data[pixel[0]][pixel[1]] = 0
+		stereo = [Frame(), Frame()]
+		p2_raw.scale3(stereo[1])
+		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1])
+        #self._y_stereo[1].scale(self._grayscale_stereo[1], 3)
+		#self._p1_info.camera.getComponent(Image).fromNumpy(event.data()[0].data)
+		#self._p2_info.camera.getComponent(Image).fromNumpy(event.data()[1].data)
+		
 	def getFullResolution(self):
 		return self._full_resolution
 
@@ -68,8 +87,9 @@ class YuGame(Game):
 		self._p2_info.text.getComponent(TextBox).width = self._info_width
 		self._p2_info.text.getComponent(TextBox).height = self._text_height
 		self._p2_info.text.getComponent(TextBox).text = "Player 2"
+		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.processYImageEvent)
 		EventDispatcher().add_event_listener(GrayscaleImageEvent.TYPE, self.processGrayscaleImageEvent)
 		EventDispatcher().add_event_listener(InputEvent.TYPE, self.processInputEvent)
 		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.processLatencyEvent)
-        
+		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.processCameraResultEvent)
 
