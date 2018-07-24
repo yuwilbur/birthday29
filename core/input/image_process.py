@@ -70,9 +70,8 @@ class ImageProcess(object):
         if self._main1_conn.poll():
             data = self._main1_conn.recv()
             EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P1_PROCESSING, data[0]))
-            #EventDispatcher().dispatch_event(CameraResultEvent(data[1]))
+            EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P1, data[1]))
         if self._main2_conn.poll():
             data = self._main2_conn.recv()
             EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P2_PROCESSING, data[0]))
-            EventDispatcher().dispatch_event(CameraResultEvent(data[1]))
-            #print len(data[1])
+            EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P2, data[1]))

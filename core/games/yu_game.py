@@ -31,21 +31,25 @@ class YuGame(Game):
 			self._p2_info.text.getComponent(TextBox).text = latency
 
 	def processCameraResultEvent(self, event):
-		self._p2_info.processed = event.data()
-		pass
+		result_type = event.data()[0]
+		result = event.data()[1]
+		if result_type == CameraResultEvent.P1:
+			self._p1_info.processed = result
+		elif result_type == CameraResultEvent.P2:
+			self._p2_info.processed = result
 
 	def processYImageEvent(self, event):
 		p1_raw = event.data()[0]
-		print len(self._p2_info.processed)
 		p2_raw = event.data()[1]
-		for pixel in self._p2_info.processed:
-			p2_raw.data[pixel[0]][pixel[1]] = 0
 		stereo = [Frame(), Frame()]
+		p1_raw.scale3(stereo[0])
 		p2_raw.scale3(stereo[1])
+		for pixel in self._p1_info.processed:
+			stereo[0].data[pixel[0]][pixel[1]][0::2] = 0
+		for pixel in self._p2_info.processed:
+			stereo[1].data[pixel[0]][pixel[1]][0::2] = 0
+		self._p1_info.camera.getComponent(Image).fromNumpy(stereo[0].data)
 		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
-        #self._y_stereo[1].scale(self._grayscale_stereo[1], 3)
-		#self._p1_info.camera.getComponent(Image).fromNumpy(event.data()[0].data)
-		#self._p2_info.camera.getComponent(Image).fromNumpy(event.data()[1].data)
 		
 	def getFullResolution(self):
 		return self._full_resolution
