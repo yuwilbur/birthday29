@@ -37,6 +37,11 @@ class Key(object):
     L = 'L'
     NUM_1 = '1'
 
+class KeyEvent(Event):
+    TYPE = "KeyEvent"
+    def __init__(self, key):
+        super(KeyEvent, self).__init__(self.TYPE, key)
+
 class KeyDownEvent(Event):
     TYPE = "KeyDownEvent"
     def __init__(self, key):
@@ -46,25 +51,6 @@ class KeyUpEvent(Event):
     TYPE = "KeyUpEvent"
     def __init__(self, key):
         super(KeyUpEvent, self).__init__(self.TYPE, key)
-
-class InputEvent(object):
-    TYPE = "Input"
-    ESCAPE = Event(TYPE, 'ESCAPE')
-    Q = Event(TYPE, 'Q')
-    UP = Event(TYPE,'UP')
-    DOWN = Event(TYPE,'DOWN')
-    LEFT = Event(TYPE,'LEFT')
-    RIGHT = Event(TYPE, 'RIGHT')
-    ENTER = Event(TYPE, 'ENTER')
-    W = Event(TYPE, 'W')
-    A = Event(TYPE, 'A')
-    S = Event(TYPE, 'S')
-    D = Event(TYPE, 'D')
-    I = Event(TYPE, 'I')
-    J = Event(TYPE, 'J')
-    K = Event(TYPE, 'K')
-    L = Event(TYPE, 'L')
-    ONE = Event(TYPE, '1')
 
 class InputDownEvent(object):
     TYPE = "InputDown"
