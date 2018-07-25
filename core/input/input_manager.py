@@ -14,9 +14,8 @@ class InputManager(Manager):
 
     def __init__(self):
         super(InputManager, self).__init__()
-        self._event_dispatcher = EventDispatcher()
-        self._camera_process = CameraProcess(self._event_dispatcher)
-        self._image_process = ImageProcess(self._event_dispatcher)
+        self._camera_process = CameraProcess()
+        self._image_process = ImageProcess()
         
         self._key_map = {
             pygame.K_ESCAPE : InputManager.Key(Key.ESCAPE),
@@ -50,14 +49,14 @@ class InputManager(Manager):
             if event.type == pygame.KEYDOWN:
                 if event.key in self._key_map:
                     if not self._key_map[event.key].pressed:
-                        self._event_dispatcher.dispatch_event(KeyDownEvent(self._key_map[event.key].key))
+                        EventDispatcher().dispatch_event(KeyDownEvent(self._key_map[event.key].key))
                         print self._key_map[event.key].key + " down"
                     self._key_map[event.key].pressed = True
-                    self._event_dispatcher.dispatch_event(KeyEvent(self._key_map[event.key].key))
+                    EventDispatcher().dispatch_event(KeyEvent(self._key_map[event.key].key))
                     print self._key_map[event.key].key
             elif event.type == pygame.KEYUP:
                 if event.key in self._key_map:
-                    self._event_dispatcher.dispatch_event(KeyUpEvent(self._key_map[event.key].key))
+                    EventDispatcher().dispatch_event(KeyUpEvent(self._key_map[event.key].key))
                     self._key_map[event.key].pressed = False
                     print self._key_map[event.key].key + " up"
         self._camera_process.update()

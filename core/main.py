@@ -19,8 +19,7 @@ class Main(object):
     def run(self):
         pygame.init()
 
-        event_dispatcher = EventDispatcher()
-        event_dispatcher.add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
+        EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
 
         managers = [
             InputManager(),

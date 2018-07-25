@@ -1,3 +1,4 @@
+from ..common.event import EventDispatcher
 from ..common.events import *
 from ..input.camera import Camera
 from ..input.frame import Frame
@@ -29,8 +30,7 @@ def cameraWorker(pipe, resolution):
 
 class CameraProcess(object):
     END_MESSAGE = 'END'
-    def __init__(self, event_dispatcher):
-        self._event_dispatcher = event_dispatcher
+    def __init__(self):
         self._resolution = Camera.RESOLUTION_LO
         self._main_conn, self._worker_conn = Pipe()
 
@@ -52,4 +52,4 @@ class CameraProcess(object):
             return
         data = self._main_conn.recv()
         self._y_stereo = data
-        self._event_dispatcher.dispatch_event(YImageEvent(self._y_stereo))
+        EventDispatcher().dispatch_event(YImageEvent(self._y_stereo))

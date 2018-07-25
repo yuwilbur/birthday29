@@ -36,9 +36,8 @@ def yImageWorker(pipe):
 
 class ImageProcess(object):
     END_MESSAGE = 'END'
-    def __init__(self, event_dispatcher):
-        self._event_dispatcher = event_dispatcher
-        self._event_dispatcher.add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
+    def __init__(self):
+        EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
 
         self._main1_conn, self._worker1_conn = Pipe()
         self._worker1 = Process(target=yImageWorker, args=((self._main1_conn, self._worker1_conn),))
