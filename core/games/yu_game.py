@@ -17,7 +17,7 @@ import time
 
 class YuGame(Game):
 	class PlayerInfo(object):
-		def __init__(self):
+		def __init__(self, up, down, left, right):
 			self.background = GameObject("background")
 			self.background.addComponent(Rectangle)
 			self.background.addComponent(LateMaterial)
@@ -44,8 +44,14 @@ class YuGame(Game):
 			self.right.addComponent(Circle)
 			self.right.addComponent(LateMaterial)
 			self.right.getComponent(Circle).radius = radius
+			self.controls = {
+				up : self.up,
+				down : self.down,
+				left : self.left,
+				right : self.right
+			}
 
-	def processLatencyEvent(self, event):
+	def onLatencyEvent(self, event):
 		data = event.data()
 		latency = str(int((time.time() - data[1]) * 1000))
 		latency_type = data[0]
@@ -54,7 +60,7 @@ class YuGame(Game):
 		elif latency_type == LatencyEvent.P2_PROCESSING:
 			self._p2_info.text.getComponent(TextBox).text = latency
 
-	def processCameraResultEvent(self, event):
+	def onCameraResultEvent(self, event):
 		result_type = event.data()[0]
 		result = event.data()[1]
 		if result_type == CameraResultEvent.P1:
@@ -62,7 +68,7 @@ class YuGame(Game):
 		elif result_type == CameraResultEvent.P2:
 			self._p2_info.processed = result
 
-	def processYImageEvent(self, event):
+	def onYImageEvent(self, event):
 		p1_raw = event.data()[0]
 		p2_raw = event.data()[1]
 		stereo = [Frame(), Frame()]
@@ -78,8 +84,18 @@ class YuGame(Game):
 	def getResolution(self):
 		return self._resolution
 
-	def processInputDownEvent(self):
+	def onKeyUpEvent(self, event):
+		print 'up'
 		pass
+
+	def onKeyDownEvent(self, event):
+		print 'down'
+		if event.data() in self._p1_info.controls:
+			print 'p1'
+			pass
+		if event.data() in self._p2_info.controls:
+			print 'p2'
+			pass
 
 	def __init__(self, name):
 		super(YuGame, self).__init__(name)
@@ -87,12 +103,12 @@ class YuGame(Game):
 		self._camera_height = 160
 		self._controls_height = 160
 
-	def createPlayer(self, center, size):
+	def createPlayer(self, center, size, up, down, left, right):
 		text_height = size.y - self._camera_height - self._controls_height
 		text_y = - size.y / 2 + text_height / 2
 		controls_y = text_y + text_height / 2 + self._controls_height / 2
 		camera_y = controls_y + self._controls_height / 2 + self._camera_height / 2
-		player = YuGame.PlayerInfo()
+		player = YuGame.PlayerInfo(up, down, left, right)
 		player.background.getComponent(Transform).position = center
 		player.background.getComponent(Rectangle).dimensions = size
 		player.text.getComponent(Transform).position = center + Vector(0, text_y)
@@ -112,10 +128,11 @@ class YuGame(Game):
 		p1_x = - (self._resolution.x / 2 + self._info_width / 2)
 		p2_x = self._resolution.x / 2 + self._info_width / 2
 		size = Vector(self._info_width, self._resolution.y)
-		self._p1_info = self.createPlayer(Vector(p1_x, 0), size)
-		self._p2_info = self.createPlayer(Vector(p2_x, 0), size)
-		EventDispatcher().add_event_listener(InputDownEvent.TYPE, self.processInputDownEvent)
-		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.processYImageEvent)
-		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.processLatencyEvent)
-		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.processCameraResultEvent)
+		self._p1_info = self.createPlayer(Vector(p1_x, 0), size, Key.W, Key.S, Key.A, Key.D)
+		self._p2_info = self.createPlayer(Vector(p2_x, 0), size, Key.I, Key.K, Key.J, Key.L)
+		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
+		EventDispatcher().add_event_listener(KeyUpEvent.TYPE, self.onKeyUpEvent)
+		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
+		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.onLatencyEvent)
+		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.onCameraResultEvent)
 

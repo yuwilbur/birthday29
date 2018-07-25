@@ -20,7 +20,7 @@ class Main(object):
         pygame.init()
 
         event_dispatcher = EventDispatcher()
-        event_dispatcher.add_event_listener(KeyDownEvent.TYPE, self.processKeyDownEvent)
+        event_dispatcher.add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
 
         managers = [
             InputManager(),
@@ -46,6 +46,6 @@ class Main(object):
 
         pygame.quit()
     
-    def processKeyDownEvent(self, event):
+    def onKeyDownEvent(self, event):
         if event.data() == Key.Q:
             self._running = False

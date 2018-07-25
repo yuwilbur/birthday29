@@ -6,8 +6,7 @@ from ..sync.manager import Manager
 class GameManager(Manager):
 	def __init__(self):
 		super(GameManager, self).__init__()
-		self._event_dispatcher = EventDispatcher()
-		self._event_dispatcher.add_event_listener(KeyDownEvent.TYPE, self.processKeyDownEvent)
+		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
 		self._game = None
 
 	def stopGame(self):
@@ -21,12 +20,12 @@ class GameManager(Manager):
 		self._game = game
 		self._game.setup()
 
-	def processKeyDownEvent(self, event):
+	def onKeyDownEvent(self, event):
 		if event.data() == Key.NUM_1:
-			self.startGame(MainMenuGame(self._event_dispatcher))
+			self.startGame(MainMenuGame("MainMenu"))
 
 	def setup(self):
-		self.startGame(MainMenuGame(self._event_dispatcher))
+		self.startGame(MainMenuGame("MainMenu"))
 
 	def update(self):
 		if self._game == None:

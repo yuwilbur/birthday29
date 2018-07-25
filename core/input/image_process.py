@@ -38,7 +38,7 @@ class ImageProcess(object):
     END_MESSAGE = 'END'
     def __init__(self, event_dispatcher):
         self._event_dispatcher = event_dispatcher
-        self._event_dispatcher.add_event_listener(YImageEvent.TYPE, self.processYImageEvent)
+        self._event_dispatcher.add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
 
         self._main1_conn, self._worker1_conn = Pipe()
         self._worker1 = Process(target=yImageWorker, args=((self._main1_conn, self._worker1_conn),))
@@ -50,7 +50,7 @@ class ImageProcess(object):
         self._worker2.daemon = True
         self._worker2.start()
 
-    def processYImageEvent(self, event):
+    def onYImageEvent(self, event):
         if not self._main1_conn.poll():
             self._main1_conn.send(event.data()[0])
         if not self._main2_conn.poll():

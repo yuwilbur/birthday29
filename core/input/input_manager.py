@@ -49,11 +49,11 @@ class InputManager(Manager):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key in self._key_map:
-                    self._event_dispatcher.dispatch_event(KeyEvent(self._key_map[event.key].key))
                     if not self._key_map[event.key].pressed:
                         self._event_dispatcher.dispatch_event(KeyDownEvent(self._key_map[event.key].key))
                         print self._key_map[event.key].key + " down"
                     self._key_map[event.key].pressed = True
+                    self._event_dispatcher.dispatch_event(KeyEvent(self._key_map[event.key].key))
                     print self._key_map[event.key].key
             elif event.type == pygame.KEYUP:
                 if event.key in self._key_map:

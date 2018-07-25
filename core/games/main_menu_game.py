@@ -20,7 +20,7 @@ class MainMenuGame(YuGame):
 
 	def setup(self):
 		super(MainMenuGame, self).setup() 
-		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.processKeyDownEvent)
+		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
 
 		self._p1 = GameObject("p1")
 		self._p1.addComponent(Rectangle)
@@ -64,7 +64,7 @@ class MainMenuGame(YuGame):
 	def stop(self):
 		return
 
-	def processKeyDownEvent(self, event):
+	def onKeyDownEvent(self, event):
 		if event.data() == Key.W:
 			self._p1.getComponent(Transform).position.y -= self.DELTA
 			return

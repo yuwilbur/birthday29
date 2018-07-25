@@ -38,17 +38,17 @@ class Key(object):
     NUM_1 = '1'
 
 class KeyEvent(Event):
-    TYPE = "KeyEvent"
+    TYPE = 'KeyEvent'
     def __init__(self, key):
         super(KeyEvent, self).__init__(self.TYPE, key)
 
 class KeyDownEvent(Event):
-    TYPE = "KeyDownEvent"
+    TYPE = 'KeyDownEvent'
     def __init__(self, key):
         super(KeyDownEvent, self).__init__(self.TYPE, key)
 
 class KeyUpEvent(Event):
-    TYPE = "KeyUpEvent"
+    TYPE = 'KeyUpEvent'
     def __init__(self, key):
         super(KeyUpEvent, self).__init__(self.TYPE, key)
 
