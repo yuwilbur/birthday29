@@ -21,9 +21,6 @@ class Renderer(Manager):
         self._engine = GameEngine()
         display_info = pygame.display.Info()
         resolution = Vector(1280, 720)
-        self._text_height = 200
-        self._camera_height = 160
-        self._info_width = 160
         self._resolution = resolution
 
     def getResolution(self):
@@ -50,8 +47,6 @@ class Renderer(Manager):
                 rect.size = material.getComponent(Rectangle).dimensions.toIntTuple()
                 rect.center = position
                 pygame.draw.rect(self._screen,  material.color, rect)
-        pygame.draw.rect(self._screen, Color(0, 0, 0), pygame.Rect(0,0,self._info_width,self._resolution.y))
-        pygame.draw.rect(self._screen, Color(0, 0, 0), pygame.Rect(self._resolution.x - self._info_width,0,self._resolution.x,self._resolution.y))
         uis = self._engine.getObjectsWithType(UI)
         for ui_id, ui in uis.items():
             surface = ui.getComponent(UI).getSurface()
