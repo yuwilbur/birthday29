@@ -78,6 +78,9 @@ class YuGame(Game):
 	def getResolution(self):
 		return self._resolution
 
+	def processInputDownEvent(self):
+		pass
+
 	def __init__(self, name):
 		super(YuGame, self).__init__(name)
 		self._info_width = 160
@@ -111,7 +114,7 @@ class YuGame(Game):
 		size = Vector(self._info_width, self._resolution.y)
 		self._p1_info = self.createPlayer(Vector(p1_x, 0), size)
 		self._p2_info = self.createPlayer(Vector(p2_x, 0), size)
-		
+		EventDispatcher().add_event_listener(InputDownEvent.TYPE, self.processInputDownEvent)
 		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.processYImageEvent)
 		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.processLatencyEvent)
 		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.processCameraResultEvent)

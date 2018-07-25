@@ -38,6 +38,9 @@ class InputEvent(object):
     L = Event(TYPE, 'L')
     ONE = Event(TYPE, '1')
 
+class InputDownEvent(object):
+    TYPE = "InputDown"
+
 class TestEvent(Event):
     TYPE = "Test"
     def __init__(self, data):
