@@ -12,14 +12,14 @@ from ..engine.game_object import GameObject
 from ..engine.collider import Collider
 from ..engine.transform import Transform
 
-class TestGame(YuGame):
+class MainMenuGame(YuGame):
 	DELTA = 10
 	def __init__(self, name):
-		super(TestGame, self).__init__("TestGame")
+		super(MainMenuGame, self).__init__("MainMenuGame")
 		self._engine = GameEngine()
 
 	def setup(self):
-		super(TestGame, self).setup() 
+		super(MainMenuGame, self).setup() 
 		EventDispatcher().add_event_listener(InputEvent.TYPE, self.processInputEvent)
 
 		self._p1 = GameObject("p1")

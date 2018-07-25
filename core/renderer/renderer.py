@@ -16,10 +16,6 @@ from pygame.color import Color
 
 class Renderer(Manager):
     __metaclass__ = Singleton
-    class PlayerInfo(object):
-        def __init__(self):
-            self.camera_surface = None
-
     def __init__(self):
         super(Renderer, self).__init__()
         self._engine = GameEngine()
@@ -39,9 +35,6 @@ class Renderer(Manager):
         if config.FULL_SCREEN:
             screen_attributes = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         self._screen = pygame.display.set_mode(self._resolution.toIntTuple(), screen_attributes)
-        self._p1_info = Renderer.PlayerInfo()
-        self._p2_info = Renderer.PlayerInfo()
-        self._p1_info.text_surface = pygame.Surface((self._info_width, self._text_height))
         self._center = self._resolution / 2
         print 'Center', self._center
 
@@ -49,7 +42,7 @@ class Renderer(Manager):
         self._screen.fill(Color(0, 0, 0))
         materials = self._engine.getObjectsWithType(Material)
         for material_id, material in materials.items():
-            position = (material.getComponent(Transform).position + self._center).toIntTuple()
+            position = (self._center + material.getComponent(Transform).position).toIntTuple()
             if material.hasComponent(Circle):
                 pygame.draw.circle(self._screen, material.color, position, material.getComponent(Circle).radius)
             elif material.hasComponent(Rectangle):
@@ -59,22 +52,12 @@ class Renderer(Manager):
                 pygame.draw.rect(self._screen,  material.color, rect)
         pygame.draw.rect(self._screen, Color(0, 0, 0), pygame.Rect(0,0,self._info_width,self._resolution.y))
         pygame.draw.rect(self._screen, Color(0, 0, 0), pygame.Rect(self._resolution.x - self._info_width,0,self._resolution.x,self._resolution.y))
-        if not self._p1_info.camera_surface == None:
-            dimensions = (self._info_width, self._camera_height)
-            size = (0, 0, dimensions[0], dimensions[1])
-            position = (0, self._resolution.y - dimensions[1])
-            self._screen.blit(self._p1_info.camera_surface, position, size)
-        if not self._p2_info.camera_surface == None:
-            dimensions = (self._info_width, self._camera_height)
-            size = (0, 0, dimensions[0], dimensions[1])
-            position = (self._resolution.x - dimensions[0], self._resolution.y - dimensions[1])
-            self._screen.blit(self._p2_info.camera_surface, position, size)
         uis = self._engine.getObjectsWithType(UI)
         for ui_id, ui in uis.items():
             surface = ui.getComponent(UI).getSurface()
             if surface == None:
                 continue
-            position = (ui.getComponent(Transform).position - Vector(surface.get_width() / 2, surface.get_height() / 2)).toIntTuple()
+            position = (self._center + ui.getComponent(Transform).position - Vector(surface.get_width() / 2, surface.get_height() / 2)).toIntTuple()
             self._screen.blit(surface, position, (0, 0, surface.get_width(), surface.get_height()))
         pygame.display.update()
 

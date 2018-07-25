@@ -1,6 +1,7 @@
 from ..common.event import EventDispatcher
 from ..common.events import InputEvent
 from ..games.test_game import TestGame
+from ..games.main_menu_game import MainMenuGame
 from ..sync.manager import Manager
 
 class GameManager(Manager):
@@ -26,7 +27,7 @@ class GameManager(Manager):
 			self.startGame(TestGame(self._event_dispatcher))
 
 	def setup(self):
-		self.startGame(TestGame(self._event_dispatcher))
+		self.startGame(MainMenuGame(self._event_dispatcher))
 
 	def update(self):
 		if self._game == None:
