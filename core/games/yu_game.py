@@ -31,7 +31,7 @@ class YuGame(Game):
 			self.up = GameObject("up")
 			self.up.addComponent(Circle)
 			self.up.addComponent(LateMaterial)
-			self.up.getComponent(Circle).radius = 25
+			self.up.getComponent(Circle).radius = radius
 			self.down = GameObject("down")
 			self.down.addComponent(Circle)
 			self.down.addComponent(LateMaterial)
@@ -95,7 +95,12 @@ class YuGame(Game):
 		player.text.getComponent(Transform).position = center + Vector(0, text_y)
 		player.text.getComponent(TextBox).width = self._info_width
 		player.text.getComponent(TextBox).height = text_height
-		player.up.getComponent(Transform).position = center + Vector(0, controls_y)
+		controls_center = Vector(center.x, controls_y)
+		controls_diff = 50
+		player.up.getComponent(Transform).position = controls_center - Vector(0, controls_diff)
+		player.down.getComponent(Transform).position = controls_center + Vector(0, controls_diff)
+		player.right.getComponent(Transform).position = controls_center + Vector(controls_diff, 0)
+		player.left.getComponent(Transform).position = controls_center - Vector(controls_diff, 0)
 		player.camera.getComponent(Transform).position = center + Vector(0, camera_y)
 		return player
 
