@@ -1,6 +1,6 @@
 from .common import config
 from .common.event import EventDispatcher
-from .common.events import InputEvent
+from .common.events import *
 from .engine.game_engine import GameEngine
 from .games.game_manager import GameManager
 from .input.input_manager import InputManager
@@ -20,7 +20,7 @@ class Main(object):
         pygame.init()
 
         event_dispatcher = EventDispatcher()
-        event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
+        event_dispatcher.add_event_listener(KeyDownEvent.TYPE, self.processKeyDownEvent)
 
         managers = [
             InputManager(),
@@ -46,6 +46,6 @@ class Main(object):
 
         pygame.quit()
     
-    def processInputEvent(self, event):
-        if event == InputEvent.Q:
+    def processKeyDownEvent(self, event):
+        if event.data() == Key.Q:
             self._running = False

@@ -37,12 +37,15 @@ class Key(object):
     L = 'L'
     NUM_1 = '1'
 
-class KeyEvent(Event):
-    TYPE = "KeyEvent"
+class KeyDownEvent(Event):
+    TYPE = "KeyDownEvent"
     def __init__(self, key):
-        if not isinstance(key, Key):
-            raise ValueError("key is no Key type.")
-        super(KeyEvent, self).__init__(self.TYPE, key)
+        super(KeyDownEvent, self).__init__(self.TYPE, key)
+
+class KeyUpEvent(Event):
+    TYPE = "KeyUpEvent"
+    def __init__(self, key):
+        super(KeyUpEvent, self).__init__(self.TYPE, key)
 
 class InputEvent(object):
     TYPE = "Input"

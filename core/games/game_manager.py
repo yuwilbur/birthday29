@@ -1,6 +1,5 @@
 from ..common.event import EventDispatcher
-from ..common.events import InputEvent
-from ..games.test_game import TestGame
+from ..common.events import *
 from ..games.main_menu_game import MainMenuGame
 from ..sync.manager import Manager
 
@@ -8,7 +7,7 @@ class GameManager(Manager):
 	def __init__(self):
 		super(GameManager, self).__init__()
 		self._event_dispatcher = EventDispatcher()
-		self._event_dispatcher.add_event_listener(InputEvent.TYPE, self.processInputEvent)
+		self._event_dispatcher.add_event_listener(KeyDownEvent.TYPE, self.processKeyDownEvent)
 		self._game = None
 
 	def stopGame(self):
@@ -22,9 +21,9 @@ class GameManager(Manager):
 		self._game = game
 		self._game.setup()
 
-	def processInputEvent(self, event):
-		if event == InputEvent.ONE:
-			self.startGame(TestGame(self._event_dispatcher))
+	def processKeyDownEvent(self, event):
+		if event.data() == Key.NUM_1:
+			self.startGame(MainMenuGame(self._event_dispatcher))
 
 	def setup(self):
 		self.startGame(MainMenuGame(self._event_dispatcher))

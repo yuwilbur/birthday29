@@ -7,7 +7,7 @@ from ..engine.primitive import Rectangle
 from ..engine.primitive import Circle
 from ..engine.material import Material
 from ..common.event import EventDispatcher
-from ..common.events import InputEvent
+from ..common.events import *
 from ..engine.game_object import GameObject
 from ..engine.collider import Collider
 from ..engine.transform import Transform
@@ -20,7 +20,7 @@ class MainMenuGame(YuGame):
 
 	def setup(self):
 		super(MainMenuGame, self).setup() 
-		EventDispatcher().add_event_listener(InputEvent.TYPE, self.processInputEvent)
+		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.processKeyDownEvent)
 
 		self._p1 = GameObject("p1")
 		self._p1.addComponent(Rectangle)
@@ -64,25 +64,25 @@ class MainMenuGame(YuGame):
 	def stop(self):
 		return
 
-	def processInputEvent(self, event):
-		if event == InputEvent.W:
+	def processKeyDownEvent(self, event):
+		if event.data() == Key.W:
 			self._p1.getComponent(Transform).position.y -= self.DELTA
 			return
-		elif event == InputEvent.A:
+		elif event.data() == Key.A:
 			return
-		elif event == InputEvent.S:
+		elif event.data() == Key.S:
 			self._p1.getComponent(Transform).position.y += self.DELTA
 			return
-		elif event == InputEvent.D:
+		elif event.data() == Key.D:
 			return
-		elif event == InputEvent.I:
+		elif event.data() == Key.I:
 			self._p2.getComponent(Transform).position.y -= self.DELTA
 			return
-		elif event == InputEvent.J:
+		elif event.data() == Key.J:
 			return
-		elif event == InputEvent.K:
+		elif event.data() == Key.K:
 			self._p2.getComponent(Transform).position.y += self.DELTA
 			return
-		elif event == InputEvent.L:
+		elif event.data() == Key.L:
 			return
 		return
