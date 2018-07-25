@@ -8,6 +8,7 @@ from ..engine.primitive import Solid
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.material import Material
+from ..engine.material import LateMaterial
 from ..engine.ui import UI
 from ..sync.manager import Manager
 
@@ -35,9 +36,8 @@ class Renderer(Manager):
         self._center = self._resolution / 2
         print 'Center', self._center
 
-    def update(self):
-        self._screen.fill(Color(0, 0, 0))
-        materials = self._engine.getObjectsWithType(Material)
+    def renderMaterial(self, material_type):
+        materials = self._engine.getObjectsWithType(material_type)
         for material_id, material in materials.items():
             position = (self._center + material.getComponent(Transform).position).toIntTuple()
             if material.hasComponent(Circle):
@@ -47,6 +47,11 @@ class Renderer(Manager):
                 rect.size = material.getComponent(Rectangle).dimensions.toIntTuple()
                 rect.center = position
                 pygame.draw.rect(self._screen,  material.color, rect)
+
+    def update(self):
+        self._screen.fill(Color(0, 0, 0))
+        self.renderMaterial(Material)
+        self.renderMaterial(LateMaterial)
         uis = self._engine.getObjectsWithType(UI)
         for ui_id, ui in uis.items():
             surface = ui.getComponent(UI).getSurface()
