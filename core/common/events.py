@@ -19,9 +19,34 @@ class LatencyEvent(Event):
     def __init__(self, latency_type, time):
         super(LatencyEvent, self).__init__(self.TYPE, (latency_type, time))
 
+class Key(object):
+    ESCAPE = 'ESCAPE'
+    Q = 'Q'
+    UP = 'UP'
+    DOWN = 'DOWN'
+    LEFT = 'LEFT'
+    RIGHT = 'RIGHT'
+    ENTER = 'ENTER'
+    W = 'W'
+    A = 'A'
+    S = 'S'
+    D = 'D'
+    I = 'I'
+    J = 'J'
+    K = 'K'
+    L = 'L'
+    NUM_1 = '1'
+
+class KeyEvent(Event):
+    TYPE = "KeyEvent"
+    def __init__(self, key):
+        if not isinstance(key, Key):
+            raise ValueError("key is no Key type.")
+        super(KeyEvent, self).__init__(self.TYPE, key)
+
 class InputEvent(object):
     TYPE = "Input"
-    ESCAPE = Event(TYPE,'ESCAPE')
+    ESCAPE = Event(TYPE, 'ESCAPE')
     Q = Event(TYPE, 'Q')
     UP = Event(TYPE,'UP')
     DOWN = Event(TYPE,'DOWN')
