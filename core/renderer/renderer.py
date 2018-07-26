@@ -11,9 +11,9 @@ from ..engine.material import Material
 from ..engine.material import LateMaterial
 from ..engine.ui import UI
 from ..sync.manager import Manager
+from ..renderer.color import Color
 
 import pygame
-from pygame.color import Color
 
 class Renderer(Manager):
     __metaclass__ = Singleton
@@ -49,7 +49,7 @@ class Renderer(Manager):
                 pygame.draw.rect(self._screen,  material.color, rect)
 
     def update(self):
-        self._screen.fill(Color(0, 0, 0))
+        self._screen.fill(Color.BLACK)
         self.renderMaterial(Material)
         self.renderMaterial(LateMaterial)
         uis = self._engine.getObjectsWithType(UI)

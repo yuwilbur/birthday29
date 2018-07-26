@@ -22,8 +22,10 @@ class YuGame(Game):
 			self.background.addComponent(Rectangle)
 			self.background.addComponent(LateMaterial)
 			self.background.getComponent(LateMaterial).color = Color.BLACK
-			self.text = GameObject("text")
-			self.text.addComponent(TextBox)
+			self.text_object = GameObject("text")
+			self.text_object.addComponent(TextBox)
+			self.general_text = ""
+			self.game_text = ""
 			self.camera = GameObject("camera")
 			self.camera.addComponent(Image)
 			self.processed = []
@@ -51,14 +53,20 @@ class YuGame(Game):
 				right : (self.right, Color.RED)
 			}
 
+	def setPlayer1Text(self, text):
+		self._p1_info.game_text = text
+
+	def setPlayer2Text(self, text):
+		self._p2_info.game_text = text
+
 	def onLatencyEvent(self, event):
 		data = event.data()
 		latency = str(int((time.time() - data[1]) * 1000))
 		latency_type = data[0]
 		if latency_type == LatencyEvent.P1_PROCESSING:
-			self._p1_info.text.getComponent(TextBox).text = latency
+			self._p1_info.general_text = latency
 		elif latency_type == LatencyEvent.P2_PROCESSING:
-			self._p2_info.text.getComponent(TextBox).text = latency
+			self._p2_info.general_text = latency
 
 	def onCameraResultEvent(self, event):
 		result_type = event.data()[0]
@@ -116,9 +124,9 @@ class YuGame(Game):
 		player = YuGame.PlayerInfo(up, down, left, right)
 		player.background.getComponent(Transform).position = center
 		player.background.getComponent(Rectangle).dimensions = size
-		player.text.getComponent(Transform).position = center + Vector(0, text_y)
-		player.text.getComponent(TextBox).width = self._info_width
-		player.text.getComponent(TextBox).height = text_height
+		player.text_object.getComponent(Transform).position = center + Vector(0, text_y)
+		player.text_object.getComponent(TextBox).width = self._info_width
+		player.text_object.getComponent(TextBox).height = text_height
 		controls_center = Vector(center.x, controls_y)
 		controls_diff = 50
 		player.up.getComponent(Transform).position = controls_center - Vector(0, controls_diff)
@@ -140,4 +148,8 @@ class YuGame(Game):
 		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
 		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.onLatencyEvent)
 		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.onCameraResultEvent)
+
+	def update(self):
+		self._p1_info.text_object.getComponent(TextBox).text = self._p1_info.general_text + self._p1_info.game_text
+		self._p2_info.text_object.getComponent(TextBox).text = self._p2_info.general_text + self._p2_info.game_text
 

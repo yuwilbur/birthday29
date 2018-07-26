@@ -1,9 +1,9 @@
 #from ..renderer import color
 from ..engine.component import Component
+from ..renderer.color import Color
 
 from abc import abstractmethod
 import pygame
-from pygame.color import Color
 
 class UI(Component):
 	def __init__(self, game_object):
@@ -32,7 +32,7 @@ class TextBox(UI):
 		self.text = ""
 		self.width = 0
 		self.height = 0
-		self.color = Color(255, 0, 0, 0)
+		self.color = Color.GREEN
 		self.font_type = 'Arial'
 		self.font_size = 24
 

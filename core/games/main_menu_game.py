@@ -59,6 +59,7 @@ class MainMenuGame(YuGame):
 		createWall(Vector(resolution.x / 2, 0), Vector(thickness, resolution.y))
 
 	def update(self):
+		super(MainMenuGame, self).update()
 		return
 
 	def stop(self):
