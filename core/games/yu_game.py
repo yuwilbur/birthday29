@@ -11,8 +11,8 @@ from ..engine.ui import Image
 from ..engine.ui import TextBox
 from ..engine.transform import Transform
 from ..input.frame import Frame
+from ..renderer.color import Color
 
-from pygame.color import Color
 import time
 
 class YuGame(Game):
@@ -21,7 +21,7 @@ class YuGame(Game):
 			self.background = GameObject("background")
 			self.background.addComponent(Rectangle)
 			self.background.addComponent(LateMaterial)
-			self.background.getComponent(LateMaterial).color = Color(0,0,0)
+			self.background.getComponent(LateMaterial).color = Color.BLACK
 			self.text = GameObject("text")
 			self.text.addComponent(TextBox)
 			self.camera = GameObject("camera")
@@ -45,10 +45,10 @@ class YuGame(Game):
 			self.right.addComponent(LateMaterial)
 			self.right.getComponent(Circle).radius = radius
 			self.controls = {
-				up : self.up,
-				down : self.down,
-				left : self.left,
-				right : self.right
+				up : (self.up, Color.BLUE),
+				down : (self.down, Color.YELLOW),
+				left : (self.left, Color.GREEN),
+				right : (self.right, Color.RED)
 			}
 
 	def onLatencyEvent(self, event):
@@ -86,19 +86,21 @@ class YuGame(Game):
 
 	def onMainKeyUpEvent(self, event):
 		key = event.data()
-		color = Color(255,255,255)
 		if key in self._p1_info.controls:
-			self._p1_info.controls[key].getComponent(LateMaterial).color = color
+			control = self._p1_info.controls[key]
+			control[0].getComponent(LateMaterial).color = Color.WHITE
 		if event.data() in self._p2_info.controls:
-			self._p2_info.controls[key].getComponent(LateMaterial).color = color
+			control = self._p2_info.controls[key]
+			control[0].getComponent(LateMaterial).color = Color.WHITE
 
 	def onMainKeyDownEvent(self, event):
 		key = event.data()
-		color = Color(0,255,0)
 		if key in self._p1_info.controls:
-			self._p1_info.controls[key].getComponent(LateMaterial).color = color
+			control = self._p1_info.controls[key]
+			control[0].getComponent(LateMaterial).color = control[1]
 		if event.data() in self._p2_info.controls:
-			self._p2_info.controls[key].getComponent(LateMaterial).color = color
+			control = self._p2_info.controls[key]
+			control[0].getComponent(LateMaterial).color = control[1]
 
 	def __init__(self, name):
 		super(YuGame, self).__init__(name)
