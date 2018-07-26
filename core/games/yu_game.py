@@ -84,18 +84,21 @@ class YuGame(Game):
 	def getResolution(self):
 		return self._resolution
 
-	def onKeyUpEvent(self, event):
-		print 'up'
-		pass
-
-	def onKeyDownEvent(self, event):
-		print 'down'
-		if event.data() in self._p1_info.controls:
-			print 'p1'
-			pass
+	def onMainKeyUpEvent(self, event):
+		key = event.data()
+		color = Color(255,255,255)
+		if key in self._p1_info.controls:
+			self._p1_info.controls[key].getComponent(LateMaterial).color = color
 		if event.data() in self._p2_info.controls:
-			print 'p2'
-			pass
+			self._p2_info.controls[key].getComponent(LateMaterial).color = color
+
+	def onMainKeyDownEvent(self, event):
+		key = event.data()
+		color = Color(0,255,0)
+		if key in self._p1_info.controls:
+			self._p1_info.controls[key].getComponent(LateMaterial).color = color
+		if event.data() in self._p2_info.controls:
+			self._p2_info.controls[key].getComponent(LateMaterial).color = color
 
 	def __init__(self, name):
 		super(YuGame, self).__init__(name)
@@ -130,8 +133,8 @@ class YuGame(Game):
 		size = Vector(self._info_width, self._resolution.y)
 		self._p1_info = self.createPlayer(Vector(p1_x, 0), size, Key.W, Key.S, Key.A, Key.D)
 		self._p2_info = self.createPlayer(Vector(p2_x, 0), size, Key.I, Key.K, Key.J, Key.L)
-		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
-		EventDispatcher().add_event_listener(KeyUpEvent.TYPE, self.onKeyUpEvent)
+		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onMainKeyDownEvent)
+		EventDispatcher().add_event_listener(KeyUpEvent.TYPE, self.onMainKeyUpEvent)
 		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
 		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.onLatencyEvent)
 		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.onCameraResultEvent)
