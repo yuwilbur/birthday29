@@ -32,7 +32,7 @@ class CameraTool:
             self.camera.close()
         self.camera = picamera.PiCamera()
         self.camera.resolution = resolution
-        self.camera.shutter_speed = 1500
+        self.camera.shutter_speed = 2500
         self.camera.awb_mode = 'off'
         self.camera.awb_gains = 1.0
         self.camera.vflip = True
