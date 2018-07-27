@@ -21,7 +21,7 @@ class Camera(object):
         if 'picamera' in sys.modules:
             self._camera = picamera.PiCamera()
             self._camera.resolution = resolution
-            self._camera.shutter_speed = 1500
+            self._camera.shutter_speed = 2500
             self._camera.awb_mode = 'off'
             self._camera.awb_gains = 1.0
             self._camera.vflip = True
