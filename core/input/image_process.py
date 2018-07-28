@@ -1,5 +1,6 @@
 from ..common.event import EventDispatcher
 from ..common.events import *
+from ..engine.vector import Vector
 
 from multiprocessing import Process, Pipe, Pool
 import copy
@@ -8,19 +9,28 @@ import numpy as np
     
 def processYImage(y):
     threshold = 200
-    diameter = 12
+    radius = 6
     circle_points = list()
-    circle_points.append((0, 0))
-    circle_points.append((diameter, 0))
-    circle_points.append((diameter / 2, -diameter / 2))
-    circle_points.append((diameter / 2, diameter / 2))
+    circle_center = Vector(0, radius)
+    circle_points.append(circle_center + Vector(0, -radius))
+    circle_points.append(circle_center + Vector(0, radius))
+    circle_points.append(circle_center + Vector(radius, 0))
+    circle_points.append(circle_center + Vector(-radius, 0))
+    sqrt_two_invert = 1.414
+    circle_points.append(circle_center + Vector(radius / sqrt_two_invert, radius / sqrt_two_invert))
+    circle_points.append(circle_center + Vector(radius / sqrt_two_invert, -radius / sqrt_two_invert))
+    circle_points.append(circle_center + Vector(-radius / sqrt_two_invert, radius / sqrt_two_invert))
+    circle_points.append(circle_center + Vector(-radius / sqrt_two_invert, -radius / sqrt_two_invert))
+
     candidates = np.argwhere(y >= threshold)
     results = list()
     for candidate in candidates:
         is_circle = True
         sub_results = list()
         for circle_point in circle_points:
-            point = (candidate[0] + circle_point[0], candidate[1] + circle_point[1])
+            # invert x and y
+            candidate_vector = Vector(candidate[1], candidate[0])
+            point = (candidate_vector + circle_point).toIntTupleInvert()
             sub_results.append(point)
             if y[point[0]][point[1]] < threshold:
                 is_circle = False

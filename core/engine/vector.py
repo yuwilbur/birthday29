@@ -9,6 +9,9 @@ class Vector(object):
 	def toIntTuple(self):
 		return (int(self.x), int(self.y))
 
+	def toIntTupleInvert(self):
+		return (int(self.y), int(self.x))
+
 	def __neg__(self):
 		return Vector(-self.x, -self.y)
 
