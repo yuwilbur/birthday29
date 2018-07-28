@@ -8,13 +8,14 @@ import numpy as np
 
 def heavyWork():
     total = 0
-    for x in range(0,100000):
+    for x in range(0,2000000):
         total += 1
         total /= 3
     return total
 
 def processYImage(y):
     candidates = np.argwhere(y > 200)
+    heavyWork()
     #print len(candidates)
     #print len(candidates)
     #total = 0
@@ -26,13 +27,16 @@ def processYImage(y):
 
 def yImageWorker(pipe):
     main_conn, worker_conn = pipe
+    #test1, test2 = pipe2
     while True:
-        data = worker_conn.recv()
-        if data == ImageProcess.END_MESSAGE:
-            break;
-        if not main_conn.poll():
-            result = processYImage(data.data)
-            worker_conn.send((data.timestamp, result))
+        heavyWork()
+        #ata = worker_conn.recv()
+        #if data == ImageProcess.END_MESSAGE:
+        #    break;
+        #if not worker_conn.poll():            
+        #   heavyWork()
+            #result = processYImage(data.data)
+            #test1.send((data.timestamp, result))
 
 class ImageProcess(object):
     END_MESSAGE = 'END'
@@ -40,11 +44,15 @@ class ImageProcess(object):
         EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
 
         self._main1_conn, self._worker1_conn = Pipe()
+        #self.test11, self.test12 = Pipe()
+        #self._worker1 = Process(target=yImageWorker, args=((self._main1_conn, self._worker1_conn),(self.test11, self.test12),))
         self._worker1 = Process(target=yImageWorker, args=((self._main1_conn, self._worker1_conn),))
         self._worker1.daemon = True
         self._worker1.start()
 
         self._main2_conn, self._worker2_conn = Pipe()
+        #self.test21, self.test22 = Pipe()
+        #self._worker2 = Process(target=yImageWorker, args=((self._main2_conn, self._worker2_conn),(self.test21, self.test22),))
         self._worker2 = Process(target=yImageWorker, args=((self._main2_conn, self._worker2_conn),))
         self._worker2.daemon = True
         self._worker2.start()
@@ -66,11 +74,16 @@ class ImageProcess(object):
         self._worker2.join()
 
     def update(self):
+        print '.'
+        return
         if self._main1_conn.poll():
-            data = self._main1_conn.recv()
-            EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P1_PROCESSING, data[0]))
-            EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P1, data[1]))
+            #print '.'
+            #data = self._main1_conn.recv()
+            #EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P1_PROCESSING, data[0]))
+            #EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P1, data[1]))
+            pass
         if self._main2_conn.poll():
-            data = self._main2_conn.recv()
-            EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P2_PROCESSING, data[0]))
-            EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P2, data[1]))
+            pass
+            #data = self._main2_conn.recv()
+            #EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P2_PROCESSING, data[0]))
+            #EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P2, data[1]))
