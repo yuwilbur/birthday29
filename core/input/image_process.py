@@ -8,7 +8,7 @@ import numpy as np
 
 def heavyWork():
     total = 0
-    for x in range(0,2000000):
+    for x in range(0,20000):
         total += 1
         total /= 3
     return total
@@ -28,11 +28,9 @@ def processYImage(y):
 def yImageWorker(pipe):
     main_conn, worker_conn = pipe
     while True:
-        heavyWork()
         data = worker_conn.recv()
         if data == ImageProcess.END_MESSAGE:
-           break;            
-        heavyWork()
+           break;
         result = processYImage(data.data)
         worker_conn.send((data.timestamp, result))
 
@@ -68,18 +66,11 @@ class ImageProcess(object):
         self._worker2.join()
 
     def update(self):
-        print '.'
-        return
         if self._main1_conn.poll():
             data = self._main1_conn.recv()
-            #print '.'
-            #data = self._main1_conn.recv()
-            #EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P1_PROCESSING, data[0]))
-            #EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P1, data[1]))
-            pass
+            EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P1_PROCESSING, data[0]))
+            EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P1, data[1]))
         if self._main2_conn.poll():
-            data = self._main1_conn.recv()
-            pass
-            #data = self._main2_conn.recv()
-            #EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P2_PROCESSING, data[0]))
-            #EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P2, data[1]))
+            data = self._main2_conn.recv()
+            EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P2_PROCESSING, data[0]))
+            EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P2, data[1]))
