@@ -25,7 +25,9 @@ def processYImage(y):
 
     results = list()
     y[0][0] = 0
+    cycles = 0
     while True:
+        cycles += 1
         candidate_index = np.argmax(y > threshold)
         if candidate_index == 0:
             break
@@ -34,7 +36,6 @@ def processYImage(y):
         if candidate[0] <= radius or candidate[0] >= y.shape[0] - radius or candidate[1] <= radius or candidate[1] >= y.shape[1] - radius:
             y[candidate_origin] = 0
             continue
-        candidate = candidate[0:2]
         is_circle = True
         sub_results = list()
         for circle_point in circle_points:
@@ -49,7 +50,7 @@ def processYImage(y):
             bot_right = candidate + (radius, radius)
             y[top_left[0]:bot_right[0], top_left[1]:bot_right[1]] = 0
         y[candidate_origin] = 0
-
+    print cycles
     return results
 
 def yImageWorker(pipe):
