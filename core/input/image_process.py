@@ -5,25 +5,29 @@ from multiprocessing import Process, Pipe, Pool
 import copy
 import time
 import numpy as np
-
-def heavyWork():
-    total = 0
-    for x in range(0,200000):
-        total += 1
-        total /= 3
-    return total
-
+    
 def processYImage(y):
-    candidates = np.argwhere(y > 200)
-    heavyWork()
-    #print len(candidates)
-    #print len(candidates)
-    #total = 0
-    #for candidate in candidates:
-    #    total += y[candidate[0]][candidate[1]]
-    return copy.deepcopy(candidates)
-    #return len(candidates)
-    #return 0
+    threshold = 200
+    diameter = 12
+    circle_points = list()
+    circle_points.append((0, 0))
+    circle_points.append((diameter, 0))
+    circle_points.append((diameter / 2, -diameter / 2))
+    circle_points.append((diameter / 2, diameter / 2))
+    candidates = np.argwhere(y >= threshold)
+    results = list()
+    for candidate in candidates:
+        is_circle = True
+        sub_results = list()
+        for circle_point in circle_points:
+            point = (candidate[0] + circle_point[0], candidate[1] + circle_point[1])
+            sub_results.append(point)
+            if y[point[0]][point[1]] < threshold:
+                is_circle = False
+                break
+        if is_circle:
+            results.extend(sub_results)
+    return results
 
 def yImageWorker(pipe):
     main_conn, worker_conn = pipe
