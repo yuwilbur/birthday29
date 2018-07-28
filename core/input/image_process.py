@@ -33,7 +33,6 @@ def processYImage(y):
         is_circle = True
         sub_results = list()
         for circle_point in circle_points:
-            # invert x and y
             point = (candidate + circle_point).astype(int)
             sub_results.append(point)
             if y[point[0]][point[1]] < threshold:
@@ -43,8 +42,8 @@ def processYImage(y):
         if is_circle:
             candidate_center = candidate + center
             results.append(candidate_center)
-            top_left = candidate_center - (radius + 10, radius + 10)
-            bot_right = candidate_center + (radius + 10, radius + 10)
+            top_left = candidate_center - (radius, radius)
+            bot_right = candidate_center + (radius, radius)
             y[top_left[0]:bot_right[0], top_left[1]:bot_right[1]] = 0
 
     return results
