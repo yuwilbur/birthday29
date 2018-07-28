@@ -27,16 +27,14 @@ def processYImage(y):
 
 def yImageWorker(pipe):
     main_conn, worker_conn = pipe
-    #test1, test2 = pipe2
     while True:
         heavyWork()
-        #ata = worker_conn.recv()
-        #if data == ImageProcess.END_MESSAGE:
-        #    break;
-        #if not worker_conn.poll():            
-        #   heavyWork()
-            #result = processYImage(data.data)
-            #test1.send((data.timestamp, result))
+        data = worker_conn.recv()
+        if data == ImageProcess.END_MESSAGE:
+           break;            
+        heavyWork()
+        result = processYImage(data.data)
+        worker_conn.send((data.timestamp, result))
 
 class ImageProcess(object):
     END_MESSAGE = 'END'
@@ -44,23 +42,19 @@ class ImageProcess(object):
         EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
 
         self._main1_conn, self._worker1_conn = Pipe()
-        #self.test11, self.test12 = Pipe()
-        #self._worker1 = Process(target=yImageWorker, args=((self._main1_conn, self._worker1_conn),(self.test11, self.test12),))
         self._worker1 = Process(target=yImageWorker, args=((self._main1_conn, self._worker1_conn),))
         self._worker1.daemon = True
         self._worker1.start()
 
         self._main2_conn, self._worker2_conn = Pipe()
-        #self.test21, self.test22 = Pipe()
-        #self._worker2 = Process(target=yImageWorker, args=((self._main2_conn, self._worker2_conn),(self.test21, self.test22),))
         self._worker2 = Process(target=yImageWorker, args=((self._main2_conn, self._worker2_conn),))
         self._worker2.daemon = True
         self._worker2.start()
 
     def onYImageEvent(self, event):
-        if not self._main1_conn.poll():
+        if not self._main1_conn.poll() and not self._worker1_conn.poll():
             self._main1_conn.send(event.data()[0])
-        if not self._main2_conn.poll():
+        if not self._main2_conn.poll() and not self._worker2_conn.poll():
             self._main2_conn.send(event.data()[1])
 
     def stop(self):
@@ -77,12 +71,14 @@ class ImageProcess(object):
         print '.'
         return
         if self._main1_conn.poll():
+            data = self._main1_conn.recv()
             #print '.'
             #data = self._main1_conn.recv()
             #EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P1_PROCESSING, data[0]))
             #EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P1, data[1]))
             pass
         if self._main2_conn.poll():
+            data = self._main1_conn.recv()
             pass
             #data = self._main2_conn.recv()
             #EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P2_PROCESSING, data[0]))
