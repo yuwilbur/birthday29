@@ -23,25 +23,28 @@ def processYImage(y):
     circle_points.append(center + np.array([-radius_sqrt_two, radius_sqrt_two]))
     circle_points.append(center + np.array([-radius_sqrt_two, -radius_sqrt_two]))
 
-    candidates = np.argwhere(y >= threshold)
+    y[0][0] = 0
     results = list()
-    for candidate in candidates:
+    while True:
+        candidate = np.unravel_index(np.argmax(y > threshold), y.shape) 
         candidate = candidate[0:2]
+        if y[candidate] == 0:
+            break
         is_circle = True
         sub_results = list()
         for circle_point in circle_points:
             # invert x and y
-            point = candidate + circle_point
-            point = (int(point[0]), int(point[1]))
+            point = (candidate + circle_point).astype(int)
             sub_results.append(point)
             if y[point[0]][point[1]] < threshold:
                 is_circle = False
                 break
+        y[candidate] = 0
         if is_circle:
             candidate_center = candidate + center
             results.append(candidate_center)
-            top_left = candidate_center - (radius, radius)
-            bot_right = candidate_center + (radius, radius)
+            top_left = candidate_center - (radius + 10, radius + 10)
+            bot_right = candidate_center + (radius + 10, radius + 10)
             y[top_left[0]:bot_right[0], top_left[1]:bot_right[1]] = 0
 
     return results
