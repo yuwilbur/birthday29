@@ -5,38 +5,45 @@ from ..engine.vector import Vector
 from multiprocessing import Process, Pipe, Pool
 import copy
 import time
+import operator
 import numpy as np
-    
+
 def processYImage(y):
     threshold = 200
     radius = 6
     circle_points = list()
-    circle_center = Vector(0, radius)
-    circle_points.append(circle_center + Vector(0, -radius))
-    circle_points.append(circle_center + Vector(0, radius))
-    circle_points.append(circle_center + Vector(radius, 0))
-    circle_points.append(circle_center + Vector(-radius, 0))
-    sqrt_two_invert = 1.414
-    circle_points.append(circle_center + Vector(radius / sqrt_two_invert, radius / sqrt_two_invert))
-    circle_points.append(circle_center + Vector(radius / sqrt_two_invert, -radius / sqrt_two_invert))
-    circle_points.append(circle_center + Vector(-radius / sqrt_two_invert, radius / sqrt_two_invert))
-    circle_points.append(circle_center + Vector(-radius / sqrt_two_invert, -radius / sqrt_two_invert))
+    center = np.array([radius, 0])
+    circle_points.append(center + np.array([0, -radius]))
+    circle_points.append(center + np.array([0, radius]))
+    circle_points.append(center + np.array([radius, 0]))
+    circle_points.append(center + np.array([-radius, 0]))
+    radius_sqrt_two = radius / 1.414
+    circle_points.append(center + np.array([radius_sqrt_two, radius_sqrt_two]))
+    circle_points.append(center + np.array([radius_sqrt_two, -radius_sqrt_two]))
+    circle_points.append(center + np.array([-radius_sqrt_two, radius_sqrt_two]))
+    circle_points.append(center + np.array([-radius_sqrt_two, -radius_sqrt_two]))
 
     candidates = np.argwhere(y >= threshold)
     results = list()
     for candidate in candidates:
+        candidate = candidate[0:2]
         is_circle = True
         sub_results = list()
         for circle_point in circle_points:
             # invert x and y
-            candidate_vector = Vector(candidate[1], candidate[0])
-            point = (candidate_vector + circle_point).toIntTupleInvert()
+            point = candidate + circle_point
+            point = (int(point[0]), int(point[1]))
             sub_results.append(point)
             if y[point[0]][point[1]] < threshold:
                 is_circle = False
                 break
         if is_circle:
-            results.extend(sub_results)
+            candidate_center = candidate + center
+            results.append(candidate_center)
+            top_left = candidate_center - (radius, radius)
+            bot_right = candidate_center + (radius, radius)
+            y[top_left[0]:bot_right[0], top_left[1]:bot_right[1]] = 0
+
     return results
 
 def yImageWorker(pipe):
