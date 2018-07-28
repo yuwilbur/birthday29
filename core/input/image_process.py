@@ -8,7 +8,7 @@ import numpy as np
 
 def heavyWork():
     total = 0
-    for x in range(0,20000):
+    for x in range(0,200000):
         total += 1
         total /= 3
     return total
