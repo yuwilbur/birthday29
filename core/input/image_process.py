@@ -40,19 +40,23 @@ class ImageProcess(object):
         EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
 
         self._main1_conn, self._worker1_conn = Pipe()
+        self._worker1_ready = True
         self._worker1 = Process(target=yImageWorker, args=((self._main1_conn, self._worker1_conn),))
         self._worker1.daemon = True
         self._worker1.start()
 
         self._main2_conn, self._worker2_conn = Pipe()
+        self._worker2_ready = True
         self._worker2 = Process(target=yImageWorker, args=((self._main2_conn, self._worker2_conn),))
         self._worker2.daemon = True
         self._worker2.start()
 
     def onYImageEvent(self, event):
-        if not self._main1_conn.poll() and not self._worker1_conn.poll():
+        if self._worker1_ready:
+            self._worker1_ready = False
             self._main1_conn.send(event.data()[0])
-        if not self._main2_conn.poll() and not self._worker2_conn.poll():
+        if self._worker2_ready:
+            self._worker2_ready = False
             self._main2_conn.send(event.data()[1])
 
     def stop(self):
@@ -68,9 +72,11 @@ class ImageProcess(object):
     def update(self):
         if self._main1_conn.poll():
             data = self._main1_conn.recv()
+            self._worker1_ready = True
             EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P1_PROCESSING, data[0]))
             EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P1, data[1]))
         if self._main2_conn.poll():
             data = self._main2_conn.recv()
+            self._worker2_ready = True
             EventDispatcher().dispatch_event(LatencyEvent(LatencyEvent.P2_PROCESSING, data[0]))
             EventDispatcher().dispatch_event(CameraResultEvent(CameraResultEvent.P2, data[1]))
