@@ -150,6 +150,10 @@ class YuGame(Game):
 		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.onCameraResultEvent)
 
 	def update(self):
-		self._p1_info.text_object.getComponent(TextBox).text = self._p1_info.general_text + self._p1_info.game_text
-		self._p2_info.text_object.getComponent(TextBox).text = self._p2_info.general_text + self._p2_info.game_text
+		self._p1_info.text_object.getComponent(TextBox).texts = []
+		self._p1_info.text_object.getComponent(TextBox).texts.append(self._p1_info.general_text)
+		self._p1_info.text_object.getComponent(TextBox).texts.append(self._p1_info.game_text)
 
+		self._p2_info.text_object.getComponent(TextBox).texts = []
+		self._p2_info.text_object.getComponent(TextBox).texts.append(self._p2_info.general_text)
+		self._p2_info.text_object.getComponent(TextBox).texts.append(self._p2_info.game_text)

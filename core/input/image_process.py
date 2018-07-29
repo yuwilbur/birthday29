@@ -8,49 +8,63 @@ import time
 import operator
 import numpy as np
 
+def createCirclePoints(radius):
+    points = list()
+    points.append(np.array([0, -radius]))
+    points.append(np.array([0, radius]))
+    points.append(np.array([radius, 0]))
+    points.append(np.array([-radius, 0]))
+    radius_sqrt_two = int(radius / 1.414)
+    points.append(np.array([radius_sqrt_two, radius_sqrt_two]))
+    points.append(np.array([radius_sqrt_two, -radius_sqrt_two]))
+    points.append(np.array([-radius_sqrt_two, radius_sqrt_two]))
+    points.append(np.array([-radius_sqrt_two, -radius_sqrt_two]))
+    return points
+
 def processYImage(y):
+    radius_per_width_ratio = 2
+    detection_ratio = 3.0 / 4.0
+    lower_radius = 8
+    upper_radius = 16
     threshold = 200
-    radius = 6
-    circle_points = list()
-    center = np.array([radius, 0])
-    circle_points.append(np.array([0, -radius]))
-    circle_points.append(np.array([0, radius]))
-    circle_points.append(np.array([radius, 0]))
-    circle_points.append(np.array([-radius, 0]))
-    radius_sqrt_two = radius / 1.414
-    circle_points.append(np.array([radius_sqrt_two, radius_sqrt_two]))
-    circle_points.append(np.array([radius_sqrt_two, -radius_sqrt_two]))
-    circle_points.append(np.array([-radius_sqrt_two, radius_sqrt_two]))
-    circle_points.append(np.array([-radius_sqrt_two, -radius_sqrt_two]))
 
     results = list()
     y[0][0] = 0
-    cycles = 0
     while True:
-        cycles += 1
-        candidate_index = np.argmax(y > threshold)
-        if candidate_index == 0:
+        candidate = np.argmax(y > threshold)
+        if candidate == 0:
             break
-        candidate_origin = np.unravel_index(candidate_index, y.shape)
-        candidate = candidate_origin[0:2] + center
-        if candidate[0] <= radius or candidate[0] >= y.shape[0] - radius or candidate[1] <= radius or candidate[1] >= y.shape[1] - radius:
-            y[candidate_origin] = 0
+        candidate = np.unravel_index(candidate, y.shape)
+        candidate_y = candidate[0]
+        candidate_x = candidate[1]
+        radius = min(upper_radius, candidate_y, y.shape[0] - candidate_y, candidate_x, y.shape[1] - candidate_x)
+        if radius < lower_radius:
+            y[candidate] = 0
             continue
-        is_circle = True
-        sub_results = list()
-        for circle_point in circle_points:
-            point = (candidate + circle_point).astype(int)
-            sub_results.append(point)
-            if y[point[0]][point[1]] < threshold:
-                is_circle = False
+        width = radius / radius_per_width_ratio
+        is_potentially_circle = False
+        for j in range(candidate_y, candidate_y + width):
+            if y[j][candidate_x] < threshold:
+                is_potentially_circle = True
+                width = j - candidate_y
+                radius = int((width * radius_per_width_ratio) * detection_ratio)
+                candidate_y = candidate_y + radius
+                candidate_x += 1
+                candidate = np.array([candidate_y, candidate_x])
                 break
-        if is_circle:
-            results.append(candidate)
-            top_left = candidate - (radius, radius)
-            bot_right = candidate + (radius, radius)
-            y[top_left[0]:bot_right[0], top_left[1]:bot_right[1]] = 0
-        y[candidate_origin] = 0
-    print cycles
+        if is_potentially_circle:
+            circle_points = createCirclePoints(radius)
+            is_circle = True
+            sub_results = list()
+            for circle_point in circle_points:
+                point = candidate + circle_point
+                sub_results.append(point)
+                if y[point[0]][point[1]] < threshold:
+                    is_circle = False
+                    break
+            if is_circle:
+                results.append(candidate)
+        y[candidate[0]-radius:candidate[0]+radius,candidate[1]-radius:candidate[1]+radius] = 0
     return results
 
 def yImageWorker(pipe):
