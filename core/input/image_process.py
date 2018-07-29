@@ -44,14 +44,17 @@ def processYImage(y):
         width = radius / radius_per_width_ratio
         is_potentially_circle = False
         for j in range(candidate_y, candidate_y + width):
-            if y[j][candidate_x] < threshold:
+            if y[j][candidate_x] <= threshold:
                 is_potentially_circle = True
                 width = j - candidate_y
                 radius = int((width * radius_per_width_ratio) * detection_ratio)
                 candidate_y = candidate_y + radius
-                candidate_x += 1
-                candidate = np.array([candidate_y, candidate_x])
+                for i in range(candidate_x - radius, candidate_x):
+                    if y[candidate_y][i] > threshold:
+                        candidate_x = i + radius
+                        break
                 break
+        candidate = np.array([candidate_y, candidate_x])
         if is_potentially_circle:
             circle_points = createCirclePoints(radius)
             is_circle = True
