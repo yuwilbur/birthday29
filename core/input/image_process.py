@@ -31,10 +31,10 @@ def processYImage(y):
     results = list()
     y[0][0] = 0
     while True:
-        candidate = np.argmax(y > threshold)
-        if candidate == 0:
+        candidates = np.argwhere(y > threshold)
+        if len(candidates) == 0:
             break
-        candidate = np.unravel_index(candidate, y.shape)
+        candidate = candidates[0]
         candidate_y = candidate[0]
         candidate_x = candidate[1]
         radius = min(upper_radius, candidate_y, y.shape[0] - candidate_y, candidate_x, y.shape[1] - candidate_x)
