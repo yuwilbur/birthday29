@@ -22,8 +22,8 @@ def createCirclePoints(radius):
     return points
 
 def processYImage(y):
-    radius_per_width_ratio = 2
-    detection_ratio = 3.0 / 4.0
+    outer_radius_ratio = 5.0 / 4.0
+    inner_radius_ratio = 3.0 / 4.0
     lower_radius = 8
     upper_radius = 16
     threshold = 200
@@ -42,32 +42,39 @@ def processYImage(y):
         if radius < lower_radius:
             y[candidate] = 0
             continue
-        width = radius / radius_per_width_ratio
-        is_potentially_circle = False
-        for j in range(candidate_y, candidate_y + width, steps):
-            if y[j][candidate_x] <= threshold:
-                is_potentially_circle = True
-                width = j - candidate_y
-                radius = int((width * radius_per_width_ratio) * detection_ratio)
-                candidate_y = candidate_y + radius
+        is_circle = False
+        for j in range(candidate_y + radius * 2, candidate_y + lower_radius * 2, -steps):
+            if y[j][candidate_x] > threshold:
+                is_circle = True
+                radius = (j - candidate_y) / 2 + 1
+                candidate_y = j - radius
                 for i in range(candidate_x - radius, candidate_x, steps):
                     if y[candidate_y][i] > threshold:
                         candidate_x = i + radius
                         break
                 break
-        candidate = np.array([candidate_y, candidate_x])
-        if is_potentially_circle:
-            circle_points = createCirclePoints(radius)
-            is_circle = True
-            sub_results = list()
-            for circle_point in circle_points:
-                point = candidate + circle_point
-                sub_results.append(point)
+        if is_circle:
+            candidate = np.array([candidate_y, candidate_x])
+            inner_points = createCirclePoints(int(radius * inner_radius_ratio))
+            outer_points = createCirclePoints(int(radius * outer_radius_ratio))
+            #sub_results = list()
+            for inner_point in inner_points:
+                point = candidate + inner_point
+                #sub_results.append(point)
                 if y[point[0]][point[1]] < threshold:
                     is_circle = False
                     break
-            if is_circle:
-                results.append(candidate)
+            if not is_circle:
+                continue
+            for outer_point in outer_points:
+                point = candidate + outer_point
+                #sub_results.append(point)
+                if y[point[0]][point[1]] >= threshold:
+                    is_circle = False
+                    break
+            if not is_circle:
+                continue
+            results.append(candidate)
         y[candidate[0]-radius:candidate[0]+radius,candidate[1]-radius:candidate[1]+radius] = 0
     return results
 
