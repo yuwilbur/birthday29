@@ -38,12 +38,11 @@ def processYImage(y):
         candidate = candidates[0]
         candidate_y = candidate[0]
         candidate_x = candidate[1]
-        radius = min(upper_radius, candidate_y, y.shape[0] - candidate_y, candidate_x, y.shape[1] - candidate_x)
-        if radius < lower_radius:
+        if candidate_y + upper_radius * 2 >= y.shape[0] or candidate_x + upper_radius >= y.shape[1] or candidate_x - upper_radius < 0:
             y[candidate] = 0
             continue
         is_circle = False
-        for j in range(candidate_y + radius * 2, candidate_y + lower_radius * 2, -steps):
+        for j in range(candidate_y + upper_radius * 2, candidate_y + lower_radius * 2, -steps):
             if y[j][candidate_x] > threshold:
                 is_circle = True
                 radius = (j - candidate_y) / 2 + 1
