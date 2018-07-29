@@ -27,7 +27,6 @@ def processYImage(y):
     lower_radius = 8
     upper_radius = 16
     threshold = 200
-    steps = 1
 
     results = list()
     y[0][0] = 0
@@ -42,12 +41,14 @@ def processYImage(y):
             y[candidate] = 0
             continue
         is_circle = False
-        for j in range(candidate_y + upper_radius * 2, candidate_y + lower_radius * 2, -steps):
+        radius = 1
+        for j in range(candidate_y + upper_radius * 2, candidate_y + lower_radius * 2, -1):
+            print j
             if y[j][candidate_x] > threshold:
                 is_circle = True
                 radius = (j - candidate_y) / 2 + 1
                 candidate_y = j - radius
-                for i in range(candidate_x - radius, candidate_x, steps):
+                for i in range(candidate_x - radius, candidate_x, 1):
                     if y[candidate_y][i] > threshold:
                         candidate_x = i + radius
                         break
