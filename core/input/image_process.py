@@ -14,11 +14,11 @@ def createCirclePoints(radius):
     points.append(np.array([0, radius]))
     points.append(np.array([radius, 0]))
     points.append(np.array([-radius, 0]))
-    radius_sqrt_two = int(radius / 1.414)
-    points.append(np.array([radius_sqrt_two, radius_sqrt_two]))
-    points.append(np.array([radius_sqrt_two, -radius_sqrt_two]))
-    points.append(np.array([-radius_sqrt_two, radius_sqrt_two]))
-    points.append(np.array([-radius_sqrt_two, -radius_sqrt_two]))
+    #radius_sqrt_two = int(radius / 1.414)
+    #points.append(np.array([radius_sqrt_two, radius_sqrt_two]))
+    #points.append(np.array([radius_sqrt_two, -radius_sqrt_two]))
+    #points.append(np.array([-radius_sqrt_two, radius_sqrt_two]))
+    #points.append(np.array([-radius_sqrt_two, -radius_sqrt_two]))
     return points
 
 def processYImage(y):
@@ -27,6 +27,7 @@ def processYImage(y):
     lower_radius = 8
     upper_radius = 16
     threshold = 200
+    steps = 1
 
     results = list()
     y[0][0] = 0
@@ -43,13 +44,13 @@ def processYImage(y):
             continue
         width = radius / radius_per_width_ratio
         is_potentially_circle = False
-        for j in range(candidate_y, candidate_y + width):
+        for j in range(candidate_y, candidate_y + width, steps):
             if y[j][candidate_x] <= threshold:
                 is_potentially_circle = True
                 width = j - candidate_y
                 radius = int((width * radius_per_width_ratio) * detection_ratio)
                 candidate_y = candidate_y + radius
-                for i in range(candidate_x - radius, candidate_x):
+                for i in range(candidate_x - radius, candidate_x, steps):
                     if y[candidate_y][i] > threshold:
                         candidate_x = i + radius
                         break
