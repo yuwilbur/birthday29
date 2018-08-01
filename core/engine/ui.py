@@ -30,31 +30,28 @@ class TextBox(UI):
 	def __init__(self, game_object):
 		super(TextBox, self).__init__(game_object)
 		self.__class__.__name__ = UI.__name__
-		self.texts = []
 		self.width = 0
 		self.height = 0
 		self.color = Color.GREEN
 		self.font_type = 'Arial'
 		self.font_size = 24
 		self.align = Align.RIGHT
-
-	def setText(text):
-		pass
-
-	def getSurface(self):
-		surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+		self.surface = None
 		pygame.font.init()
+
+	def setTexts(self, texts):
+		self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 		font = pygame.font.SysFont(self.font_type, self.font_size)
 		font_height = font.size("Tg")[1]
 		y_position = 0
-		for text in self.texts:
+		for text in texts:
 			while text:
-				if y_position + font_height > surface.get_height():
+				if y_position + font_height > self.surface.get_height():
 					break
 
 				i = 1
 				while i < len(text):
-					if font.size(text[:i])[0] > surface.get_width():
+					if font.size(text[:i])[0] > self.surface.get_width():
 						i = text.rfind(" ", 0, i) + 1
 						break
 					i += 1
@@ -69,7 +66,9 @@ class TextBox(UI):
 				elif self.align == Align.CENTER:
 					x_position = (self.width - render_text_length) / 2
 
-				surface.blit(font.render(render_text, True, self.color), (x_position, y_position))
+				self.surface.blit(font.render(render_text, True, self.color), (x_position, y_position))
 				y_position += font_height
 				text = text[i:]
-		return surface
+
+	def getSurface(self):
+		return self.surface

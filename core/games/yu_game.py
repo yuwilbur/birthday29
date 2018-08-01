@@ -70,11 +70,9 @@ class YuGame(Game):
 		latency = str(int((time.time() - data[1]) * 1000))
 		latency_type = data[0]
 		if latency_type == LatencyEvent.P1_PROCESSING:
-			self._p1_info.latency_text.getComponent(TextBox).texts = []
-			self._p1_info.latency_text.getComponent(TextBox).texts.append(latency)
+			self._p1_info.latency_text.getComponent(TextBox).setTexts([latency])
 		elif latency_type == LatencyEvent.P2_PROCESSING:
-			self._p2_info.latency_text.getComponent(TextBox).texts = []
-			self._p2_info.latency_text.getComponent(TextBox).texts.append(latency)
+			self._p2_info.latency_text.getComponent(TextBox).setTexts([latency])
 
 	def onCameraResultEvent(self, event):
 		result_type = event.data()[0]
@@ -160,6 +158,7 @@ class YuGame(Game):
 		player.game_text.getComponent(TextBox).width = game_text_width
 		player.game_text.getComponent(TextBox).height = game_text_height
 		player.game_text.getComponent(TextBox).align = text_align
+		player.game_text.getComponent(TextBox).font_size = 32
 		controls_diff = 50
 		player.up.getComponent(Transform).position = controls_position - Vector(0, controls_diff)
 		player.down.getComponent(Transform).position = controls_position + Vector(0, controls_diff)
@@ -185,8 +184,6 @@ class YuGame(Game):
 		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.onCameraResultEvent)
 
 	def update(self):
-		self._p1_info.game_text.getComponent(TextBox).texts = []
-		self._p1_info.game_text.getComponent(TextBox).texts.append("Ready Player One")
-		self._p2_info.game_text.getComponent(TextBox).texts = []
-		self._p2_info.game_text.getComponent(TextBox).texts.append("Ready Player Two")
+		self._p1_info.game_text.getComponent(TextBox).setTexts(["Ready Player One"])
+		self._p2_info.game_text.getComponent(TextBox).setTexts(["Ready Player Two"])
 
