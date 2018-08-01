@@ -47,11 +47,15 @@ class YuGame(Game):
 			self.right.addComponent(LateMaterial)
 			self.right.getComponent(Circle).radius = radius
 			self.controls = {
-				up : (self.up, Color.BLUE),
-				down : (self.down, Color.YELLOW),
-				left : (self.left, Color.GREEN),
-				right : (self.right, Color.RED)
+				up : (self.up, Color.LIGHT_BLUE, Color.DARK_BLUE),
+				down : (self.down, Color.LIGHT_YELLOW, Color.DARK_YELLOW),
+				left : (self.left, Color.LIGHT_GREEN, Color.DARK_GREEN),
+				right : (self.right, Color.LIGHT_RED, Color.DARK_RED)
 			}
+			self.up.getComponent(LateMaterial).color = self.controls[up][2]
+			self.down.getComponent(LateMaterial).color = self.controls[down][2]
+			self.left.getComponent(LateMaterial).color = self.controls[left][2]
+			self.right.getComponent(LateMaterial).color = self.controls[right][2]
 
 	def setPlayer1Text(self, text):
 		self._p1_info.game_text = text
@@ -96,10 +100,10 @@ class YuGame(Game):
 		key = event.data()
 		if key in self._p1_info.controls:
 			control = self._p1_info.controls[key]
-			control[0].getComponent(LateMaterial).color = Color.WHITE
+			control[0].getComponent(LateMaterial).color = control[2]
 		if event.data() in self._p2_info.controls:
 			control = self._p2_info.controls[key]
-			control[0].getComponent(LateMaterial).color = Color.WHITE
+			control[0].getComponent(LateMaterial).color = control[2]
 
 	def onMainKeyDownEvent(self, event):
 		key = event.data()
