@@ -11,6 +11,7 @@ from ..common.events import *
 from ..engine.game_object import GameObject
 from ..engine.collider import Collider
 from ..engine.transform import Transform
+from ..renderer.color import Color
 
 class MainMenuGame(YuGame):
 	DELTA = 10
@@ -26,14 +27,14 @@ class MainMenuGame(YuGame):
 		self._p1.addComponent(Rectangle)
 		self._p1.addComponent(Material)
 		self._p1.addComponent(Collider)
-		self._p1.getComponent(Transform).position = Vector(-300,0)
+		self._p1.getComponent(Transform).position = Vector(-300,0) + self.getOffset()
 		self._p1.getComponent(Rectangle).dimensions = Vector(25, 200)
 
 		self._p2 = GameObject("p2")
 		self._p2.addComponent(Rectangle)
 		self._p2.addComponent(Material)
 		self._p2.addComponent(Collider)
-		self._p2.getComponent(Transform).position = Vector(300, 0)
+		self._p2.getComponent(Transform).position = Vector(300, 0) + self.getOffset()
 		self._p2.getComponent(Rectangle).dimensions = Vector(25, 200) 
 
 		self._ball = GameObject("ball")
@@ -50,8 +51,9 @@ class MainMenuGame(YuGame):
 			wall = GameObject("wall")
 			wall.addComponent(Rectangle)
 			wall.addComponent(Material)
+			wall.getComponent(Material).color = Color.GREY
 			wall.addComponent(Collider)
-			wall.getComponent(Transform).position = position
+			wall.getComponent(Transform).position = position + self.getOffset()
 			wall.getComponent(Rectangle).dimensions = dimensions
 		createWall(Vector(0, -resolution.y / 2), Vector(resolution.x, thickness))
 		createWall(Vector(0, resolution.y / 2), Vector(resolution.x, thickness))

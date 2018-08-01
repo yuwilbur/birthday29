@@ -96,6 +96,9 @@ class YuGame(Game):
 	def getResolution(self):
 		return self._resolution
 
+	def getOffset(self):
+		return self._offset
+
 	def onMainKeyUpEvent(self, event):
 		key = event.data()
 		if key in self._p1_info.controls:
@@ -120,33 +123,46 @@ class YuGame(Game):
 		self._camera_height = 160
 		self._controls_height = 160
 
-	def createPlayer(self, center, size, up, down, left, right):
-		text_height = size.y - self._camera_height - self._controls_height
-		text_y = - size.y / 2 + text_height / 2
-		controls_y = text_y + text_height / 2 + self._controls_height / 2
-		camera_y = controls_y + self._controls_height / 2 + self._camera_height / 2
+	def createPlayer(self, start, align, length, up, down, left, right):
+		camera_length = self._info_width
+		controls_length = self._info_width
+		text_length = length - camera_length - controls_length 
+		text_width = text_length
+		text_height = self._info_width
+		if align == Vector(1, 0):
+			camera_position = start + Vector(camera_length / 2, 0)
+			controls_position = camera_position + Vector(camera_length / 2, 0) + Vector(controls_length / 2, 0)
+			text_position = controls_position + Vector(controls_length / 2, 0) + Vector(text_length / 2, 0)
+			background_position = start + Vector((camera_length + controls_length + text_length) / 2, 0)
+		else:
+			camera_position = start - Vector(camera_length / 2, 0)
+			controls_position = camera_position - Vector(camera_length / 2, 0) - Vector(controls_length / 2, 0)
+			text_position = controls_position - Vector(controls_length / 2, 0) - Vector(text_length / 2, 0)
+			background_position = start - Vector((camera_length + controls_length + text_length) / 2, 0)
 		player = YuGame.PlayerInfo(up, down, left, right)
-		player.background.getComponent(Transform).position = center
-		player.background.getComponent(Rectangle).dimensions = size
-		player.text_object.getComponent(Transform).position = center + Vector(0, text_y)
-		player.text_object.getComponent(TextBox).width = self._info_width
+		player.background.getComponent(Transform).position = background_position
+		player.background.getComponent(Rectangle).dimensions = Vector(length, self._info_width)
+		player.text_object.getComponent(Transform).position = text_position
+		player.text_object.getComponent(TextBox).width = text_width
 		player.text_object.getComponent(TextBox).height = text_height
-		controls_center = Vector(center.x, controls_y)
 		controls_diff = 50
-		player.up.getComponent(Transform).position = controls_center - Vector(0, controls_diff)
-		player.down.getComponent(Transform).position = controls_center + Vector(0, controls_diff)
-		player.right.getComponent(Transform).position = controls_center + Vector(controls_diff, 0)
-		player.left.getComponent(Transform).position = controls_center - Vector(controls_diff, 0)
-		player.camera.getComponent(Transform).position = center + Vector(0, camera_y)
+		player.up.getComponent(Transform).position = controls_position - Vector(0, controls_diff)
+		player.down.getComponent(Transform).position = controls_position + Vector(0, controls_diff)
+		player.right.getComponent(Transform).position = controls_position + Vector(controls_diff, 0)
+		player.left.getComponent(Transform).position = controls_position - Vector(controls_diff, 0)
+		player.camera.getComponent(Transform).position = camera_position
 		return player
 
 	def setup(self):
-		self._resolution = Renderer().getResolution() - Vector(self._info_width * 2, 0)
-		p1_x = - (self._resolution.x / 2 + self._info_width / 2)
-		p2_x = self._resolution.x / 2 + self._info_width / 2
-		size = Vector(self._info_width, self._resolution.y)
-		self._p1_info = self.createPlayer(Vector(p1_x, 0), size, Key.W, Key.S, Key.A, Key.D)
-		self._p2_info = self.createPlayer(Vector(p2_x, 0), size, Key.I, Key.K, Key.J, Key.L)
+		self._offset = Vector(0, -self._info_width / 2)
+		self._resolution = Renderer().getResolution() - Vector(0, self._info_width)
+		p1_x = - self._resolution.x / 2
+		p1_y = self._resolution.y / 2
+		p2_x = self._resolution.x / 2
+		p2_y = self._resolution.y / 2
+		length = self._resolution.x / 2
+		self._p1_info = self.createPlayer(Vector(p1_x, p1_y), Vector(1, 0), length, Key.W, Key.S, Key.A, Key.D)
+		self._p2_info = self.createPlayer(Vector(p2_x, p2_y), Vector(-1, 0), length, Key.I, Key.K, Key.J, Key.L)
 		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onMainKeyDownEvent)
 		EventDispatcher().add_event_listener(KeyUpEvent.TYPE, self.onMainKeyUpEvent)
 		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
