@@ -1,5 +1,6 @@
 #from ..renderer import color
 from ..engine.component import Component
+from ..engine.align import Align
 from ..renderer.color import Color
 
 from abc import abstractmethod
@@ -35,6 +36,10 @@ class TextBox(UI):
 		self.color = Color.GREEN
 		self.font_type = 'Arial'
 		self.font_size = 24
+		self.align = Align.RIGHT
+
+	def setText(text):
+		pass
 
 	def getSurface(self):
 		surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
@@ -54,7 +59,17 @@ class TextBox(UI):
 						break
 					i += 1
 
-				surface.blit(font.render(text[:i], True, self.color), (0, y_position))
+				render_text = text[:i]
+				render_text_length = font.size(render_text)[0]
+				x_position = 0
+				if self.align == Align.RIGHT:
+					x_position = 0
+				elif self.align == Align.LEFT:
+					x_position = self.width - render_text_length
+				elif self.align == Align.CENTER:
+					x_position = (self.width - render_text_length) / 2
+
+				surface.blit(font.render(render_text, True, self.color), (x_position, y_position))
 				y_position += font_height
 				text = text[i:]
 		return surface

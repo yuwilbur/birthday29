@@ -27,6 +27,7 @@ class YuGame(Game):
 			self.camera.addComponent(Image)
 			self.latency_text = GameObject("text")
 			self.latency_text.addComponent(TextBox)
+			self.latency_text.getComponent(TextBox).align = Align.RIGHT
 			self.game_text = GameObject("game text")
 			self.game_text.addComponent(TextBox)
 			self.processed = []
@@ -141,12 +142,14 @@ class YuGame(Game):
 			game_text_position = controls_position + Vector(controls_length / 2, 0) + Vector(game_text_length / 2, 0)
 			latency_text_position = camera_position
 			background_position = start + Vector((camera_length + controls_length + game_text_length) / 2, 0)
+			text_align = Align.LEFT
 		else:
 			camera_position = start - Vector(camera_length / 2, 0)
 			controls_position = camera_position - Vector(camera_length / 2, 0) - Vector(controls_length / 2, 0)
 			game_text_position = controls_position - Vector(controls_length / 2, 0) - Vector(game_text_length / 2, 0)
 			latency_text_position = camera_position
 			background_position = start - Vector((camera_length + controls_length + game_text_length) / 2, 0)
+			text_align = Align.RIGHT
 		player = YuGame.PlayerInfo(up, down, left, right)
 		player.background.getComponent(Transform).position = background_position
 		player.background.getComponent(Rectangle).dimensions = Vector(length, self._info_width)
@@ -156,6 +159,7 @@ class YuGame(Game):
 		player.game_text.getComponent(Transform).position = game_text_position
 		player.game_text.getComponent(TextBox).width = game_text_width
 		player.game_text.getComponent(TextBox).height = game_text_height
+		player.game_text.getComponent(TextBox).align = text_align
 		controls_diff = 50
 		player.up.getComponent(Transform).position = controls_position - Vector(0, controls_diff)
 		player.down.getComponent(Transform).position = controls_position + Vector(0, controls_diff)
