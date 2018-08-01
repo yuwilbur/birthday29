@@ -7,6 +7,7 @@ from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.material import LateMaterial
 from ..engine.game_object import GameObject
+from ..engine.align import Align
 from ..engine.ui import Image
 from ..engine.ui import TextBox
 from ..engine.transform import Transform
@@ -22,12 +23,12 @@ class YuGame(Game):
 			self.background.addComponent(Rectangle)
 			self.background.addComponent(LateMaterial)
 			self.background.getComponent(LateMaterial).color = Color.BLACK
-			self.text_object = GameObject("text")
-			self.text_object.addComponent(TextBox)
-			self.general_text = ""
-			self.game_text = ""
 			self.camera = GameObject("camera")
 			self.camera.addComponent(Image)
+			self.latency_text = GameObject("text")
+			self.latency_text.addComponent(TextBox)
+			self.game_text = GameObject("game text")
+			self.game_text.addComponent(TextBox)
 			self.processed = []
 			radius = 25
 			self.up = GameObject("up")
@@ -68,9 +69,11 @@ class YuGame(Game):
 		latency = str(int((time.time() - data[1]) * 1000))
 		latency_type = data[0]
 		if latency_type == LatencyEvent.P1_PROCESSING:
-			self._p1_info.general_text = latency
+			self._p1_info.latency_text.getComponent(TextBox).texts = []
+			self._p1_info.latency_text.getComponent(TextBox).texts.append(latency)
 		elif latency_type == LatencyEvent.P2_PROCESSING:
-			self._p2_info.general_text = latency
+			self._p2_info.latency_text.getComponent(TextBox).texts = []
+			self._p2_info.latency_text.getComponent(TextBox).texts.append(latency)
 
 	def onCameraResultEvent(self, event):
 		result_type = event.data()[0]
@@ -126,25 +129,33 @@ class YuGame(Game):
 	def createPlayer(self, start, align, length, up, down, left, right):
 		camera_length = self._info_width
 		controls_length = self._info_width
-		text_length = length - camera_length - controls_length 
-		text_width = text_length
-		text_height = self._info_width
-		if align == Vector(1, 0):
+		game_text_length = length - camera_length - controls_length
+		game_text_width = game_text_length
+		game_text_height = self._info_width
+		latency_text_length = camera_length
+		latency_text_width = latency_text_length
+		latency_text_height = self._info_width
+		if align == Align.RIGHT:
 			camera_position = start + Vector(camera_length / 2, 0)
 			controls_position = camera_position + Vector(camera_length / 2, 0) + Vector(controls_length / 2, 0)
-			text_position = controls_position + Vector(controls_length / 2, 0) + Vector(text_length / 2, 0)
-			background_position = start + Vector((camera_length + controls_length + text_length) / 2, 0)
+			game_text_position = controls_position + Vector(controls_length / 2, 0) + Vector(game_text_length / 2, 0)
+			latency_text_position = camera_position
+			background_position = start + Vector((camera_length + controls_length + game_text_length) / 2, 0)
 		else:
 			camera_position = start - Vector(camera_length / 2, 0)
 			controls_position = camera_position - Vector(camera_length / 2, 0) - Vector(controls_length / 2, 0)
-			text_position = controls_position - Vector(controls_length / 2, 0) - Vector(text_length / 2, 0)
-			background_position = start - Vector((camera_length + controls_length + text_length) / 2, 0)
+			game_text_position = controls_position - Vector(controls_length / 2, 0) - Vector(game_text_length / 2, 0)
+			latency_text_position = camera_position
+			background_position = start - Vector((camera_length + controls_length + game_text_length) / 2, 0)
 		player = YuGame.PlayerInfo(up, down, left, right)
 		player.background.getComponent(Transform).position = background_position
 		player.background.getComponent(Rectangle).dimensions = Vector(length, self._info_width)
-		player.text_object.getComponent(Transform).position = text_position
-		player.text_object.getComponent(TextBox).width = text_width
-		player.text_object.getComponent(TextBox).height = text_height
+		player.latency_text.getComponent(Transform).position = latency_text_position
+		player.latency_text.getComponent(TextBox).width = latency_text_width
+		player.latency_text.getComponent(TextBox).height = latency_text_height
+		player.game_text.getComponent(Transform).position = game_text_position
+		player.game_text.getComponent(TextBox).width = game_text_width
+		player.game_text.getComponent(TextBox).height = game_text_height
 		controls_diff = 50
 		player.up.getComponent(Transform).position = controls_position - Vector(0, controls_diff)
 		player.down.getComponent(Transform).position = controls_position + Vector(0, controls_diff)
@@ -161,8 +172,8 @@ class YuGame(Game):
 		p2_x = self._resolution.x / 2
 		p2_y = self._resolution.y / 2
 		length = self._resolution.x / 2
-		self._p1_info = self.createPlayer(Vector(p1_x, p1_y), Vector(1, 0), length, Key.W, Key.S, Key.A, Key.D)
-		self._p2_info = self.createPlayer(Vector(p2_x, p2_y), Vector(-1, 0), length, Key.I, Key.K, Key.J, Key.L)
+		self._p1_info = self.createPlayer(Vector(p1_x, p1_y), Align.RIGHT, length, Key.W, Key.S, Key.A, Key.D)
+		self._p2_info = self.createPlayer(Vector(p2_x, p2_y), Align.LEFT, length, Key.I, Key.K, Key.J, Key.L)
 		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onMainKeyDownEvent)
 		EventDispatcher().add_event_listener(KeyUpEvent.TYPE, self.onMainKeyUpEvent)
 		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
@@ -170,10 +181,8 @@ class YuGame(Game):
 		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.onCameraResultEvent)
 
 	def update(self):
-		self._p1_info.text_object.getComponent(TextBox).texts = []
-		self._p1_info.text_object.getComponent(TextBox).texts.append(self._p1_info.general_text)
-		self._p1_info.text_object.getComponent(TextBox).texts.append(self._p1_info.game_text)
+		self._p1_info.game_text.getComponent(TextBox).texts = []
+		self._p1_info.game_text.getComponent(TextBox).texts.append("Ready Player One")
+		self._p2_info.game_text.getComponent(TextBox).texts = []
+		self._p2_info.game_text.getComponent(TextBox).texts.append("Ready Player Two")
 
-		self._p2_info.text_object.getComponent(TextBox).texts = []
-		self._p2_info.text_object.getComponent(TextBox).texts.append(self._p2_info.general_text)
-		self._p2_info.text_object.getComponent(TextBox).texts.append(self._p2_info.game_text)
