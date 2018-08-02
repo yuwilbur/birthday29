@@ -32,7 +32,7 @@ class TextBox(UI):
 		self.__class__.__name__ = UI.__name__
 		self.width = 0
 		self.height = 0
-		self.color = Color.GREEN
+		self.color = Color.WHITE
 		self.font_type = 'Arial'
 		self.font_size = 24
 		self.align = Align.RIGHT
@@ -67,7 +67,7 @@ class TextBox(UI):
 					x_position = (self.width - render_text_length) / 2
 
 				self.surface.blit(font.render(render_text, True, self.color), (x_position, y_position))
-				y_position += font_height
+				y_position += font_height * 1.25
 				text = text[i:]
 
 	def getSurface(self):

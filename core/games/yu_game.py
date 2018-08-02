@@ -59,11 +59,14 @@ class YuGame(Game):
 			self.left.getComponent(LateMaterial).color = self.controls[left][2]
 			self.right.getComponent(LateMaterial).color = self.controls[right][2]
 
-	def setPlayer1Text(self, text):
-		self._p1_info.game_text = text
+	def setPlayer1Texts(self, texts):
+		self._p1_info.game_text.getComponent(TextBox).setTexts(texts)
 
-	def setPlayer2Text(self, text):
-		self._p2_info.game_text = text
+	def setPlayer2Texts(self, texts):
+		self._p2_info.game_text.getComponent(TextBox).setTexts(texts)
+
+	def setGameTexts(self, texts):
+		self._game_text.getComponent(TextBox).setTexts(texts)
 
 	def onLatencyEvent(self, event):
 		data = event.data()
@@ -130,7 +133,7 @@ class YuGame(Game):
 		controls_length = self._info_width
 		game_text_length = length - camera_length - controls_length
 		game_text_width = game_text_length
-		game_text_height = self._info_width
+		game_text_height = self._info_width * 3 / 4
 		latency_text_length = camera_length
 		latency_text_width = latency_text_length
 		latency_text_height = self._info_width
@@ -154,11 +157,12 @@ class YuGame(Game):
 		player.latency_text.getComponent(Transform).position = latency_text_position
 		player.latency_text.getComponent(TextBox).width = latency_text_width
 		player.latency_text.getComponent(TextBox).height = latency_text_height
+		player.latency_text.getComponent(TextBox).color = Color.GREY
 		player.game_text.getComponent(Transform).position = game_text_position
 		player.game_text.getComponent(TextBox).width = game_text_width
 		player.game_text.getComponent(TextBox).height = game_text_height
 		player.game_text.getComponent(TextBox).align = text_align
-		player.game_text.getComponent(TextBox).font_size = 32
+		player.game_text.getComponent(TextBox).font_size = self._font_size
 		controls_diff = 50
 		player.up.getComponent(Transform).position = controls_position - Vector(0, controls_diff)
 		player.down.getComponent(Transform).position = controls_position + Vector(0, controls_diff)
@@ -168,6 +172,7 @@ class YuGame(Game):
 		return player
 
 	def setup(self):
+		self._font_size = 64
 		self._offset = Vector(0, -self._info_width / 2)
 		self._resolution = Renderer().getResolution() - Vector(0, self._info_width)
 		p1_x = - self._resolution.x / 2
@@ -182,8 +187,18 @@ class YuGame(Game):
 		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
 		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.onLatencyEvent)
 		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.onCameraResultEvent)
+		self._game_text = GameObject("main game text")
+		self._game_text.addComponent(TextBox)
+		self._game_text.getComponent(TextBox).font_size = self._font_size
+		self._game_text.getComponent(TextBox).width = 1000
+		self._game_text.getComponent(TextBox).height = self._info_width * 3 / 4
+		self._game_text.getComponent(TextBox).align = Align.CENTER
+		self._game_text.getComponent(Transform).position = Vector(0, p1_y)
+		self.setPlayer1Texts(["1 "])
+		self.setPlayer2Texts([" 2"])
+		self.setGameTexts(["|","THE ULTIMATE PING PONG"])
+
 
 	def update(self):
-		self._p1_info.game_text.getComponent(TextBox).setTexts(["Ready Player One"])
-		self._p2_info.game_text.getComponent(TextBox).setTexts(["Ready Player Two"])
+		pass
 

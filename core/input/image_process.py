@@ -43,7 +43,7 @@ def processYImage(y):
         is_circle = False
         radius = 1
         for j in range(candidate_y + upper_radius * 2, candidate_y + lower_radius * 2, -1):
-            print j
+            #print j
             if y[j][candidate_x] > threshold:
                 is_circle = True
                 radius = (j - candidate_y) / 2 + 1
