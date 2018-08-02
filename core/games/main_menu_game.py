@@ -35,7 +35,6 @@ class MainMenuGame(YuGame):
 		self._p1.addComponent(Rectangle)
 		self._p1.addComponent(Material)
 		self._p1.addComponent(Collider)
-		self._p1.getComponent(Transform).position = Vector(-400,0) + self.getOffset()
 		self._p1.getComponent(Rectangle).dimensions = Vector(thickness, 150)
 		self._p1.getComponent(Collider).setOnCollisionListener(self.onP1Collision)
 
@@ -43,7 +42,6 @@ class MainMenuGame(YuGame):
 		self._p2.addComponent(Rectangle)
 		self._p2.addComponent(Material)
 		self._p2.addComponent(Collider)
-		self._p2.getComponent(Transform).position = Vector(400, 0) + self.getOffset()
 		self._p2.getComponent(Rectangle).dimensions = Vector(thickness, 150) 
 		self._p2.getComponent(Collider).setOnCollisionListener(self.onP2Collision)
 
@@ -52,7 +50,6 @@ class MainMenuGame(YuGame):
 		self._ball.addComponent(Material)
 		self._ball.addComponent(Collider)
 		self._ball.getComponent(Circle).radius = 50
-		self._ball.getComponent(Solid).velocity = Vector(400, 0)
 
 		resolution = self.getResolution()
 
@@ -71,6 +68,15 @@ class MainMenuGame(YuGame):
 		p1_target.getComponent(Collider).setOnCollisionListener(self.onP1Score)
 		p2_target = createWall(Vector(-resolution.x / 2, 0), Vector(thickness, resolution.y))
 		p2_target.getComponent(Collider).setOnCollisionListener(self.onP2Score)
+
+		self.reset()
+
+	def reset(self):
+		self._p1.getComponent(Transform).position = Vector(-400,0) + self.getOffset()
+		self._p2.getComponent(Transform).position = Vector(400, 0) + self.getOffset()
+		self._ball.getComponent(Transform).position = Vector() + self.getOffset()
+		self._ball.getComponent(Solid).velocity = Vector(400, 0)
+
 
 	def update(self):
 		super(MainMenuGame, self).update()

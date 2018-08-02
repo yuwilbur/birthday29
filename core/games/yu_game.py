@@ -102,10 +102,12 @@ class YuGame(Game):
 	def onP1Score(self, game_object):
 		self._p1_info.score += 1
 		self.updatePlayer1Score()
+		self.reset()
 
 	def onP2Score(self, game_object):
 		self._p2_info.score += 1
 		self.updatePlayer2Score()
+		self.reset()
 
 	def getResolution(self):
 		return self._resolution
@@ -206,6 +208,9 @@ class YuGame(Game):
 		self.updatePlayer1Score()
 		self.updatePlayer2Score()
 		self.setGameTexts(["|","THE ULTIMATE PING PONG"])
+
+	def reset(self):
+		pass
 
 	def update(self):
 		pass

@@ -74,9 +74,9 @@ class GameEngine(Manager):
 			if (not Vector.DistanceSqu(x1, closest_corner) <= circle_radius_squ or
 				not Vector.Dot(v1, closest_corner - x1) >= 0):
 				return False
-		if (x1.x >= x2.x - s2.x / 2 and x1.x <= x2.x + s2.x / 2):
+		if (x1.x > x2.x - s2.x / 2 and x1.x < x2.x + s2.x / 2):
 			collider.getComponent(Solid).velocity = Vector(v1.x, -v1.y)
-		elif (x1.y >= x2.y - s2.y / 2 and x1.y <= x2.y + s2.y / 2):
+		elif (x1.y > x2.y - s2.y / 2 and x1.y < x2.y + s2.y / 2):
 			collider.getComponent(Solid).velocity = Vector(-v1.x, v1.y)
 		else:
 			collider.getComponent(Solid).velocity = -Vector(v1.y, v1.x)
