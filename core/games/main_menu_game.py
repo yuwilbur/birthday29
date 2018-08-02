@@ -1,4 +1,3 @@
-from ..engine.game_engine import GameEngine
 from ..engine.vector import Vector
 from ..games.yu_game import YuGame
 from ..engine.ui import TextBox
@@ -15,9 +14,8 @@ from ..renderer.color import Color
 
 class MainMenuGame(YuGame):
 	DELTA = 10
-	def __init__(self, name):
+	def __init__(self):
 		super(MainMenuGame, self).__init__("MainMenuGame")
-		self._engine = GameEngine()
 
 	def onP1Collision(self, game_object):
 		print 'p1'

@@ -22,10 +22,10 @@ class GameManager(Manager):
 
 	def onKeyDownEvent(self, event):
 		if event.data() == Key.NUM_1:
-			self.startGame(MainMenuGame("MainMenu"))
+			self.startGame(MainMenuGame())
 
 	def setup(self):
-		self.startGame(MainMenuGame("MainMenu"))
+		self.startGame(MainMenuGame())
 
 	def update(self):
 		if self._game == None:
