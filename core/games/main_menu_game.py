@@ -73,7 +73,7 @@ class MainMenuGame(YuGame):
 		self._p1.getComponent(Transform).position = Vector(-400,0) + self.getOffset()
 		self._p2.getComponent(Transform).position = Vector(400, 0) + self.getOffset()
 		self._ball.getComponent(Transform).position = Vector() + self.getOffset()
-		self._ball.getComponent(Solid).velocity = Vector(400, 0)
+		self._ball.getComponent(Solid).velocity = Vector(400, 100)
 
 
 	def update(self):
