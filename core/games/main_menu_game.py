@@ -19,6 +19,12 @@ class MainMenuGame(YuGame):
 		super(MainMenuGame, self).__init__("MainMenuGame")
 		self._engine = GameEngine()
 
+	def onP1Collision(self, game_object):
+		print 'p1'
+
+	def onP2Collision(self, game_object):
+		print 'p2'
+
 	def setup(self):
 		super(MainMenuGame, self).setup() 
 		EventDispatcher().add_event_listener(KeyEvent.TYPE, self.onKeyEvent)
@@ -29,6 +35,7 @@ class MainMenuGame(YuGame):
 		self._p1.addComponent(Collider)
 		self._p1.getComponent(Transform).position = Vector(-300,0) + self.getOffset()
 		self._p1.getComponent(Rectangle).dimensions = Vector(25, 200)
+		self._p1.getComponent(Collider).setOnCollisionListener(self.onP1Collision)
 
 		self._p2 = GameObject("p2")
 		self._p2.addComponent(Rectangle)
@@ -36,13 +43,14 @@ class MainMenuGame(YuGame):
 		self._p2.addComponent(Collider)
 		self._p2.getComponent(Transform).position = Vector(300, 0) + self.getOffset()
 		self._p2.getComponent(Rectangle).dimensions = Vector(25, 200) 
+		self._p2.getComponent(Collider).setOnCollisionListener(self.onP2Collision)
 
 		self._ball = GameObject("ball")
 		self._ball.addComponent(Circle)
 		self._ball.addComponent(Material)
 		self._ball.addComponent(Collider)
 		self._ball.getComponent(Circle).radius = 50
-		self._ball.getComponent(Solid).velocity = Vector(400, 100)
+		self._ball.getComponent(Solid).velocity = Vector(400, 0)
 
 		resolution = self.getResolution()
 		thickness = 50

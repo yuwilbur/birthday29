@@ -34,9 +34,10 @@ class GameEngine(Manager):
 		v2 = reference.getComponent(Solid).velocity
 		s2 = reference.getComponent(Circle).radius
 		if (Vector.DistanceSqu(x1, x2) > math.pow(s1 + s2, 2)):
-			return
+			return False
 		velocity = v1 - (x1 - x2) * (2 * m2 / (m1 + m1) * Vector.Dot(v1 - v2, x1 - x2) / Vector.DistanceSqu(x2, x1))
 		collider.getComponent(Solid).velocity = velocity
+		return True
 
 	def runCircleRectangleCollision(self, collider, reference):
 		x1 = collider.getComponent(Transform).position
@@ -50,11 +51,11 @@ class GameEngine(Manager):
 		if x1.x <= x2.x + s2.x / 2 and x1.x >= x2.x - s2.x / 2:
 			if (not (math.fabs(x1.y - x2.y) < s1 + s2.y / 2) or
 				not (v1.y * (x2.y - x1.y) >= 0)):
-				return
+				return False
 		elif x1.y <= x2.y + s2.y / 2 and x1.y >= x2.y - s2.y / 2:
 			if (not (math.fabs(x1.x - x2.x) < s1 + s2.x / 2) or
 				not (v1.x * (x2.x - x1.x) >= 0)):
-				return
+				return False
 		else:
 			corners = [
 				x2 + Vector(s2.x, s2.y) / 2,
@@ -72,13 +73,14 @@ class GameEngine(Manager):
 			circle_radius_squ = math.pow(s1, 2)
 			if (not Vector.DistanceSqu(x1, closest_corner) <= circle_radius_squ or
 				not Vector.Dot(v1, closest_corner - x1) >= 0):
-				return
+				return False
 		if (x1.x >= x2.x - s2.x / 2 and x1.x <= x2.x + s2.x / 2):
 			collider.getComponent(Solid).velocity = Vector(v1.x, -v1.y)
 		elif (x1.y >= x2.y - s2.y / 2 and x1.y <= x2.y + s2.y / 2):
 			collider.getComponent(Solid).velocity = Vector(-v1.x, v1.y)
 		else:
 			collider.getComponent(Solid).velocity = -Vector(v1.y, v1.x)
+		return True
 
 	def getObjectsWithType(self, component_type):
 		return GameObjectManager().getComponents(component_type)
@@ -89,13 +91,17 @@ class GameEngine(Manager):
 			return
 		for (key, value) in collider_objects.items():
 			self.runPhysics(value)
-		reference_objects = copy.deepcopy(collider_objects)
+		reference_objects = copy.copy(collider_objects)
 		for (collider_key, collider) in collider_objects.items():
 			for (reference_key, reference) in reference_objects.items():
 				if collider_key == reference_key:
 					continue
 				if collider.hasComponent(Circle):
 					if reference.hasComponent(Circle):
-						self.runCircleCircleCollision(collider, reference)
+						if self.runCircleCircleCollision(collider, reference):
+							collider.onCollision(reference.game_object)
+							reference.onCollision(collider.game_object)
 					if reference.hasComponent(Rectangle):
-						self.runCircleRectangleCollision(collider, reference)
+						if self.runCircleRectangleCollision(collider, reference):
+							collider.onCollision(reference.game_object)
+							reference.onCollision(collider.game_object)

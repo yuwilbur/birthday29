@@ -198,7 +198,6 @@ class YuGame(Game):
 		self.setPlayer2Texts([" 2"])
 		self.setGameTexts(["|","THE ULTIMATE PING PONG"])
 
-
 	def update(self):
 		pass
 
