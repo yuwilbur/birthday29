@@ -22,27 +22,35 @@ class MainMenuGame(YuGame):
 	def onP1Collision(self, game_object):
 		print 'p1'
 
+	def onP1Score(self, game_object):
+		print 'p1 score'
+
 	def onP2Collision(self, game_object):
 		print 'p2'
+
+	def onP2Score(self, game_object):
+		print 'p2 score'
 
 	def setup(self):
 		super(MainMenuGame, self).setup() 
 		EventDispatcher().add_event_listener(KeyEvent.TYPE, self.onKeyEvent)
 
+		thickness = 25
+
 		self._p1 = GameObject("p1")
 		self._p1.addComponent(Rectangle)
 		self._p1.addComponent(Material)
 		self._p1.addComponent(Collider)
-		self._p1.getComponent(Transform).position = Vector(-300,0) + self.getOffset()
-		self._p1.getComponent(Rectangle).dimensions = Vector(25, 200)
+		self._p1.getComponent(Transform).position = Vector(-400,0) + self.getOffset()
+		self._p1.getComponent(Rectangle).dimensions = Vector(thickness, 150)
 		self._p1.getComponent(Collider).setOnCollisionListener(self.onP1Collision)
 
 		self._p2 = GameObject("p2")
 		self._p2.addComponent(Rectangle)
 		self._p2.addComponent(Material)
 		self._p2.addComponent(Collider)
-		self._p2.getComponent(Transform).position = Vector(300, 0) + self.getOffset()
-		self._p2.getComponent(Rectangle).dimensions = Vector(25, 200) 
+		self._p2.getComponent(Transform).position = Vector(400, 0) + self.getOffset()
+		self._p2.getComponent(Rectangle).dimensions = Vector(thickness, 150) 
 		self._p2.getComponent(Collider).setOnCollisionListener(self.onP2Collision)
 
 		self._ball = GameObject("ball")
@@ -53,20 +61,22 @@ class MainMenuGame(YuGame):
 		self._ball.getComponent(Solid).velocity = Vector(400, 0)
 
 		resolution = self.getResolution()
-		thickness = 50
 
 		def createWall(position, dimensions):
 			wall = GameObject("wall")
 			wall.addComponent(Rectangle)
 			wall.addComponent(Material)
-			wall.getComponent(Material).color = Color.GREY
+			wall.getComponent(Material).color = Color.BLACK
 			wall.addComponent(Collider)
 			wall.getComponent(Transform).position = position + self.getOffset()
 			wall.getComponent(Rectangle).dimensions = dimensions
+			return wall
 		createWall(Vector(0, -resolution.y / 2), Vector(resolution.x, thickness))
 		createWall(Vector(0, resolution.y / 2), Vector(resolution.x, thickness))
-		createWall(Vector(-resolution.x / 2, 0), Vector(thickness, resolution.y))
-		createWall(Vector(resolution.x / 2, 0), Vector(thickness, resolution.y))
+		p1_target = createWall(Vector(resolution.x / 2, 0), Vector(thickness, resolution.y))
+		p1_target.getComponent(Collider).setOnCollisionListener(self.onP1Score)
+		p2_target = createWall(Vector(-resolution.x / 2, 0), Vector(thickness, resolution.y))
+		p2_target.getComponent(Collider).setOnCollisionListener(self.onP2Score)
 
 	def update(self):
 		super(MainMenuGame, self).update()

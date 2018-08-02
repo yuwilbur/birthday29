@@ -50,14 +50,14 @@ class InputManager(Manager):
                 if event.key in self._key_map:
                     if not self._key_map[event.key].pressed:
                         EventDispatcher().dispatch_event(KeyDownEvent(self._key_map[event.key].key))
-                        print self._key_map[event.key].key + " down"
+                        #print self._key_map[event.key].key + " down"
                     self._key_map[event.key].pressed = True
                     EventDispatcher().dispatch_event(KeyEvent(self._key_map[event.key].key))
-                    print self._key_map[event.key].key
+                    #print self._key_map[event.key].key
             elif event.type == pygame.KEYUP:
                 if event.key in self._key_map:
                     EventDispatcher().dispatch_event(KeyUpEvent(self._key_map[event.key].key))
                     self._key_map[event.key].pressed = False
-                    print self._key_map[event.key].key + " up"
+                    #print self._key_map[event.key].key + " up"
         self._camera_process.update()
         self._image_process.update()
