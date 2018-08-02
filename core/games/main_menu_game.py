@@ -75,14 +75,6 @@ class MainMenuGame(YuGame):
 		self._ball.getComponent(Transform).position = Vector() + self.getOffset()
 		self._ball.getComponent(Solid).velocity = Vector(400, 100)
 
-
-	def update(self):
-		super(MainMenuGame, self).update()
-		return
-
-	def stop(self):
-		return
-
 	def onKeyEvent(self, event):
 		if event.data() == Key.W:
 			self._p1.getComponent(Transform).position.y -= self.DELTA
