@@ -58,12 +58,13 @@ class YuGame(Game):
 			self.down.getComponent(LateMaterial).color = self.controls[down][2]
 			self.left.getComponent(LateMaterial).color = self.controls[left][2]
 			self.right.getComponent(LateMaterial).color = self.controls[right][2]
+			self.score = 0
 
-	def setPlayer1Texts(self, texts):
-		self._p1_info.game_text.getComponent(TextBox).setTexts(texts)
+	def updatePlayer1Score(self):
+		self._p1_info.game_text.getComponent(TextBox).setTexts([str(self._p1_info.score) + " "])
 
-	def setPlayer2Texts(self, texts):
-		self._p2_info.game_text.getComponent(TextBox).setTexts(texts)
+	def updatePlayer2Score(self):
+		self._p2_info.game_text.getComponent(TextBox).setTexts([" " + str(self._p2_info.score)])
 
 	def setGameTexts(self, texts):
 		self._game_text.getComponent(TextBox).setTexts(texts)
@@ -97,6 +98,14 @@ class YuGame(Game):
 		for pixel in self._p2_info.processed:
 			stereo[1].data[pixel[0]][pixel[1]] = Color.GREEN[0:3]
 		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
+
+	def onP1Score(self, game_object):
+		self._p1_info.score += 1
+		self.updatePlayer1Score()
+
+	def onP2Score(self, game_object):
+		self._p2_info.score += 1
+		self.updatePlayer2Score()
 
 	def getResolution(self):
 		return self._resolution
@@ -194,8 +203,8 @@ class YuGame(Game):
 		self._game_text.getComponent(TextBox).height = self._info_width * 3 / 4
 		self._game_text.getComponent(TextBox).align = Align.CENTER
 		self._game_text.getComponent(Transform).position = Vector(0, p1_y)
-		self.setPlayer1Texts(["1 "])
-		self.setPlayer2Texts([" 2"])
+		self.updatePlayer1Score()
+		self.updatePlayer2Score()
 		self.setGameTexts(["|","THE ULTIMATE PING PONG"])
 
 	def update(self):

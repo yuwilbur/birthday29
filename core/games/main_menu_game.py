@@ -22,14 +22,8 @@ class MainMenuGame(YuGame):
 	def onP1Collision(self, game_object):
 		print 'p1'
 
-	def onP1Score(self, game_object):
-		print 'p1 score'
-
 	def onP2Collision(self, game_object):
 		print 'p2'
-
-	def onP2Score(self, game_object):
-		print 'p2 score'
 
 	def setup(self):
 		super(MainMenuGame, self).setup() 
