@@ -75,15 +75,13 @@ class GameEngine(Manager):
 				not Vector.Dot(v1, closest_corner - x1) > 0):
 				return False
 		if (x1.x >= x2.x - s2.x / 2 and x1.x <= x2.x + s2.x / 2):
-			collider.getComponent(Solid).velocity = Vector(v1.x, -v1.y)
+			collider.getComponent(Solid).velocity = Vector(v1.x, -v1.y) + v2 / 2.0
 		elif (x1.y >= x2.y - s2.y / 2 and x1.y <= x2.y + s2.y / 2):
-			collider.getComponent(Solid).velocity = Vector(-v1.x, v1.y)
+			collider.getComponent(Solid).velocity = Vector(-v1.x, v1.y) + v2 / 2.0
 		else:
 			if closest_corner == corners[0] or closest_corner == corners[3]:
-				print '1'
 				collider.getComponent(Solid).velocity = -Vector(v1.y, v1.x)
 			else:
-				print '2'
 				collider.getComponent(Solid).velocity = Vector(v1.y, v1.x)
 		return True
 

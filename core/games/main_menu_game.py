@@ -13,7 +13,7 @@ from ..engine.transform import Transform
 from ..renderer.color import Color
 
 class MainMenuGame(YuGame):
-	DELTA = 10
+	DELTA = 200
 	def __init__(self):
 		super(MainMenuGame, self).__init__("MainMenuGame")
 
@@ -25,7 +25,8 @@ class MainMenuGame(YuGame):
 
 	def setup(self):
 		super(MainMenuGame, self).setup() 
-		EventDispatcher().add_event_listener(KeyEvent.TYPE, self.onKeyEvent)
+		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
+		EventDispatcher().add_event_listener(KeyUpEvent.TYPE, self.onKeyUpEvent)
 
 		thickness = 25
 
@@ -76,24 +77,47 @@ class MainMenuGame(YuGame):
 		self._ball.getComponent(Transform).position = Vector() + self.getOffset()
 		self._ball.getComponent(Solid).velocity = Vector(400, 0)
 
-	def onKeyEvent(self, event):
+	def onKeyDownEvent(self, event):
 		if event.data() == Key.W:
-			self._p1.getComponent(Transform).position.y -= self.DELTA
+			self._p1.getComponent(Solid).velocity.y = -self.DELTA
 			return
 		elif event.data() == Key.A:
 			return
 		elif event.data() == Key.S:
-			self._p1.getComponent(Transform).position.y += self.DELTA
+			self._p1.getComponent(Solid).velocity.y = self.DELTA
 			return
 		elif event.data() == Key.D:
 			return
 		elif event.data() == Key.I:
-			self._p2.getComponent(Transform).position.y -= self.DELTA
+			self._p2.getComponent(Solid).velocity.y = -self.DELTA
 			return
 		elif event.data() == Key.J:
 			return
 		elif event.data() == Key.K:
-			self._p2.getComponent(Transform).position.y += self.DELTA
+			self._p2.getComponent(Solid).velocity.y = self.DELTA
+			return
+		elif event.data() == Key.L:
+			return
+		return
+
+	def onKeyUpEvent(self, event):
+		if event.data() == Key.W:
+			self._p1.getComponent(Solid).velocity.y = 0
+			return
+		elif event.data() == Key.A:
+			return
+		elif event.data() == Key.S:
+			self._p1.getComponent(Solid).velocity.y = 0
+			return
+		elif event.data() == Key.D:
+			return
+		elif event.data() == Key.I:
+			self._p2.getComponent(Solid).velocity.y = 0
+			return
+		elif event.data() == Key.J:
+			return
+		elif event.data() == Key.K:
+			self._p2.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.L:
 			return
