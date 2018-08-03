@@ -47,7 +47,7 @@ class MainMenuGame(YuGame):
 		self._ball.addComponent(Circle)
 		self._ball.addComponent(Material)
 		self._ball.addComponent(Collider)
-		self._ball.getComponent(Circle).radius = 50
+		self._ball.getComponent(Circle).radius = 25
 
 		resolution = self.getResolution()
 
@@ -70,10 +70,11 @@ class MainMenuGame(YuGame):
 		self.reset()
 
 	def reset(self):
-		self._p1.getComponent(Transform).position = Vector(-400,0) + self.getOffset()
-		self._p2.getComponent(Transform).position = Vector(400, 0) + self.getOffset()
+		start_distance = 500
+		self._p1.getComponent(Transform).position = Vector(-start_distance,0) + self.getOffset()
+		self._p2.getComponent(Transform).position = Vector(start_distance, 0) + self.getOffset()
 		self._ball.getComponent(Transform).position = Vector() + self.getOffset()
-		self._ball.getComponent(Solid).velocity = Vector(400, 100)
+		self._ball.getComponent(Solid).velocity = Vector(400, 0)
 
 	def onKeyEvent(self, event):
 		if event.data() == Key.W:
