@@ -85,6 +85,24 @@ class GameEngine(Manager):
 				collider.getComponent(Solid).velocity = Vector(v1.y, v1.x)
 		return True
 
+	def runRectangleRectangleCollision(self, collider, reference):
+		x1 = collider.getComponent(Transform).position
+		s1 = collider.getComponent(Rectangle).dimensions
+		x2 = reference.getComponent(Transform).position
+		s2 = reference.getComponent(Rectangle).dimensions
+		c1 = [
+			x1 + Vector(s1.x, s1.y) / 2,
+			x1 + Vector(-s1.x, s1.y) / 2,
+			x1 + Vector(s1.x, -s1.y) / 2,
+			x1 + Vector(-s1.x, -s1.y) / 2
+		]
+		for c in c1:
+			x_diff = c.x - x2.x
+			y_diff = c.y - x2.y
+			if x_diff >  - s2.x / 2 and x_diff < s2.x / 2 and y_diff > - s2.y / 2 and y_diff < s2.y / 2:
+				return True
+		return False
+
 	def getObjectsWithType(self, component_type):
 		return GameObjectManager().getComponents(component_type)
 
@@ -103,8 +121,11 @@ class GameEngine(Manager):
 					if reference.hasComponent(Circle):
 						if self.runCircleCircleCollision(collider, reference):
 							collider.onCollision(reference.game_object)
-							reference.onCollision(collider.game_object)
 					if reference.hasComponent(Rectangle):
 						if self.runCircleRectangleCollision(collider, reference):
 							collider.onCollision(reference.game_object)
 							reference.onCollision(collider.game_object)
+				if collider.hasComponent(Rectangle):
+					if reference.hasComponent(Rectangle):
+						if self.runRectangleRectangleCollision(collider, reference):
+							collider.onCollision(reference.game_object)

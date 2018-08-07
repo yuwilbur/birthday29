@@ -11,6 +11,7 @@ from ..engine.game_object import GameObject
 from ..engine.collider import Collider
 from ..engine.transform import Transform
 from ..renderer.color import Color
+from ..sync.period_sync import PeriodSync
 
 class MainMenuGame(YuGame):
 	DELTA = 200
@@ -18,10 +19,16 @@ class MainMenuGame(YuGame):
 		super(MainMenuGame, self).__init__("MainMenuGame")
 
 	def onP1Collision(self, game_object):
-		print 'p1'
+		if game_object.name == 'ball':
+			return
+		self._p1.getComponent(Transform).position.y -= self._p1.getComponent(Solid).velocity.y * PeriodSync.PERIOD
+		self._p1.getComponent(Solid).velocity.y = 0
 
 	def onP2Collision(self, game_object):
-		print 'p2'
+		if game_object.name == 'ball':
+			return
+		self._p2.getComponent(Transform).position.y -= self._p2.getComponent(Solid).velocity.y * PeriodSync.PERIOD
+		self._p2.getComponent(Solid).velocity.y = 0
 
 	def setup(self):
 		super(MainMenuGame, self).setup() 
@@ -50,7 +57,7 @@ class MainMenuGame(YuGame):
 		self._ball.addComponent(Collider)
 		self._ball.getComponent(Circle).radius = 25
 
-		resolution = self.getResolution()
+		self._resolution = self.getResolution()
 
 		def createWall(position, dimensions):
 			wall = GameObject("wall")
@@ -61,16 +68,17 @@ class MainMenuGame(YuGame):
 			wall.getComponent(Transform).position = position + self.getOffset()
 			wall.getComponent(Rectangle).dimensions = dimensions
 			return wall
-		createWall(Vector(0, -resolution.y / 2), Vector(resolution.x, thickness))
-		createWall(Vector(0, resolution.y / 2), Vector(resolution.x, thickness))
-		p1_target = createWall(Vector(resolution.x / 2, 0), Vector(thickness, resolution.y))
+		createWall(Vector(0, -self._resolution.y / 2), Vector(self._resolution.x, thickness))
+		createWall(Vector(0, self._resolution.y / 2), Vector(self._resolution.x, thickness))
+		p1_target = createWall(Vector(self._resolution.x / 2, 0), Vector(thickness, self._resolution.y))
 		p1_target.getComponent(Collider).setOnCollisionListener(self.onP1Score)
-		p2_target = createWall(Vector(-resolution.x / 2, 0), Vector(thickness, resolution.y))
+		p2_target = createWall(Vector(-self._resolution.x / 2, 0), Vector(thickness, self._resolution.y))
 		p2_target.getComponent(Collider).setOnCollisionListener(self.onP2Score)
 
 		self.reset()
 
 	def reset(self):
+		super(MainMenuGame, self).reset()
 		start_distance = 500
 		self._p1.getComponent(Transform).position = Vector(-start_distance,0) + self.getOffset()
 		self._p2.getComponent(Transform).position = Vector(start_distance, 0) + self.getOffset()

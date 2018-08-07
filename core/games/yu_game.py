@@ -100,11 +100,15 @@ class YuGame(Game):
 		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
 
 	def onP1Score(self, game_object):
+		if not game_object.name == 'ball':
+			return
 		self._p1_info.score += 1
 		self.updatePlayer1Score()
 		self.reset()
 
 	def onP2Score(self, game_object):
+		if not game_object.name == 'ball':
+			return
 		self._p2_info.score += 1
 		self.updatePlayer2Score()
 		self.reset()
