@@ -93,10 +93,10 @@ class YuGame(Game):
 		p1_raw.scale3(stereo[0])
 		p2_raw.scale3(stereo[1])
 		for pixel in self._p1_info.processed:
-			stereo[0].data[pixel[0]][pixel[1]] = Color.GREEN[0:3]
+			stereo[0].data[pixel.position[0]][pixel.position[1]] = Color.RED[0:3]
 		self._p1_info.camera.getComponent(Image).fromNumpy(stereo[0].data)
 		for pixel in self._p2_info.processed:
-			stereo[1].data[pixel[0]][pixel[1]] = Color.GREEN[0:3]
+			stereo[1].data[pixel.position[0]][pixel.position[1]] = Color.RED[0:3]
 		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
 
 	def onP1Score(self, game_object):
@@ -124,7 +124,7 @@ class YuGame(Game):
 		if key in self._p1_info.controls:
 			control = self._p1_info.controls[key]
 			control[0].getComponent(LateMaterial).color = control[2]
-		if event.data() in self._p2_info.controls:
+		if key in self._p2_info.controls:
 			control = self._p2_info.controls[key]
 			control[0].getComponent(LateMaterial).color = control[2]
 
@@ -133,7 +133,7 @@ class YuGame(Game):
 		if key in self._p1_info.controls:
 			control = self._p1_info.controls[key]
 			control[0].getComponent(LateMaterial).color = control[1]
-		if event.data() in self._p2_info.controls:
+		if key in self._p2_info.controls:
 			control = self._p2_info.controls[key]
 			control[0].getComponent(LateMaterial).color = control[1]
 
