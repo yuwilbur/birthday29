@@ -24,7 +24,7 @@ def processYImage(img):
         return value / count
     img_height = img.shape[0]
     img_width = img.shape[1]
-    threshold = 150
+    threshold = 125
     max_length = 16
     rise = 2.0
 
@@ -49,6 +49,7 @@ def processYImage(img):
                 left_slope = (x - cx - 1) / rise
                 break
         if left_slope == 0:
+            clearArea([cy, cx - max_length],[cy + max_length, cx + max_length])
             continue
 
         right_slope = 0
@@ -58,13 +59,15 @@ def processYImage(img):
                 right_slope = (x - cx + 1) / rise
                 break
         if right_slope == 0:
+            clearArea([cy, cx - max_length],[cy + max_length, cx + max_length])
             continue
 
         slope = (right_slope + left_slope) / 2.0
         for y in range(cy + 1, cy + max_length, +1):
-            x = cx + int(slope * y)
+            x = cx + int(slope * (y - cy))
+            results.append(ImageInput(np.array([y, x]), 0))
             if (img[y][x] < threshold):
-                length = int((y - cy) * 1.2)
+                length = int((y - cy) * 1.6)
                 cy = y - 1
                 cx = x
                 break
@@ -87,10 +90,6 @@ def processYImage(img):
 
         results.append(ImageInput(np.array([cy, cx]), key_direction))
         clearArea([cy - length, cx - length],[cy + length, cx + length])
-        # candidates = np.argwhere(img >= threshold)
-        # for candidate in candidates:
-        #     results.append(ImageInput(np.array([candidate[0], candidate[1]]), key_direction))
-        # break
     return results
 
 def yImageWorker(pipe):
