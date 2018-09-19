@@ -87,7 +87,10 @@ def processYImage(img):
 
         results.append(ImageInput(np.array([cy, cx]), key_direction))
         clearArea([cy - length, cx - length],[cy + length, cx + length])
-        break
+        # candidates = np.argwhere(img >= threshold)
+        # for candidate in candidates:
+        #     results.append(ImageInput(np.array([candidate[0], candidate[1]]), key_direction))
+        # break
     return results
 
 def yImageWorker(pipe):
