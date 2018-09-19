@@ -9,56 +9,85 @@ import time
 import operator
 import numpy as np
 
-def processYImage(y):
-    def clearRegion(y, top_left, bot_right):
-        y[top_left[0]:bot_right[0],top_left[1]:bot_right[1]] = 0
-    threshold = 150
-    outer_radius_ratio = 5.0 / 4.0
-    inner_radius_ratio = 3.0 / 4.0
-    step = 4
-    min_thickness = 3
-    max_thickness = 6
-    max_length = 24
-
+def processYImage(img):
     results = list()
-    y[0][0] = 0
+    def clearArea(top_left, bot_right):
+        img[top_left[0]:bot_right[0],top_left[1]:bot_right[1]] = 0
+    def getValue(top_left, bot_right):
+        count = (bot_right[0] - top_left[0] + 1) * (bot_right[1] - top_left[1] + 1)
+        if count == 0:
+            return 0.0
+        value = 0.0
+        for y in range(top_left[0], bot_right[0] + 1):
+            for x in range(top_left[1], bot_right[1] + 1):
+                value += img[y][x][0]
+        return value / count
+    img_height = img.shape[0]
+    img_width = img.shape[1]
+    threshold = 150
+    max_length = 16
+    rise = 2.0
+
+    img[0][0] = 0
     while True:
-        candidates = np.argwhere(y >= threshold)
+        candidates = np.argwhere(img >= threshold)
         if len(candidates) == 0:
             break
         candidate = candidates[0]
         cy = candidate[0]
         cx = candidate[1]
-
-        thickness1 = 0
-        thickness2 = 0
-        for top_y in range(cy, cy + max_length):
-            if (y[top_y][cx] < threshold):
-                thickness1 = top_y - cy
-                break
-        if thickness1 > max_thickness:
-            results.append(ImageInput(np.array([top_y, cx]), 0))
-            clearRegion(y, np.array([cy,cx - max_length / 2]), np.array([cy + max_length, cx + max_length / 2]))
+        img[cy][cx] = 0
+        if min(cx, cy) <= max_length or max(cx, cy) >= img_height - max_length:
+            continue
+        if img[cy + rise][cx] < threshold:
             continue
 
-        for center_y in range(top_y, top_y + max_thickness):
-            if (y[center_y][cx] >= threshold):
-                thickness2 = center_y - top_y
+        left_slope = 0
+        for x in range(cx + 1, cx + max_length, +1):
+            if (img[cy + rise][x] < threshold):
+                results.append(ImageInput(np.array([cy + rise, x - 1]), 0))
+                left_slope = (x - cx - 1) / rise
                 break
-        results.append(ImageInput(np.array([center_y, cx]), 0))
+        if left_slope == 0:
+            continue
+
+        right_slope = 0
+        for x in range(cx - 1, cx - max_length, -1):
+            if (img[cy + rise][x] < threshold):
+                results.append(ImageInput(np.array([cy + rise, x + 1]), 0))
+                right_slope = (x - cx + 1) / rise
+                break
+        if right_slope == 0:
+            continue
+
+        slope = (right_slope + left_slope) / 2.0
+        for y in range(cy + 1, cy + max_length, +1):
+            x = cx + int(slope * y)
+            if (img[y][x] < threshold):
+                length = int((y - cy) * 1.2)
+                cy = y - 1
+                cx = x
+                break
+
+        top = getValue([cy - 2, cx - 1], [cy - 2, cx + 1])
+        bottom = getValue([cy + 2, cx - 1], [cy + 2, cx + 1])
+        left = getValue([cy - 1, cx - 2], [cy + 1, cx - 2])
+        right = getValue([cy - 1, cx + 2], [cy + 1, cx + 2])
+        max_value = max(top, bottom, left, right)
+        if (top == max_value):
+            key_direction = Key.DOWN
+        elif (bottom == max_value):
+            key_direction = Key.UP
+        elif (left == max_value):
+            key_direction = Key.RIGHT
+        elif (right == max_value):
+            key_direction = Key.LEFT
+        else:
+            break
+
+        results.append(ImageInput(np.array([cy, cx]), key_direction))
+        clearArea([cy - length, cx - length],[cy + length, cx + length])
         break
-
-
-        # for center_y in range(top_y, top_y + max_length):
-        #     if (y[center_y][cx] >= threshold):
-        #         thickness2 = center_y - top_y
-        #         break
-        # center_y = cy + min(thickness1, thickness2) * 2
-        # if (y[center_y][cx] >= threshold):
-        #     pass
-        # else:
-        #     pass
-        # results.append(ImageInput(np.array([center_y, cx]), 0))
     return results
 
 def yImageWorker(pipe):
