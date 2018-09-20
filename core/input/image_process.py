@@ -26,7 +26,7 @@ def processYImage(img):
     img_width = img.shape[1]
     threshold = 125
     max_length = 16
-    rise = 2.0
+    rise = 4.0
 
     img[0][0] = 0
     while True:
@@ -43,21 +43,23 @@ def processYImage(img):
             continue
 
         left_slope = 0
-        for x in range(cx + 1, cx + max_length, +1):
-            if (img[cy + rise][x] < threshold):
-                results.append(ImageInput(np.array([cy + rise, x - 1]), 0))
-                left_slope = (x - cx - 1) / rise
-                break
+        x = cx
+        for y in range(cy + 1, cy + int(rise), +1):
+            for x in range(x, cx + max_length, +1):
+                if (img[y][x] < threshold):
+                    break
+        left_slope = (x - cx - 1) / rise
         if left_slope == 0:
             clearArea([cy, cx - max_length],[cy + max_length, cx + max_length])
             continue
 
         right_slope = 0
-        for x in range(cx - 1, cx - max_length, -1):
-            if (img[cy + rise][x] < threshold):
-                results.append(ImageInput(np.array([cy + rise, x + 1]), 0))
-                right_slope = (x - cx + 1) / rise
-                break
+        x = cx
+        for y in range(cy + 1, cy + int(rise), +1):
+            for x in range(x, cx - max_length, -1):
+                if (img[y][x] < threshold):
+                    break
+        right_slope = (x - cx - 1) / rise
         if right_slope == 0:
             clearArea([cy, cx - max_length],[cy + max_length, cx + max_length])
             continue
