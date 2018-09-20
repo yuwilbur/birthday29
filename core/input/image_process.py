@@ -13,6 +13,9 @@ def processYImage(img):
     results = list()
     def clearArea(top_left, bot_right):
         img[top_left[0]:bot_right[0],top_left[1]:bot_right[1]] = 0
+        # for y in range(top_left[0], bot_right[0]):
+        #     for x in range(top_left[1], bot_right[1]):
+        #         results.append(ImageInput(np.array([y, x]), 0))
     def getValue(top_left, bot_right):
         count = (bot_right[0] - top_left[0] + 1) * (bot_right[1] - top_left[1] + 1)
         if count == 0:
@@ -27,7 +30,7 @@ def processYImage(img):
     threshold = 125
     half_length = 8
     full_length = half_length * 2
-    rise = 4.0
+    rise = half_length / 2.0
 
     img[0][0] = 0
     while True:
@@ -70,7 +73,6 @@ def processYImage(img):
         slope = (right_slope + left_slope) / 2.0
         for y in range(cy + 1, cy + full_length, +1):
             x = cx + int(slope * (y - cy))
-            #results.append(ImageInput(np.array([y, x]), 0))
             if (mid_y == cy):
                 if (img[y][x] < threshold):
                     mid_y = y - 1
@@ -88,7 +90,7 @@ def processYImage(img):
         else:
             y = bot_y
         
-        length = int((y - cy) * 1.6)
+        length = int((y - cy) * 1.25)
         cy = y
         cx = x
 
