@@ -25,7 +25,8 @@ def processYImage(img):
     img_height = img.shape[0]
     img_width = img.shape[1]
     threshold = 125
-    max_length = 16
+    half_length = 8
+    full_length = half_length * 2
     rise = 4.0
 
     img[0][0] = 0
@@ -37,7 +38,7 @@ def processYImage(img):
         cy = candidate[0]
         cx = candidate[1]
         img[cy][cx] = 0
-        if min(cx, cy) <= max_length or max(cx, cy) >= img_height - max_length:
+        if min(cx, cy) <= half_length or max(cx, cy) >= img_height - half_length:
             continue
         if img[cy + rise][cx] < threshold:
             continue
@@ -45,34 +46,51 @@ def processYImage(img):
         left_slope = 0
         x = cx
         for y in range(cy + 1, cy + int(rise), +1):
-            for x in range(x, cx + max_length, +1):
+            for x in range(x, cx + half_length, +1):
                 if (img[y][x] < threshold):
                     break
         left_slope = (x - cx - 1) / rise
         if left_slope == 0:
-            clearArea([cy, cx - max_length],[cy + max_length, cx + max_length])
+            clearArea([cy, cx - half_length],[cy + full_length, cx + half_length])
             continue
 
         right_slope = 0
         x = cx
         for y in range(cy + 1, cy + int(rise), +1):
-            for x in range(x, cx - max_length, -1):
+            for x in range(x, cx - half_length, -1):
                 if (img[y][x] < threshold):
                     break
         right_slope = (x - cx - 1) / rise
         if right_slope == 0:
-            clearArea([cy, cx - max_length],[cy + max_length, cx + max_length])
+            clearArea([cy, cx - half_length],[cy + full_length, cx + half_length])
             continue
 
+        mid_y = cy
+        bot_y = cy
         slope = (right_slope + left_slope) / 2.0
-        for y in range(cy + 1, cy + max_length, +1):
+        for y in range(cy + 1, cy + full_length, +1):
             x = cx + int(slope * (y - cy))
-            results.append(ImageInput(np.array([y, x]), 0))
-            if (img[y][x] < threshold):
-                length = int((y - cy) * 1.6)
-                cy = y - 1
-                cx = x
-                break
+            #results.append(ImageInput(np.array([y, x]), 0))
+            if (mid_y == cy):
+                if (img[y][x] < threshold):
+                    mid_y = y - 1
+            else:
+                if (img[y][x] >= threshold):
+                    bot_y = y - 1
+                    break
+        if bot_y == cy:
+            clearArea([cy, cx - half_length],[cy + full_length, cx + half_length])
+            continue
+
+        diff_y = (bot_y - mid_y) - (mid_y - cy)
+        if (diff_y * diff_y) > 2*2:
+            y = mid_y
+        else:
+            y = bot_y
+        
+        length = int((y - cy) * 1.6)
+        cy = y
+        cx = x
 
         top = getValue([cy - 2, cx - 1], [cy - 2, cx + 1])
         bottom = getValue([cy + 2, cx - 1], [cy + 2, cx + 1])
