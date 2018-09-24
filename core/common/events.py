@@ -36,6 +36,7 @@ class Key(object):
     K = 'K'
     L = 'L'
     NUM_1 = '1'
+    DEBUG = 'DEBUG'
 
 class KeyEvent(Event):
     TYPE = 'KeyEvent'

@@ -98,15 +98,20 @@ class YuGame(Game):
 					color = Color.GREEN
 				elif pixel.direction == Key.RIGHT:
 					color = Color.RED
-				img.data[pixel.position[0]][pixel.position[1]] = color[0:3]
+				elif pixel.direction == Key.DEBUG:
+					color = Color.ORANGE
+				y = pixel.position[0]
+				x = pixel.position[1]
+				length = pixel.half_length
+				img[(y - length):(y + length),(x - length):(x + length)] = color[0:3]
 		p1_raw = event.data()[0]
 		p2_raw = event.data()[1]
 		stereo = [Frame(), Frame()]
 		p1_raw.scale3(stereo[0])
 		p2_raw.scale3(stereo[1])
-		overlayImage(self._p1_info.processed, stereo[0])
+		overlayImage(self._p1_info.processed, stereo[0].data)
 		self._p1_info.camera.getComponent(Image).fromNumpy(stereo[0].data)
-		overlayImage(self._p2_info.processed, stereo[1])
+		overlayImage(self._p2_info.processed, stereo[1].data)
 		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
 
 	def onP1Score(self, game_object):

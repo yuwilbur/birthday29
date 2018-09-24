@@ -18,13 +18,10 @@ def processYImage(img):
     full_length = half_length * 2
     rise = 2
 
-    def addPixel(y, x, direction):
-        results.append(ImageInput(np.array([y, x]), direction))
+    def addPixel(y, x, direction, length = 0):
+        results.append(ImageInput(np.array([y, x]), direction, length))
     def clearArea(top_left, bot_right):
         img[top_left[0]:bot_right[0],top_left[1]:bot_right[1]] = 0
-        # for y in range(top_left[0], bot_right[0]):
-        #     for x in range(top_left[1], bot_right[1]):
-        #         addPixel(y, x, 0)
     def getValue(top_left, bot_right):
         count = (bot_right[0] - top_left[0] + 1) * (bot_right[1] - top_left[1] + 1)
         if count == 0:
@@ -58,14 +55,14 @@ def processYImage(img):
         x_limit = min(cx + full_length, img_width)
         for x in range(cx, x_limit + 1, +1):
             if (img[y][x] < threshold):
-                #addPixel(y, x, 0)
+                #addPixel(y, x, Key.DEBUG)
                 break
         x_right = x
 
         x_limit = max(cx - full_length, 0)
         for x in range(cx, x_limit - 1, -1):
             if (img[y][x] < threshold):
-                #addPixel(y, x, 0)
+                #addPixel(y, x, Key.DEBUG)
                 break
         x_left = x
 
@@ -74,33 +71,32 @@ def processYImage(img):
         x_diff = x_center - cx
         x_threshold = half_length / 4
         length = int((x_right - x_left) * 1.2 / 2.0)
+        
+        x = x_center
+        addPixel(y, x, Key.DEBUG)
+        y = (x_right - x_left) / 2 + cy
 
-        #addPixel(y, x_center, 0)
-
-        if (length < half_length):
+        if (length < half_length or length > full_length):
             clearArea([cy, x_center - length],[cy + length * 2, x_center + length])
             continue
 
-        y = (x_right - x_left) / 2 + cy
-        x = x_center
         top = getValue([y - 2, x - 1], [y - 2, x + 1])
         bottom = getValue([y + 2, x - 1], [y + 2, x + 1])
         left = getValue([y - 1, x - 2], [y + 1, x - 2])
         right = getValue([y - 1, x + 2], [y + 1, x + 2])
         max_value = max(top, bottom, left, right)
         key_direction = None
-        if (top == max_value):
-            key_direction = Key.DOWN
-        elif (bottom == max_value):
-            key_direction = Key.UP
-        elif (left == max_value):
-            key_direction = Key.RIGHT
-        elif (right == max_value):
-            key_direction = Key.LEFT
-        else:
-            continue
+        if max_value > threshold:
+            if (top == max_value):
+                key_direction = Key.DOWN
+            elif (bottom == max_value):
+                key_direction = Key.UP
+            elif (left == max_value):
+                key_direction = Key.RIGHT
+            elif (right == max_value):
+                key_direction = Key.LEFT
         if not (key_direction == None):
-            addPixel(y, x, key_direction)
+            addPixel(y, x, key_direction, length)
         clearArea([cy, x_center - length],[cy + length * 2, x_center + length])
     return results
 

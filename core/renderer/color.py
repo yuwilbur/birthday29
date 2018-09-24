@@ -16,3 +16,4 @@ class Color(object):
 	LIGHT_GREEN = Color(192, 255, 192)
 	LIGHT_BLUE = Color(192, 192, 255)
 	LIGHT_YELLOW = Color(255, 255, 192)
+	ORANGE = Color(255, 128, 0)
