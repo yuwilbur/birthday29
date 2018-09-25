@@ -13,8 +13,8 @@ def processYImage(img):
     results = list()
     img_height = img.shape[0]
     img_width = img.shape[1]
-    threshold = 125
-    half_length = 8
+    threshold = 200
+    half_length = 12
     full_length = half_length * 2
     rise = 2
 
@@ -29,8 +29,8 @@ def processYImage(img):
         if (top_left[0] == 0 or top_left[1] == 0 or bot_right[0] == img_height - 1 or bot_right[1] == img_width - 1):
             return 0.0
         value = 0.0
-        for y in range(top_left[0], bot_right[0]):
-            for x in range(top_left[1], bot_right[1]):
+        for y in range(top_left[0], bot_right[0] + 1, +1):
+            for x in range(top_left[1], bot_right[1] + 1, +1):
                 value += img[y][x][0]
         return value / count
 
@@ -82,10 +82,11 @@ def processYImage(img):
             clearArea([cy, x_center - length],[cy + length * 2, x_center + length])
             continue
 
-        top = getValue([y - 2, x - 1], [y - 2, x + 1])
-        bottom = getValue([y + 2, x - 1], [y + 2, x + 1])
-        left = getValue([y - 1, x - 2], [y + 1, x - 2])
-        right = getValue([y - 1, x + 2], [y + 1, x + 2])
+        diff = max(length / 4, 2)
+        top = getValue([y - diff, x - 1], [y - diff, x + 1])
+        bottom = getValue([y + diff, x - 1], [y + diff, x + 1])
+        left = getValue([y - 1, x - diff], [y + 1, x - diff])
+        right = getValue([y - 1, x + diff], [y + 1, x + diff])
         max_value = max(top, bottom, left, right)
         key_direction = None
         if max_value > threshold:
