@@ -45,14 +45,14 @@ def processYImage(img):
         if (cy > img_height - half_length):
             break
 
-        y_limit = cy + rise
+        y_limit = min(cy + rise, img_height - 1)
         for y in range(cy + 1, cy + rise + 1, +1):
             if (img[y][cx] < threshold):
                 break
         if not (y == y_limit):
             continue
 
-        x_limit = min(cx + full_length, img_width)
+        x_limit = min(cx + full_length, img_width - 1)
         for x in range(cx, x_limit + 1, +1):
             if (img[y][x] < threshold):
                 #addPixel(y, x, Key.DEBUG)
