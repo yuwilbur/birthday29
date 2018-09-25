@@ -70,7 +70,10 @@ def processYImage(img):
 
         x_diff = x_center - cx
         x_threshold = half_length / 4
-        length = int((x_right - x_left) * 1.2 / 2.0)
+        if (x_right == img_width - 1 or x_left == 0):
+            length = x_right - x_left
+        else:
+            length = int((x_right - x_left) * 1.2 / 2.0)
         
         x = x_center
         addPixel(y, x, Key.DEBUG)
