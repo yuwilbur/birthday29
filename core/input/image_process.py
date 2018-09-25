@@ -26,9 +26,11 @@ def processYImage(img):
         count = (bot_right[0] - top_left[0] + 1) * (bot_right[1] - top_left[1] + 1)
         if count == 0:
             return 0.0
+        if (top_left[0] == 0 or top_left[1] == 0 or bot_right[0] == img_height - 1 or bot_right[1] == img_width - 1):
+            return 0.0
         value = 0.0
-        for y in range(max(top_left[0], 0), min(bot_right[0], img_height) + 1):
-            for x in range(max(top_left[1], 0), min(bot_right[1], img_width) + 1):
+        for y in range(top_left[0], bot_right[0]):
+            for x in range(top_left[1], bot_right[1]):
                 value += img[y][x][0]
         return value / count
 
@@ -55,14 +57,12 @@ def processYImage(img):
         x_limit = min(cx + full_length, img_width - 1)
         for x in range(cx, x_limit + 1, +1):
             if (img[y][x] < threshold):
-                #addPixel(y, x, Key.DEBUG)
                 break
         x_right = x
 
         x_limit = max(cx - full_length, 0)
         for x in range(cx, x_limit - 1, -1):
             if (img[y][x] < threshold):
-                #addPixel(y, x, Key.DEBUG)
                 break
         x_left = x
 
@@ -76,7 +76,6 @@ def processYImage(img):
             length = int((x_right - x_left) * 1.2 / 2.0)
         
         x = x_center
-        addPixel(y, x, Key.DEBUG)
         y = (x_right - x_left) / 2 + cy
 
         if (length < half_length or length > full_length):
