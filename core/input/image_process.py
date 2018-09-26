@@ -8,13 +8,14 @@ import copy
 import time
 import operator
 import numpy as np
+import math
 
 def processYImage(img):
     results = list()
     img_height = img.shape[0]
     img_width = img.shape[1]
     threshold = 125
-    half_length = 8
+    half_length = 12
     full_length = half_length * 2
     rise = 2
 
@@ -33,43 +34,14 @@ def processYImage(img):
             for x in range(top_left[1], bot_right[1] + 1, +1):
                 value += img[y][x][0]
         return value / count
-    def fromCenter(cy, cx):
-        length = 0
-        y = cy
-        x = cx
-        y_limit = min(cy + rise, img_height - 1)
-        for y in range(cy + 1, cy + rise + 1, +1):
-            if (img[y][cx] < threshold):
-                break
-        if not (y == y_limit):
-            return [length, y, x]
+    def distanceSqu(x1, x2):
+        y_diff = x1[0] - x2[0]
+        x_diff = x1[1] - x2[1]
+        return (y_diff*y_diff + x_diff*x_diff)
 
-        x_limit = min(cx + full_length, img_width - 1)
-        for x in range(cx, x_limit + 1, +1):
-            if (img[y][x] < threshold):
-                break
-        x_right = x
+    angle_threshold = 1
 
-        x_limit = max(cx - full_length, 0)
-        for x in range(cx, x_limit - 1, -1):
-            if (img[y][x] < threshold):
-                break
-        x_left = x
-
-        x_center = (x_left + x_right) / 2
-
-        x_diff = x_center - cx
-        x_threshold = half_length / 4
-        if (x_right == img_width - 1 or x_left == 0):
-            length = x_right - x_left
-        else:
-            length = int((x_right - x_left) * 1.2 / 2.0)
-        
-        x = x_center
-        y = (x_right - x_left) / 2 + cy
-        return [length, y, x]
-
-    img[0][0] = 0
+    img[0][0][0] = 0
     while True:
         candidates = np.argwhere(img >= threshold)
         if len(candidates) == 0:
@@ -77,16 +49,53 @@ def processYImage(img):
         candidate = candidates[0]
         cy = candidate[0]
         cx = candidate[1]
-        img[cy][cx] = 0
+        img[cy][cx][0] = 0
         # Stop processing if the newest value is at the bottom.
         if (cy > img_height - half_length):
             break
 
-        [length, y, x] = fromCenter(cy, cx)        
+        min_x = max(cx - full_length, 0)
+        max_x = min(cx + full_length, img_width - 1)
+        max_y = min(cy + full_length, img_height - 1)
+
+        x = cx
+        for y in range(cy + 1, max_y + 1, +1):
+            if img[y][x][0] < threshold:
+                y -= 1
+                break
+            for x in range(x, max_x + 1, +1):
+                if img[y][x][0] < threshold:
+                    x -= 1
+                    break
+        bot_right = [y - cy, x - cx]
+
+        x = cx
+        for y in range(cy + 1, max_y + 1, +1):
+            if img[y][x][0] < threshold:
+                y -= 1
+                break
+            for x in range(x, min_x - 1, -1):
+                if img[y][x][0] < threshold:
+                    x += 1
+                    break
+        bot_left = [y - cy, x - cx]
+
+        dot = bot_right[0] * bot_left[0] + bot_right[1] * bot_left[1]
+        det = bot_right[1] * bot_left[0] - bot_right[0] * bot_left[1]
+        angle = math.atan2(det, dot)
+
+        length = bot_right[1] - bot_left[1]
 
         if (length < half_length or length > full_length):
-            clearArea([cy, x - length],[cy + length * 2, x + length])
+            clearArea([cy, x - length / 2],[cy + length, x + length / 2])
             continue
+
+        if (angle > angle_threshold):
+            y = cy + (bot_right[0] + bot_left[0]) / 2 + 1
+            x = cx + (bot_right[1] + bot_left[1]) / 2 + 1
+        else:
+            y = cy + (bot_right[0] + bot_left[0]) / 4 + 1
+            x = cx + (bot_right[1] + bot_left[1]) / 2 + 1
 
         diff = max(length / 4, 2)
         top = getValue([y - diff, x - 1], [y - diff, x + 1])
@@ -106,7 +115,7 @@ def processYImage(img):
                 key_direction = Key.LEFT
         if not (key_direction == None):
             addPixel(y, x, key_direction, length)
-        clearArea([cy, x - length],[cy + length * 2, x + length])
+        clearArea([cy, x - length / 2],[cy + length, x + length / 2])
     return results
 
 def yImageWorker(pipe):
