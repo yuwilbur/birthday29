@@ -97,6 +97,9 @@ def processYImage(img):
             y = cy + (right[0] + left[0]) / 4 + 1
             x = cx + (right[1] + left[1]) / 2 + 1
 
+        if (y <= half_length or y >= img_height - half_length or x <= half_length or x <= img_width - half_length):
+            continue
+
         value = img[y][x][0]
         value_threshold = threshold / 2
         for diff in range(0, half_length):
