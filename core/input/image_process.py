@@ -15,7 +15,7 @@ def processYImage(img):
     results = list()
     img_height = img.shape[0]
     img_width = img.shape[1]
-    threshold = 200
+    threshold = 125
     half_length = 12
     full_length = half_length * 2
 
@@ -80,28 +80,32 @@ def processYImage(img):
                 if img[y][x][0] < threshold:
                     x += 1
                     break
+        for y in range(y, cy, -1):
+            if img[y][x][0] < threshold:
+                y += 1
+                break
         left = [y - cy, x - cx]
 
-        length = int((right[1] - left[1] + 1) * 1.2)
+        length = int((right[1] - left[1] + 1) * 1.5)
+
+        if (length < half_length or length > full_length):
+            clearArea([cy, x - length / 2],[cy + length, x + length / 2])
+            continue
         
         addPixel(cy, cx, Key.UP)
         addPixel(cy + right[0], cx + right[1], Key.RIGHT)
         addPixel(cy + left[0], cx + left[1], Key.LEFT)
 
-        if (length < half_length or length > full_length):
-            clearArea([cy, x - length / 2],[cy + length, x + length / 2])
-            continue
+        # dot = right[0] * left[0] + right[1] * left[1]
+        # det = right[1] * left[0] - right[0] * left[1]
+        # angle = math.atan2(det, dot)
 
-        dot = right[0] * left[0] + right[1] * left[1]
-        det = right[1] * left[0] - right[0] * left[1]
-        angle = math.atan2(det, dot)
-
-        if (angle > angle_threshold):
-            y = cy + (right[0] + left[0]) / 2 + 1
-            x = cx + (right[1] + left[1]) / 2 + 1
-        else:
-            y = cy + (right[0] + left[0]) / 4 + 1
-            x = cx + (right[1] + left[1]) / 2 + 1
+        # if (angle > angle_threshold):
+        y = cy + (right[0] + left[0]) / 2 + 1
+        x = cx + (right[1] + left[1]) / 2 + 1
+        # else:
+        #     y = cy + (right[0] + left[0]) / 4 + 1
+        #     x = cx + (right[1] + left[1]) / 2 + 1
 
         addPixel(y, x, Key.DOWN)
 
