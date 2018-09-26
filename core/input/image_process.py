@@ -15,9 +15,8 @@ def processYImage(img):
     results = list()
     img_height = img.shape[0]
     img_width = img.shape[1]
-    threshold = 125
+    threshold = 150
     min_length = 12
-    max_length = min_length * 4
 
     def addPixel(y, x, direction, length = 1):
         results.append(ImageInput(np.array([y, x]), direction, length))
@@ -56,11 +55,9 @@ def processYImage(img):
         if (cy > img_height - min_length):
             break
 
-        #min_x = max(cx - max_length, 0)
         min_x = 0
         max_x = img_width - 1
         min_y = cy
-        #max_y = min(cy + max_length, img_height - 1)
         max_y = img_height - 1
 
         x = cx
@@ -99,7 +96,7 @@ def processYImage(img):
                 break
         left = [y - cy, x - cx]
 
-        length = int(max(right[1] - left[1] + 3, 1) * 1.5)
+        length = int(max(right[1] - left[1] + 3, 4) * 1.5)
         
         #addPixel(cy, cx, Key.UP)
         #addPixel(cy + right[0], cx + right[1], Key.RIGHT)
@@ -144,6 +141,7 @@ def processYImage(img):
                     break
 
         if diff == min_length - 1:
+            clearArea([y - length / 2, x - length / 2],[y + length / 2, x + length / 2])
             continue
 
         diff = 2
@@ -166,7 +164,6 @@ def processYImage(img):
         if not (key_direction == None):
             addPixel(y, x, key_direction, 2)
         clearArea([y - length / 2, x - length / 2],[y + length / 2, x + length / 2])
-    print len(results), cycles
     return results
 
 def yImageWorker(pipe):
