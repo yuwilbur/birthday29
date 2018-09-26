@@ -68,9 +68,10 @@ def processYImage(img):
                 break
             for x in range(x, max_x + 1, +1):
                 if img[y][x][0] < threshold:
-                    x -= 1
+                    if (x > min_x):
+                        x -= 1
                     break
-        if (x < max_x):
+        if (x > min_x):
             x -= 1
         for y in range(y, max_y + 1, +1):
             if img[y][x][0] < threshold:
@@ -85,9 +86,10 @@ def processYImage(img):
                 break
             for x in range(x, min_x - 1, -1):
                 if img[y][x][0] < threshold:
-                    x += 1
+                    if (x < max_x):
+                        x += 1
                     break
-        if (x > min_x):
+        if (x < max_x):
             x += 1
         for y in range(y, min_y - 1, -1):
             if img[y][x][0] < threshold:
