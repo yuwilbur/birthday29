@@ -70,7 +70,8 @@ def processYImage(img):
                 if img[y][x][0] < threshold:
                     x -= 1
                     break
-        x -= 1
+        if (x < max_x):
+            x -= 1
         for y in range(y, max_y + 1, +1):
             if img[y][x][0] < threshold:
                 y -= 1
@@ -86,7 +87,8 @@ def processYImage(img):
                 if img[y][x][0] < threshold:
                     x += 1
                     break
-        x += 1
+        if (x > min_x):
+            x += 1
         for y in range(y, min_y - 1, -1):
             if img[y][x][0] < threshold:
                 y += 1
