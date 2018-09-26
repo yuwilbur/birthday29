@@ -19,7 +19,7 @@ def processYImage(img):
     full_length = half_length * 2
     rise = 2
 
-    def addPixel(y, x, direction, length = 0):
+    def addPixel(y, x, direction, length = 1):
         results.append(ImageInput(np.array([y, x]), direction, length))
     def clearArea(top_left, bot_right):
         img[top_left[0]:bot_right[0],top_left[1]:bot_right[1]] = 0
@@ -27,13 +27,13 @@ def processYImage(img):
         count = (bot_right[0] - top_left[0] + 1) * (bot_right[1] - top_left[1] + 1)
         if count == 0:
             return 0.0
-        if (top_left[0] == 0 or top_left[1] == 0 or bot_right[0] == img_height - 1 or bot_right[1] == img_width - 1):
+        if (top_left[0] <= 0 or top_left[1] <= 0 or bot_right[0] >= img_height - 1 or bot_right[1] >= img_width - 1):
             return 0.0
         value = 0.0
         for y in range(top_left[0], bot_right[0] + 1, +1):
             for x in range(top_left[1], bot_right[1] + 1, +1):
                 value += img[y][x][0]
-        return value / count
+        return value / count + 1
     def distanceSqu(x1, x2):
         y_diff = x1[0] - x2[0]
         x_diff = x1[1] - x2[1]
@@ -67,7 +67,7 @@ def processYImage(img):
                 if img[y][x][0] < threshold:
                     x -= 1
                     break
-        bot_right = [y - cy, x - cx]
+        right = [y - cy, x - cx]
 
         x = cx
         for y in range(cy + 1, max_y + 1, +1):
@@ -78,44 +78,63 @@ def processYImage(img):
                 if img[y][x][0] < threshold:
                     x += 1
                     break
-        bot_left = [y - cy, x - cx]
+        left = [y - cy, x - cx]
 
-        dot = bot_right[0] * bot_left[0] + bot_right[1] * bot_left[1]
-        det = bot_right[1] * bot_left[0] - bot_right[0] * bot_left[1]
+        dot = right[0] * left[0] + right[1] * left[1]
+        det = right[1] * left[0] - right[0] * left[1]
         angle = math.atan2(det, dot)
 
-        length = bot_right[1] - bot_left[1]
+        length = int((right[1] - left[1]) * 1.2)
 
         if (length < half_length or length > full_length):
             clearArea([cy, x - length / 2],[cy + length, x + length / 2])
             continue
 
         if (angle > angle_threshold):
-            y = cy + (bot_right[0] + bot_left[0]) / 2 + 1
-            x = cx + (bot_right[1] + bot_left[1]) / 2 + 1
+            y = cy + (right[0] + left[0]) / 2 + 1
+            x = cx + (right[1] + left[1]) / 2 + 1
         else:
-            y = cy + (bot_right[0] + bot_left[0]) / 4 + 1
-            x = cx + (bot_right[1] + bot_left[1]) / 2 + 1
+            y = cy + (right[0] + left[0]) / 4 + 1
+            x = cx + (right[1] + left[1]) / 2 + 1
 
-        diff = max(length / 4, 2)
+        value = img[y][x][0]
+        value_threshold = threshold / 2
+        for diff in range(0, half_length):
+            if (y - diff > 0):
+                if abs(value - int(img[y - diff][x][0])) > value_threshold:
+                    y = y - diff
+                    break
+            if (x - diff > 0):
+                if abs(value - int(img[y][x - diff][0])) > value_threshold:
+                    x = x - diff
+                    break
+            if (x + diff < img_width):
+                if abs(value - int(img[y][x + diff][0])) > value_threshold:
+                    x = x + diff
+                    break
+
+        if diff == half_length - 1:
+            continue
+
+        diff = 2
         top = getValue([y - diff, x - 1], [y - diff, x + 1])
         bottom = getValue([y + diff, x - 1], [y + diff, x + 1])
         left = getValue([y - 1, x - diff], [y + 1, x - diff])
         right = getValue([y - 1, x + diff], [y + 1, x + diff])
-        max_value = max(top, bottom, left, right)
+        min_value = min(top, bottom, left, right)
         key_direction = None
-        if max_value > threshold:
-            if (top == max_value):
-                key_direction = Key.DOWN
-            elif (bottom == max_value):
+        if min_value < threshold and min_value > 0.0:
+            if (top == min_value):
                 key_direction = Key.UP
-            elif (left == max_value):
-                key_direction = Key.RIGHT
-            elif (right == max_value):
+            elif (bottom == min_value):
+                key_direction = Key.DOWN
+            elif (left == min_value):
                 key_direction = Key.LEFT
+            elif (right == min_value):
+                key_direction = Key.RIGHT
         if not (key_direction == None):
             addPixel(y, x, key_direction, length)
-        clearArea([cy, x - length / 2],[cy + length, x + length / 2])
+        clearArea([y - length / 2, x - length / 2],[y + length / 2, x + length / 2])
     return results
 
 def yImageWorker(pipe):
