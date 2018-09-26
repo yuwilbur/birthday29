@@ -196,6 +196,9 @@ class YuGame(Game):
 		player.camera.getComponent(Transform).position = camera_position
 		return player
 
+	def start(self):
+		pass
+
 	def setup(self):
 		self._font_size = 64
 		self._offset = Vector(0, -self._info_width / 2)

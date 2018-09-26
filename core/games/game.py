@@ -5,6 +5,10 @@ from abc import abstractmethod
 class Game(object):
 	def __init__(self, name):
 		self._name = name
+
+	@abstractmethod
+	def start(self):
+		return
 	
 	@abstractmethod
 	def setup(self):

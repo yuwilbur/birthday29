@@ -49,10 +49,13 @@ class MainMenuGame(YuGame):
 		super(MainMenuGame, self).onP2Score()
 		self.resetPositions()
 
+	def start(self):
+		super(MainMenuGame, self).start()
+		self._game_lock = False
+
 	def setup(self):
 		super(MainMenuGame, self).setup() 
 		EventDispatcher().add_event_listener(KeyEvent.TYPE, self.onKeyEvent)
-		#EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
 		EventDispatcher().add_event_listener(KeyUpEvent.TYPE, self.onKeyUpEvent)
 
 		thickness = 25
@@ -81,20 +84,20 @@ class MainMenuGame(YuGame):
 
 		self._resolution = self.getResolution()
 
-		def createWall(position, dimensions):
+		def createWall(position, dimensions, color):
 			wall = GameObject("wall")
 			wall.addComponent(Rectangle)
 			wall.addComponent(Material)
-			wall.getComponent(Material).color = Color.BLACK
+			wall.getComponent(Material).color = color
 			wall.addComponent(Collider)
 			wall.getComponent(Transform).position = position + self.getOffset()
 			wall.getComponent(Rectangle).dimensions = dimensions
 			return wall
-		createWall(Vector(0, -self._resolution.y / 2), Vector(self._resolution.x, thickness))
-		createWall(Vector(0, self._resolution.y / 2), Vector(self._resolution.x, thickness))
-		p1_target = createWall(Vector(self._resolution.x / 2, 0), Vector(thickness, self._resolution.y))
+		createWall(Vector(0, -self._resolution.y / 2), Vector(self._resolution.x, thickness), Color.WHITE)
+		createWall(Vector(0, self._resolution.y / 2), Vector(self._resolution.x, thickness), Color.WHITE)
+		p1_target = createWall(Vector(self._resolution.x / 2, 0), Vector(thickness, self._resolution.y), Color.BLUE)
 		p1_target.getComponent(Collider).setOnCollisionListener(self.onP1Score)
-		p2_target = createWall(Vector(-self._resolution.x / 2, 0), Vector(thickness, self._resolution.y))
+		p2_target = createWall(Vector(-self._resolution.x / 2, 0), Vector(thickness, self._resolution.y), Color.RED)
 		p2_target.getComponent(Collider).setOnCollisionListener(self.onP2Score)
 
 		self._game_info = GameObject("main game info")
@@ -105,6 +108,8 @@ class MainMenuGame(YuGame):
 		self._game_info.getComponent(TextBox).align = Align.CENTER
 		self._game_info.getComponent(Transform).position = Vector(0, -self._resolution.y / 2 + thickness * 2)
 
+		self._game_lock = True
+
 		self.reset()
 
 	def update(self):
@@ -113,17 +118,21 @@ class MainMenuGame(YuGame):
 		self._p1.getComponent(Line).end = self._ball.getComponent(Transform).position
 		self._p2.getComponent(Line).start = self._p2.getComponent(Transform).position
 		self._p2.getComponent(Line).end = self._ball.getComponent(Transform).position
+		if (self._game_lock):
+			self._game_start = time.time()
 		self._game_duration = time.time() - self._game_start
 		if (self._game_duration < 1.0):
-			self.setGameInfo(["3"])
+			self.setGameInfo(["READY?"])
 		elif (self._game_duration < 2.0):
-			self.setGameInfo(["2"])
+			self.setGameInfo(["3"])
 		elif (self._game_duration < 3.0):
-			self.setGameInfo(["1"])
+			self.setGameInfo(["2"])
 		elif (self._game_duration < 4.0):
+			self.setGameInfo(["1"])
+		elif (self._game_duration < 5.0):
 			self.setGameInfo(["FIGHT"])
 			if (self._control_lock):
-				self._ball.getComponent(Solid).velocity = Vector(400, 0)
+				self._ball.getComponent(Solid).velocity = Vector(self.DELTA * 2, 0)
 			self._control_lock = False
 		else:
 			self.setGameInfo([""])

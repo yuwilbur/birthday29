@@ -23,6 +23,7 @@ class GameManager(Manager):
 	def onKeyDownEvent(self, event):
 		if event.data() == Key.R:
 			self.reset()
+			self._game.start()
 		# if event.data() == Key.NUM_1:
 		# 	self.startGame(MainMenuGame())
 
