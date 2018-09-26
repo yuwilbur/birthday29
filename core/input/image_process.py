@@ -56,10 +56,12 @@ def processYImage(img):
         if (cy > img_height - min_length):
             break
 
-        min_x = max(cx - max_length, 0)
-        max_x = min(cx + max_length, img_width - 1)
+        #min_x = max(cx - max_length, 0)
+        min_x = 0
+        max_x = img_width - 1
         min_y = cy
-        max_y = min(cy + max_length, img_height - 1)
+        #max_y = min(cy + max_length, img_height - 1)
+        max_y = img_height - 1
 
         x = cx
         for y in range(cy + 1, max_y + 1, +1):
@@ -103,7 +105,7 @@ def processYImage(img):
         #addPixel(cy + right[0], cx + right[1], Key.RIGHT)
         #addPixel(cy + left[0], cx + left[1], Key.LEFT)
 
-        if (length < min_length or length > max_length):
+        if (length < min_length):
             clearArea([cy, x - length / 2],[cy + length, x + length / 2])
             continue
 
