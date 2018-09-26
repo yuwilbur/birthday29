@@ -9,6 +9,7 @@ from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.material import Material
 from ..engine.material import LateMaterial
+from ..engine.line import Line
 from ..engine.ui import UI
 from ..sync.manager import Manager
 from ..renderer.color import Color
@@ -36,6 +37,11 @@ class Renderer(Manager):
         self._center = self._resolution / 2
         print 'Center', self._center
 
+    def renderLines(self):
+        lines = self._engine.getObjectsWithType(Line)
+        for line_id, line in lines.items():
+            pygame.draw.line(self._screen, line.color, (self._center + line.start).toIntTuple(), (self._center + line.end).toIntTuple())
+
     def renderMaterial(self, material_type):
         materials = self._engine.getObjectsWithType(material_type)
         for material_id, material in materials.items():
@@ -50,6 +56,7 @@ class Renderer(Manager):
 
     def update(self):
         self._screen.fill(Color.BLACK)
+        self.renderLines()
         self.renderMaterial(Material)
         self.renderMaterial(LateMaterial)
         uis = self._engine.getObjectsWithType(UI)

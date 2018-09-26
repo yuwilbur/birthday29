@@ -12,6 +12,7 @@ from ..engine.collider import Collider
 from ..engine.transform import Transform
 from ..renderer.color import Color
 from ..sync.period_sync import PeriodSync
+from ..engine.line import Line
 
 class MainMenuGame(YuGame):
 	DELTA = 200
@@ -43,6 +44,7 @@ class MainMenuGame(YuGame):
 		self._p1.addComponent(Collider)
 		self._p1.getComponent(Rectangle).dimensions = Vector(thickness, 150)
 		self._p1.getComponent(Collider).setOnCollisionListener(self.onP1Collision)
+		self._p1.addComponent(Line)
 
 		self._p2 = GameObject("p2")
 		self._p2.addComponent(Rectangle)
@@ -50,6 +52,7 @@ class MainMenuGame(YuGame):
 		self._p2.addComponent(Collider)
 		self._p2.getComponent(Rectangle).dimensions = Vector(thickness, 150) 
 		self._p2.getComponent(Collider).setOnCollisionListener(self.onP2Collision)
+		self._p2.addComponent(Line)
 
 		self._ball = GameObject("ball")
 		self._ball.addComponent(Circle)
@@ -77,6 +80,13 @@ class MainMenuGame(YuGame):
 
 		self.reset()
 
+	def update(self):
+		super(MainMenuGame, self).update()
+		self._p1.getComponent(Line).start = self._p1.getComponent(Transform).position
+		self._p1.getComponent(Line).end = self._ball.getComponent(Transform).position
+		self._p2.getComponent(Line).start = self._p2.getComponent(Transform).position
+		self._p2.getComponent(Line).end = self._ball.getComponent(Transform).position
+
 	def reset(self):
 		super(MainMenuGame, self).reset()
 		start_distance = 500
@@ -90,21 +100,25 @@ class MainMenuGame(YuGame):
 			self._p1.getComponent(Solid).velocity.y = -self.DELTA
 			return
 		elif event.data() == Key.A:
+			self._p1.getComponent(Line).color = Color.BLUE
 			return
 		elif event.data() == Key.S:
 			self._p1.getComponent(Solid).velocity.y = self.DELTA
 			return
 		elif event.data() == Key.D:
+			self._p1.getComponent(Line).color = Color.RED
 			return
 		elif event.data() == Key.I:
 			self._p2.getComponent(Solid).velocity.y = -self.DELTA
 			return
 		elif event.data() == Key.J:
+			self._p2.getComponent(Line).color = Color.BLUE
 			return
 		elif event.data() == Key.K:
 			self._p2.getComponent(Solid).velocity.y = self.DELTA
 			return
 		elif event.data() == Key.L:
+			self._p2.getComponent(Line).color = Color.RED
 			return
 		return
 
@@ -113,20 +127,24 @@ class MainMenuGame(YuGame):
 			self._p1.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.A:
+			self._p1.getComponent(Line).color = Color.WHITE
 			return
 		elif event.data() == Key.S:
 			self._p1.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.D:
+			self._p1.getComponent(Line).color = Color.WHITE
 			return
 		elif event.data() == Key.I:
 			self._p2.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.J:
+			self._p2.getComponent(Line).color = Color.WHITE
 			return
 		elif event.data() == Key.K:
 			self._p2.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.L:
+			self._p2.getComponent(Line).color = Color.WHITE
 			return
 		return

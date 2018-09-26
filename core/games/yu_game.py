@@ -8,6 +8,7 @@ from ..engine.primitive import Rectangle
 from ..engine.material import LateMaterial
 from ..engine.game_object import GameObject
 from ..engine.align import Align
+from ..engine.line import Line
 from ..engine.ui import Image
 from ..engine.ui import TextBox
 from ..engine.transform import Transform
@@ -226,7 +227,7 @@ class YuGame(Game):
 		self._game_text.getComponent(Transform).position = Vector(0, p1_y)
 		self.updatePlayer1Score()
 		self.updatePlayer2Score()
-		self.setGameTexts(["|","THE ULTIMATE PING PONG"])
+		self.setGameTexts(["|","THIS IS NOT PLAY TESTED"])
 
 	def reset(self):
 		pass
