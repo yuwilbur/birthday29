@@ -16,8 +16,8 @@ def processYImage(img):
     img_height = img.shape[0]
     img_width = img.shape[1]
     threshold = 125
-    half_length = 12
-    full_length = half_length * 2
+    min_length = 12
+    max_length = min_length * 4
 
     def addPixel(y, x, direction, length = 1):
         results.append(ImageInput(np.array([y, x]), direction, length))
@@ -53,12 +53,13 @@ def processYImage(img):
         cx = candidate[1]
         img[cy][cx][0] = 0
         # Stop processing if the newest value is at the bottom.
-        if (cy > img_height - half_length):
+        if (cy > img_height - min_length):
             break
 
-        min_x = max(cx - full_length, 0)
-        max_x = min(cx + full_length, img_width - 1)
-        max_y = min(cy + full_length, img_height - 1)
+        min_x = max(cx - max_length, 0)
+        max_x = min(cx + max_length, img_width - 1)
+        min_y = cy
+        max_y = min(cy + max_length, img_height - 1)
 
         x = cx
         for y in range(cy + 1, max_y + 1, +1):
@@ -69,6 +70,11 @@ def processYImage(img):
                 if img[y][x][0] < threshold:
                     x -= 1
                     break
+        x -= 1
+        for y in range(y, max_y + 1, +1):
+            if img[y][x][0] < threshold:
+                y -= 1
+                break
         right = [y - cy, x - cx]
 
         x = cx
@@ -80,51 +86,44 @@ def processYImage(img):
                 if img[y][x][0] < threshold:
                     x += 1
                     break
-        for y in range(y, cy, -1):
+        x += 1
+        for y in range(y, min_y - 1, -1):
             if img[y][x][0] < threshold:
                 y += 1
                 break
         left = [y - cy, x - cx]
 
-        length = int((right[1] - left[1] + 1) * 1.5)
+        length = int(max(right[1] - left[1] + 3, 1) * 1.5)
+        
+        #addPixel(cy, cx, Key.UP)
+        #addPixel(cy + right[0], cx + right[1], Key.RIGHT)
+        #addPixel(cy + left[0], cx + left[1], Key.LEFT)
 
-        if (length < half_length or length > full_length):
+        if (length < min_length or length > max_length):
             clearArea([cy, x - length / 2],[cy + length, x + length / 2])
             continue
-        
-        addPixel(cy, cx, Key.UP)
-        addPixel(cy + right[0], cx + right[1], Key.RIGHT)
-        addPixel(cy + left[0], cx + left[1], Key.LEFT)
 
-        # dot = right[0] * left[0] + right[1] * left[1]
-        # det = right[1] * left[0] - right[0] * left[1]
-        # angle = math.atan2(det, dot)
-
-        # if (angle > angle_threshold):
         y = cy + (right[0] + left[0]) / 2 + 1
         x = cx + (right[1] + left[1]) / 2 + 1
-        # else:
-        #     y = cy + (right[0] + left[0]) / 4 + 1
-        #     x = cx + (right[1] + left[1]) / 2 + 1
 
-        addPixel(y, x, Key.DOWN)
+        #addPixel(y, x, Key.DOWN)
 
-        if (y <= half_length):
-            clearArea([0,0],[half_length,img_width - 1])
+        if (y <= min_length):
+            clearArea([0,0],[min_length,img_width - 1])
             continue
-        if (y >= img_height - half_length):
-            clearArea([img_height - half_length,0],[img_height - 1,img_width - 1])
+        if (y >= img_height - min_length):
+            clearArea([img_height - min_length,0],[img_height - 1,img_width - 1])
             continue
-        if (x <= half_length):
-            clearArea([0,0],[img_height - 1,half_length])
+        if (x <= min_length):
+            clearArea([0,0],[img_height - 1,min_length])
             continue
-        if (x >= img_width - half_length):
-            clearArea([0,img_width - half_length],[img_height - 1,img_width - 1])
+        if (x >= img_width - min_length):
+            clearArea([0,img_width - min_length],[img_height - 1,img_width - 1])
             continue
 
         value = img[y][x][0]
         value_threshold = threshold / 2
-        for diff in range(0, half_length):
+        for diff in range(0, min_length):
             if (y - diff > 0):
                 if abs(value - int(img[y - diff][x][0])) > value_threshold:
                     y = y - diff
@@ -138,14 +137,15 @@ def processYImage(img):
                     x = x + diff
                     break
 
-        if diff == half_length - 1:
+        if diff == min_length - 1:
             continue
 
-        diff = 3
-        top = getValue([y - diff, x - 1], [y - diff, x + 1])
-        bottom = getValue([y + diff, x - 1], [y + diff, x + 1])
-        left = getValue([y - 1, x - diff], [y + 1, x - diff])
-        right = getValue([y - 1, x + diff], [y + 1, x + diff])
+        diff = 2
+        step = 2
+        top = getValue([y - diff, x - step], [y - diff, x + step])
+        bottom = getValue([y + diff, x - step], [y + diff, x + step])
+        left = getValue([y - step, x - diff], [y + step, x - diff])
+        right = getValue([y - step, x + diff], [y + step, x + diff])
         min_value = min(top, bottom, left, right)
         key_direction = None
         if min_value < threshold and min_value > 0.0:
@@ -157,8 +157,8 @@ def processYImage(img):
                 key_direction = Key.LEFT
             elif (right == min_value):
                 key_direction = Key.RIGHT
-        #if not (key_direction == None):
-        #    addPixel(y, x, key_direction, 2)
+        if not (key_direction == None):
+            addPixel(y, x, key_direction, 2)
         clearArea([y - length / 2, x - length / 2],[y + length / 2, x + length / 2])
     print len(results), cycles
     return results
