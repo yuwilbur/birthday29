@@ -13,8 +13,8 @@ def processYImage(img):
     results = list()
     img_height = img.shape[0]
     img_width = img.shape[1]
-    threshold = 200
-    half_length = 12
+    threshold = 125
+    half_length = 8
     full_length = half_length * 2
     rise = 2
 
@@ -33,26 +33,16 @@ def processYImage(img):
             for x in range(top_left[1], bot_right[1] + 1, +1):
                 value += img[y][x][0]
         return value / count
-
-    img[0][0] = 0
-    while True:
-        candidates = np.argwhere(img >= threshold)
-        if len(candidates) == 0:
-            break
-        candidate = candidates[0]
-        cy = candidate[0]
-        cx = candidate[1]
-        img[cy][cx] = 0
-        # Stop processing if the newest value is at the bottom.
-        if (cy > img_height - half_length):
-            break
-
+    def fromCenter(cy, cx):
+        length = 0
+        y = cy
+        x = cx
         y_limit = min(cy + rise, img_height - 1)
         for y in range(cy + 1, cy + rise + 1, +1):
             if (img[y][cx] < threshold):
                 break
         if not (y == y_limit):
-            continue
+            return [length, y, x]
 
         x_limit = min(cx + full_length, img_width - 1)
         for x in range(cx, x_limit + 1, +1):
@@ -77,9 +67,25 @@ def processYImage(img):
         
         x = x_center
         y = (x_right - x_left) / 2 + cy
+        return [length, y, x]
+
+    img[0][0] = 0
+    while True:
+        candidates = np.argwhere(img >= threshold)
+        if len(candidates) == 0:
+            break
+        candidate = candidates[0]
+        cy = candidate[0]
+        cx = candidate[1]
+        img[cy][cx] = 0
+        # Stop processing if the newest value is at the bottom.
+        if (cy > img_height - half_length):
+            break
+
+        [length, y, x] = fromCenter(cy, cx)        
 
         if (length < half_length or length > full_length):
-            clearArea([cy, x_center - length],[cy + length * 2, x_center + length])
+            clearArea([cy, x - length],[cy + length * 2, x + length])
             continue
 
         diff = max(length / 4, 2)
@@ -100,7 +106,7 @@ def processYImage(img):
                 key_direction = Key.LEFT
         if not (key_direction == None):
             addPixel(y, x, key_direction, length)
-        clearArea([cy, x_center - length],[cy + length * 2, x_center + length])
+        clearArea([cy, x - length],[cy + length * 2, x + length])
     return results
 
 def yImageWorker(pipe):
