@@ -21,8 +21,10 @@ class GameManager(Manager):
 		self._game.setup()
 
 	def onKeyDownEvent(self, event):
-		if event.data() == Key.NUM_1:
-			self.startGame(MainMenuGame())
+		if event.data() == Key.R:
+			self.reset()
+		# if event.data() == Key.NUM_1:
+		# 	self.startGame(MainMenuGame())
 
 	def setup(self):
 		self.startGame(MainMenuGame())
@@ -34,3 +36,6 @@ class GameManager(Manager):
 
 	def stop(self):
 		self.stopGame()
+
+	def reset(self):
+		self._game.reset()

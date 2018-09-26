@@ -13,6 +13,9 @@ from ..engine.transform import Transform
 from ..renderer.color import Color
 from ..sync.period_sync import PeriodSync
 from ..engine.line import Line
+from ..engine.align import Align
+
+import time
 
 class MainMenuGame(YuGame):
 	DELTA = 200
@@ -31,9 +34,25 @@ class MainMenuGame(YuGame):
 		self._p2.getComponent(Transform).position.y -= self._p2.getComponent(Solid).velocity.y * PeriodSync.PERIOD
 		self._p2.getComponent(Solid).velocity.y = 0
 
+	def setGameInfo(self, texts):
+		self._game_info.getComponent(TextBox).setTexts(texts)
+
+	def onP1Score(self, game_object):
+		if not game_object.name == 'ball':
+			return
+		super(MainMenuGame, self).onP1Score()
+		self.resetPositions()
+
+	def onP2Score(self, game_object):
+		if not game_object.name == 'ball':
+			return
+		super(MainMenuGame, self).onP2Score()
+		self.resetPositions()
+
 	def setup(self):
 		super(MainMenuGame, self).setup() 
-		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
+		EventDispatcher().add_event_listener(KeyEvent.TYPE, self.onKeyEvent)
+		#EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
 		EventDispatcher().add_event_listener(KeyUpEvent.TYPE, self.onKeyUpEvent)
 
 		thickness = 25
@@ -78,6 +97,14 @@ class MainMenuGame(YuGame):
 		p2_target = createWall(Vector(-self._resolution.x / 2, 0), Vector(thickness, self._resolution.y))
 		p2_target.getComponent(Collider).setOnCollisionListener(self.onP2Score)
 
+		self._game_info = GameObject("main game info")
+		self._game_info.addComponent(TextBox)
+		self._game_info.getComponent(TextBox).font_size = self._font_size
+		self._game_info.getComponent(TextBox).width = 1000
+		self._game_info.getComponent(TextBox).height = thickness * 2
+		self._game_info.getComponent(TextBox).align = Align.CENTER
+		self._game_info.getComponent(Transform).position = Vector(0, -self._resolution.y / 2 + thickness * 2)
+
 		self.reset()
 
 	def update(self):
@@ -86,16 +113,39 @@ class MainMenuGame(YuGame):
 		self._p1.getComponent(Line).end = self._ball.getComponent(Transform).position
 		self._p2.getComponent(Line).start = self._p2.getComponent(Transform).position
 		self._p2.getComponent(Line).end = self._ball.getComponent(Transform).position
+		self._game_duration = time.time() - self._game_start
+		if (self._game_duration < 1.0):
+			self.setGameInfo(["3"])
+		elif (self._game_duration < 2.0):
+			self.setGameInfo(["2"])
+		elif (self._game_duration < 3.0):
+			self.setGameInfo(["1"])
+		elif (self._game_duration < 4.0):
+			self.setGameInfo(["FIGHT"])
+			if (self._control_lock):
+				self._ball.getComponent(Solid).velocity = Vector(400, 0)
+			self._control_lock = False
+		else:
+			self.setGameInfo([""])
+
+	def resetPositions(self):
+		start_distance = 500
+		self._p1.getComponent(Transform).position = Vector(-start_distance,0) + self.getOffset()
+		self._p1.getComponent(Solid).velocity = Vector(0, 0)
+		self._p2.getComponent(Transform).position = Vector(start_distance, 0) + self.getOffset()
+		self._p2.getComponent(Solid).velocity = Vector(0, 0)
+		self._ball.getComponent(Transform).position = Vector() + self.getOffset()
+		self._ball.getComponent(Solid).velocity = Vector(0, 0)
+		self._game_start = time.time()
+		self._control_lock = True
 
 	def reset(self):
 		super(MainMenuGame, self).reset()
-		start_distance = 500
-		self._p1.getComponent(Transform).position = Vector(-start_distance,0) + self.getOffset()
-		self._p2.getComponent(Transform).position = Vector(start_distance, 0) + self.getOffset()
-		self._ball.getComponent(Transform).position = Vector() + self.getOffset()
-		self._ball.getComponent(Solid).velocity = Vector(400, 0)
+		self.resetPositions()
 
-	def onKeyDownEvent(self, event):
+	def onKeyEvent(self, event):
+		if (self._control_lock):
+			return
 		if event.data() == Key.W:
 			self._p1.getComponent(Solid).velocity.y = -self.DELTA
 			return
@@ -123,6 +173,8 @@ class MainMenuGame(YuGame):
 		return
 
 	def onKeyUpEvent(self, event):
+		if (self._control_lock):
+			return
 		if event.data() == Key.W:
 			self._p1.getComponent(Solid).velocity.y = 0
 			return

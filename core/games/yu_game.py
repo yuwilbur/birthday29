@@ -67,8 +67,8 @@ class YuGame(Game):
 	def updatePlayer2Score(self):
 		self._p2_info.game_text.getComponent(TextBox).setTexts([" " + str(self._p2_info.score)])
 
-	def setGameTexts(self, texts):
-		self._game_text.getComponent(TextBox).setTexts(texts)
+	def setGameTitle(self, texts):
+		self._game_title.getComponent(TextBox).setTexts(texts)
 
 	def onLatencyEvent(self, event):
 		data = event.data()
@@ -115,19 +115,13 @@ class YuGame(Game):
 		overlayImage(self._p2_info.processed, stereo[1].data)
 		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
 
-	def onP1Score(self, game_object):
-		if not game_object.name == 'ball':
-			return
+	def onP1Score(self):
 		self._p1_info.score += 1
 		self.updatePlayer1Score()
-		self.reset()
 
-	def onP2Score(self, game_object):
-		if not game_object.name == 'ball':
-			return
+	def onP2Score(self):
 		self._p2_info.score += 1
 		self.updatePlayer2Score()
-		self.reset()
 
 	def getResolution(self):
 		return self._resolution
@@ -218,19 +212,20 @@ class YuGame(Game):
 		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
 		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.onLatencyEvent)
 		EventDispatcher().add_event_listener(CameraResultEvent.TYPE, self.onCameraResultEvent)
-		self._game_text = GameObject("main game text")
-		self._game_text.addComponent(TextBox)
-		self._game_text.getComponent(TextBox).font_size = self._font_size
-		self._game_text.getComponent(TextBox).width = 1000
-		self._game_text.getComponent(TextBox).height = self._info_width * 3 / 4
-		self._game_text.getComponent(TextBox).align = Align.CENTER
-		self._game_text.getComponent(Transform).position = Vector(0, p1_y)
-		self.updatePlayer1Score()
-		self.updatePlayer2Score()
-		self.setGameTexts(["|","THIS IS NOT PLAY TESTED"])
+		self._game_title = GameObject("main game text")
+		self._game_title.addComponent(TextBox)
+		self._game_title.getComponent(TextBox).font_size = self._font_size
+		self._game_title.getComponent(TextBox).width = 1000
+		self._game_title.getComponent(TextBox).height = self._info_width * 3 / 4
+		self._game_title.getComponent(TextBox).align = Align.CENTER
+		self._game_title.getComponent(Transform).position = Vector(0, p1_y)
+		self.setGameTitle(["|","BABY DON'T HURT ME"])
 
 	def reset(self):
-		pass
+		self._p1_info.score = 0
+		self.updatePlayer1Score()
+		self._p2_info.score = 0
+		self.updatePlayer2Score()
 
 	def update(self):
 		pass
