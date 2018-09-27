@@ -16,9 +16,14 @@ from ..engine.line import *
 from ..engine.align import Align
 
 import time
+import random
 
 class MainMenuGame(YuGame):
-	DELTA = 200
+	DELTA = 100
+	acc = DELTA * 4
+	vel = DELTA
+	ball_speed = DELTA * 2
+	ball_acceleration = DELTA / 2
 	def __init__(self):
 		super(MainMenuGame, self).__init__("MainMenuGame")
 
@@ -88,6 +93,8 @@ class MainMenuGame(YuGame):
 		self._ball.addComponent(Collider)
 		self._ball.getComponent(Circle).radius = 25
 
+		self._stage = 1
+
 		self._resolution = self.getResolution()
 
 		def createWall(position, dimensions, color):
@@ -120,26 +127,6 @@ class MainMenuGame(YuGame):
 
 	def update(self):
 		super(MainMenuGame, self).update()
-		offset = 5.0
-		dash_length = 10.0
-		self._p1.getComponent(DashedLine).start = self._p1.getComponent(Transform).position
-		self._p1.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
-		self._p1.getComponent(DashedLine).dash_length = 0
-		self._p2.getComponent(DashedLine).dash_length = 0
-		if self._p1_pull and not self._p1_push:
-			self._p1.getComponent(DashedLine).offset -= offset
-			self._p1.getComponent(DashedLine).dash_length = dash_length
-		if self._p1_push and not self._p1_pull:
-			self._p1.getComponent(DashedLine).offset += offset
-			self._p1.getComponent(DashedLine).dash_length = dash_length
-		if self._p2_pull and not self._p2_push:
-			self._p2.getComponent(DashedLine).offset -= offset
-			self._p2.getComponent(DashedLine).dash_length = dash_length
-		if self._p2_push and not self._p2_pull:
-			self._p2.getComponent(DashedLine).offset += offset
-			self._p2.getComponent(DashedLine).dash_length = dash_length
-		self._p2.getComponent(DashedLine).start = self._p2.getComponent(Transform).position
-		self._p2.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
 		if (self._game_lock):
 			self._game_start = time.time()
 		self._game_duration = time.time() - self._game_start
@@ -154,17 +141,60 @@ class MainMenuGame(YuGame):
 		elif (self._game_duration < 5.0):
 			self.setGameInfo(["FIGHT"])
 			if (self._control_lock):
-				self._ball.getComponent(Solid).velocity = Vector(self.DELTA * 2, 0)
+				direction = random.randint(0,1)
+				if (direction == 0):
+					direction = -1
+				self._ball.getComponent(Solid).velocity = Vector(direction * self.ball_speed, 0)
 			self._control_lock = False
 		else:
 			self.setGameInfo([""])
+
+		if (self._stage >= 3):
+			self._p1.getComponent(DashedLine).start = self._p1.getComponent(Transform).position
+			self._p1.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
+			p1_vector = (self._p1.getComponent(DashedLine).end - self._p1.getComponent(DashedLine).start).toUnitVector()
+			self._p2.getComponent(DashedLine).start = self._p2.getComponent(Transform).position
+			self._p2.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
+			p2_vector = (self._p2.getComponent(DashedLine).end - self._p2.getComponent(DashedLine).start).toUnitVector()
+			self._p1.getComponent(DashedLine).dash_length = 0
+			self._p2.getComponent(DashedLine).dash_length = 0
+			pull_offset = 5.0
+			pull_length = 10.0
+			push_offset = 2.5
+			push_length = 5.0
+			self._ball.getComponent(Solid).acceleration = Vector(0, 0)
+			if self._p1_pull and not self._p1_push:
+				self._p1.getComponent(DashedLine).offset -= pull_offset
+				self._p1.getComponent(DashedLine).dash_length = pull_length
+				self._ball.getComponent(Solid).acceleration -= p1_vector * self.ball_acceleration
+			elif self._p1_push and not self._p1_pull:
+				self._p1.getComponent(DashedLine).offset += push_offset
+				self._p1.getComponent(DashedLine).dash_length = push_length
+				self._ball.getComponent(Solid).acceleration += p1_vector * self.ball_acceleration
+			else:
+				pass
+			if self._p2_pull and not self._p2_push:
+				self._p2.getComponent(DashedLine).offset -= pull_offset
+				self._p2.getComponent(DashedLine).dash_length = pull_length
+				self._ball.getComponent(Solid).acceleration -= p2_vector * self.ball_acceleration
+			elif self._p2_push and not self._p2_pull:
+				self._p2.getComponent(DashedLine).offset += push_offset
+				self._p2.getComponent(DashedLine).dash_length = push_length
+				self._ball.getComponent(Solid).acceleration += p2_vector * self.ball_acceleration
+			else:
+				pass
+		else:
+			self._p1.getComponent(DashedLine).dash_length = -1
+			self._p2.getComponent(DashedLine).dash_length = -1
 
 	def resetPositions(self):
 		start_distance = 500
 		self._p1.getComponent(Transform).position = Vector(-start_distance,0) + self.getOffset()
 		self._p1.getComponent(Solid).velocity = Vector(0, 0)
+		self._p1.getComponent(Solid).acceleration = Vector(0, 0)
 		self._p2.getComponent(Transform).position = Vector(start_distance, 0) + self.getOffset()
 		self._p2.getComponent(Solid).velocity = Vector(0, 0)
+		self._p2.getComponent(Solid).acceleration = Vector(0, 0)
 		self._ball.getComponent(Transform).position = Vector() + self.getOffset()
 		self._ball.getComponent(Solid).velocity = Vector(0, 0)
 		self._game_start = time.time()
@@ -178,28 +208,49 @@ class MainMenuGame(YuGame):
 		if (self._control_lock):
 			return
 		if event.data() == Key.W:
-			self._p1.getComponent(Solid).velocity.y = -self.DELTA
+			if (self._stage >= 2):
+				self._p1.getComponent(Solid).acceleration.y = -self.acc
+			else:
+				self._p1.getComponent(Solid).velocity.y = -self.vel
 			return
 		elif event.data() == Key.A:
 			self._p1_pull = True
 			return
 		elif event.data() == Key.S:
-			self._p1.getComponent(Solid).velocity.y = self.DELTA
+			if (self._stage >= 2):
+				self._p1.getComponent(Solid).acceleration.y = self.acc
+			else:
+				self._p1.getComponent(Solid).velocity.y = self.vel
 			return
 		elif event.data() == Key.D:
 			self._p1_push = True
 			return
 		elif event.data() == Key.I:
-			self._p2.getComponent(Solid).velocity.y = -self.DELTA
+			if (self._stage >= 2):
+				self._p2.getComponent(Solid).acceleration.y = -self.acc
+			else:
+				self._p2.getComponent(Solid).velocity.y = -self.vel
 			return
 		elif event.data() == Key.J:
 			self._p2_push = True
 			return
 		elif event.data() == Key.K:
-			self._p2.getComponent(Solid).velocity.y = self.DELTA
+			if (self._stage >= 2):
+				self._p2.getComponent(Solid).acceleration.y = self.acc
+			else:
+				self._p2.getComponent(Solid).velocity.y = self.vel
 			return
 		elif event.data() == Key.L:
 			self._p2_pull = True
+			return
+		elif event.data() == Key.NUM_1:
+			self._stage = 1
+			return
+		elif event.data() == Key.NUM_2:
+			self._stage = 2
+			return
+		elif event.data() == Key.NUM_3:
+			self._stage = 3
 			return
 		return
 
@@ -207,25 +258,37 @@ class MainMenuGame(YuGame):
 		if (self._control_lock):
 			return
 		if event.data() == Key.W:
-			self._p1.getComponent(Solid).velocity.y = 0
+			if (self._stage >= 2):
+				self._p1.getComponent(Solid).acceleration.y = 0
+			else:
+				self._p1.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.A:
 			self._p1_pull = False
 			return
 		elif event.data() == Key.S:
-			self._p1.getComponent(Solid).velocity.y = 0
+			if (self._stage >= 2):
+				self._p1.getComponent(Solid).acceleration.y = 0
+			else:
+				self._p1.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.D:
 			self._p1_push = False
 			return
 		elif event.data() == Key.I:
-			self._p2.getComponent(Solid).velocity.y = 0
+			if (self._stage >= 2):
+				self._p2.getComponent(Solid).acceleration.y = 0
+			else:
+				self._p2.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.J:
 			self._p2_push = False
 			return
 		elif event.data() == Key.K:
-			self._p2.getComponent(Solid).velocity.y = 0
+			if (self._stage >= 2):
+				self._p2.getComponent(Solid).acceleration.y = 0
+			else:
+				self._p2.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.L:
 			self._p2_pull = False

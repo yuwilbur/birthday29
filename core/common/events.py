@@ -36,6 +36,9 @@ class Key(object):
     K = 'K'
     L = 'L'
     NUM_1 = '1'
+    NUM_2 = '2'
+    NUM_3 = '3'
+    NUM_4 = '4'
     R = 'R'
     DEBUG = 'DEBUG'
 

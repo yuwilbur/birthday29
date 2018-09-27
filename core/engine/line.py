@@ -14,4 +14,4 @@ class DashedLine(Line):
 	def __init__(self, game_object):
 		super(DashedLine, self).__init__(game_object)
 		self.offset = 0
-		self.dash_length = 10
+		self.dash_length = -1
