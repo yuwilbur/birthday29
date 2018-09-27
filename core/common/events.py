@@ -40,6 +40,9 @@ class Key(object):
     NUM_3 = '3'
     NUM_4 = '4'
     R = 'R'
+    Z = 'Z'
+    X = 'X'
+    C = 'C'
     DEBUG = 'DEBUG'
 
 class KeyEvent(Event):

@@ -36,7 +36,10 @@ class InputManager(Manager):
             pygame.K_1 : InputManager.Key(Key.NUM_1),
             pygame.K_2 : InputManager.Key(Key.NUM_2),
             pygame.K_3 : InputManager.Key(Key.NUM_3),
-            pygame.K_r : InputManager.Key(Key.R)
+            pygame.K_r : InputManager.Key(Key.R),
+            pygame.K_z : InputManager.Key(Key.Z),
+            pygame.K_x : InputManager.Key(Key.X),
+            pygame.K_c : InputManager.Key(Key.C),
         }
 
     def setup(self):

@@ -58,6 +58,10 @@ class MainMenuGame(YuGame):
 		super(MainMenuGame, self).start()
 		self._game_lock = False
 
+	def stop(self):
+		super(MainMenuGame, self).stop()
+		self._game_lock = True
+
 	def setup(self):
 		super(MainMenuGame, self).setup() 
 		EventDispatcher().add_event_listener(KeyEvent.TYPE, self.onKeyEvent)
