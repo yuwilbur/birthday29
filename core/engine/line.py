@@ -9,3 +9,9 @@ class Line(Component):
 		self.start = Vector()
 		self.end = Vector()
 		self.color = Color.WHITE
+
+class DashedLine(Line):
+	def __init__(self, game_object):
+		super(DashedLine, self).__init__(game_object)
+		self.offset = 0
+		self.dash_length = 10

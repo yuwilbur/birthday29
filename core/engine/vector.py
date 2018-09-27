@@ -1,3 +1,5 @@
+import math
+
 class Vector(object):
 	def __init__(self, x=0, y=0):
 		self.x = x
@@ -11,6 +13,9 @@ class Vector(object):
 
 	def toIntTupleInvert(self):
 		return (int(self.y), int(self.x))
+
+	def toUnitVector(self):
+		return self / Vector.Distance(self, Vector())
 
 	def __neg__(self):
 		return Vector(-self.x, -self.y)
@@ -39,6 +44,10 @@ class Vector(object):
 		deltaSqu = self - other
 		deltaSqu = deltaSqu * deltaSqu
 		return deltaSqu.x + deltaSqu.y
+
+	@staticmethod
+	def Distance(self, other):
+		return math.sqrt(Vector.DistanceSqu(self, other))
 
 	@staticmethod
 	def Dot(self, other):

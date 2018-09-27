@@ -12,7 +12,7 @@ from ..engine.collider import Collider
 from ..engine.transform import Transform
 from ..renderer.color import Color
 from ..sync.period_sync import PeriodSync
-from ..engine.line import Line
+from ..engine.line import *
 from ..engine.align import Align
 
 import time
@@ -66,7 +66,10 @@ class MainMenuGame(YuGame):
 		self._p1.addComponent(Collider)
 		self._p1.getComponent(Rectangle).dimensions = Vector(thickness, 150)
 		self._p1.getComponent(Collider).setOnCollisionListener(self.onP1Collision)
-		self._p1.addComponent(Line)
+		self._p1.addComponent(DashedLine)
+		self._p1.getComponent(DashedLine).color = Color.WHITE
+		self._p1_push = False
+		self._p1_pull = False
 
 		self._p2 = GameObject("p2")
 		self._p2.addComponent(Rectangle)
@@ -74,7 +77,10 @@ class MainMenuGame(YuGame):
 		self._p2.addComponent(Collider)
 		self._p2.getComponent(Rectangle).dimensions = Vector(thickness, 150) 
 		self._p2.getComponent(Collider).setOnCollisionListener(self.onP2Collision)
-		self._p2.addComponent(Line)
+		self._p2.addComponent(DashedLine)
+		self._p2.getComponent(DashedLine).color = Color.WHITE
+		self._p2_push = False
+		self._p2_pull = False
 
 		self._ball = GameObject("ball")
 		self._ball.addComponent(Circle)
@@ -114,10 +120,26 @@ class MainMenuGame(YuGame):
 
 	def update(self):
 		super(MainMenuGame, self).update()
-		self._p1.getComponent(Line).start = self._p1.getComponent(Transform).position
-		self._p1.getComponent(Line).end = self._ball.getComponent(Transform).position
-		self._p2.getComponent(Line).start = self._p2.getComponent(Transform).position
-		self._p2.getComponent(Line).end = self._ball.getComponent(Transform).position
+		offset = 5.0
+		dash_length = 10.0
+		self._p1.getComponent(DashedLine).start = self._p1.getComponent(Transform).position
+		self._p1.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
+		self._p1.getComponent(DashedLine).dash_length = 0
+		self._p2.getComponent(DashedLine).dash_length = 0
+		if self._p1_pull and not self._p1_push:
+			self._p1.getComponent(DashedLine).offset -= offset
+			self._p1.getComponent(DashedLine).dash_length = dash_length
+		if self._p1_push and not self._p1_pull:
+			self._p1.getComponent(DashedLine).offset += offset
+			self._p1.getComponent(DashedLine).dash_length = dash_length
+		if self._p2_pull and not self._p2_push:
+			self._p2.getComponent(DashedLine).offset -= offset
+			self._p2.getComponent(DashedLine).dash_length = dash_length
+		if self._p2_push and not self._p2_pull:
+			self._p2.getComponent(DashedLine).offset += offset
+			self._p2.getComponent(DashedLine).dash_length = dash_length
+		self._p2.getComponent(DashedLine).start = self._p2.getComponent(Transform).position
+		self._p2.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
 		if (self._game_lock):
 			self._game_start = time.time()
 		self._game_duration = time.time() - self._game_start
@@ -159,25 +181,25 @@ class MainMenuGame(YuGame):
 			self._p1.getComponent(Solid).velocity.y = -self.DELTA
 			return
 		elif event.data() == Key.A:
-			self._p1.getComponent(Line).color = Color.BLUE
+			self._p1_pull = True
 			return
 		elif event.data() == Key.S:
 			self._p1.getComponent(Solid).velocity.y = self.DELTA
 			return
 		elif event.data() == Key.D:
-			self._p1.getComponent(Line).color = Color.RED
+			self._p1_push = True
 			return
 		elif event.data() == Key.I:
 			self._p2.getComponent(Solid).velocity.y = -self.DELTA
 			return
 		elif event.data() == Key.J:
-			self._p2.getComponent(Line).color = Color.BLUE
+			self._p2_push = True
 			return
 		elif event.data() == Key.K:
 			self._p2.getComponent(Solid).velocity.y = self.DELTA
 			return
 		elif event.data() == Key.L:
-			self._p2.getComponent(Line).color = Color.RED
+			self._p2_pull = True
 			return
 		return
 
@@ -188,24 +210,24 @@ class MainMenuGame(YuGame):
 			self._p1.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.A:
-			self._p1.getComponent(Line).color = Color.WHITE
+			self._p1_pull = False
 			return
 		elif event.data() == Key.S:
 			self._p1.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.D:
-			self._p1.getComponent(Line).color = Color.WHITE
+			self._p1_push = False
 			return
 		elif event.data() == Key.I:
 			self._p2.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.J:
-			self._p2.getComponent(Line).color = Color.WHITE
+			self._p2_push = False
 			return
 		elif event.data() == Key.K:
 			self._p2.getComponent(Solid).velocity.y = 0
 			return
 		elif event.data() == Key.L:
-			self._p2.getComponent(Line).color = Color.WHITE
+			self._p2_pull = False
 			return
 		return

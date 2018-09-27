@@ -9,12 +9,13 @@ from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.material import Material
 from ..engine.material import LateMaterial
-from ..engine.line import Line
+from ..engine.line import *
 from ..engine.ui import UI
 from ..sync.manager import Manager
 from ..renderer.color import Color
 
 import pygame
+import math
 
 class Renderer(Manager):
     __metaclass__ = Singleton
@@ -42,6 +43,25 @@ class Renderer(Manager):
         for line_id, line in lines.items():
             pygame.draw.line(self._screen, line.color, (self._center + line.start).toIntTuple(), (self._center + line.end).toIntTuple())
 
+    def renderDashedLines(self):
+        lines = self._engine.getObjectsWithType(DashedLine)
+        for line_id, line in lines.items():
+            if line.dash_length == 0:
+                pygame.draw.line(self._screen, line.color, (self._center + line.start).toIntTuple(), (self._center + line.end).toIntTuple())
+            elif line.dash_length < 0:
+                continue
+            else:
+                distance_squ = Vector.DistanceSqu(line.end, line.start)
+                direction = (line.end - line.start).toUnitVector()
+                step = direction * line.dash_length
+                offset = direction * (line.offset % (line.dash_length * 2))
+                position = line.start + offset
+                while(Vector.DistanceSqu(position, line.start) < distance_squ):
+                    pygame.draw.line(self._screen, line.color, (self._center + position).toIntTuple(), (self._center + position + step).toIntTuple())
+                    position += step * 2
+
+            
+
     def renderMaterial(self, material_type):
         materials = self._engine.getObjectsWithType(material_type)
         for material_id, material in materials.items():
@@ -57,6 +77,7 @@ class Renderer(Manager):
     def update(self):
         self._screen.fill(Color.BLACK)
         self.renderLines()
+        self.renderDashedLines()
         self.renderMaterial(Material)
         self.renderMaterial(LateMaterial)
         uis = self._engine.getObjectsWithType(UI)
