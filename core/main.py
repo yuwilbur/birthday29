@@ -15,6 +15,8 @@ import time
 class Main(object):
     def setFullScreen(self, enable):
         config.FULL_SCREEN = enable
+    def setUseCamera(self, enable):
+        config.USE_CAMERA = enable
 
     def run(self):
         pygame.mixer.pre_init(44100, -16, 2, 512)

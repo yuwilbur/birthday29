@@ -164,7 +164,7 @@ def processYImage(img):
             elif (right == min_value):
                 key_direction = Key.RIGHT
         if not (key_direction == None):
-            addPixel(y, x, key_direction, 2)
+            addPixel(y, x, key_direction, length / 2)
         clearArea([y - length / 2, x - length / 2],[y + length / 2, x + length / 2])
     return results
 

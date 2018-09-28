@@ -1,1 +1,2 @@
 FULL_SCREEN = False
+USE_CAMERA = True

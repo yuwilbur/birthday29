@@ -89,6 +89,7 @@ class YuGame(Game):
 
 	def onYImageEvent(self, event):
 		def overlayImage(pixels, img):
+			width = 2
 			for pixel in pixels:
 				color = Color.RED
 				if pixel.direction == Key.UP:
@@ -104,7 +105,12 @@ class YuGame(Game):
 				y = pixel.position[0]
 				x = pixel.position[1]
 				length = pixel.half_length
-				img[(y - length):(y + length),(x - length):(x + length)] = color[0:3]
+				color = color[0:3]
+				img[(y - length):(y - length + width),(x - length):(x + length)] = color
+				img[(y + length - width):(y + length),(x - length):(x + length)] = color
+				img[(y - length):(y + length),(x - length):(x - length + width)] = color
+				img[(y - length):(y + length),(x + length - width):(x + length)] = color
+		
 		p1_raw = event.data()[0]
 		p2_raw = event.data()[1]
 		stereo = [Frame(), Frame()]

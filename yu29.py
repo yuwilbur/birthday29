@@ -10,8 +10,10 @@ if __name__ == '__main__':
 			continue
 		arg_type = arg[2:-2]
 		arg_value = arg[-1:]
-		if arg_type == 'full_screen':
+		if arg_type == 'fullscreen':
 			main.setFullScreen(arg_value == '1')
+		elif arg_type == 'camera':
+			main.setUseCamera(arg_value == '1')
 	main.run()
 	pygame.quit()
 	sys.exit()
