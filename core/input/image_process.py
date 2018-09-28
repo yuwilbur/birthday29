@@ -44,6 +44,8 @@ def processYImage(img):
     img[0][0][0] = 0
     while True:
         cycles += 1
+        if cycles > 75:
+            break
         candidates = np.argwhere(img >= threshold)
         if len(candidates) == 0:
             break

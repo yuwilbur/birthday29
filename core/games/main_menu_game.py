@@ -25,7 +25,8 @@ class MainMenuGame(YuGame):
 	ASSETS_PATH = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "core", "assets")
 	HIT_SOUND_PATH = os.path.join(ASSETS_PATH, "boop.wav")
 	BOOM_SOUND_PATH = os.path.join(ASSETS_PATH, "boom.wav")
-	MUSIC_PATH = os.path.join(ASSETS_PATH, "music2.ogg")
+	#MUSIC_PATH = os.path.join(ASSETS_PATH, "music2.ogg")
+	MUSIC_PATH = os.path.join(ASSETS_PATH, "music.mp3")
 	DELTA = 300
 	acc = DELTA * 4
 	vel = DELTA

@@ -17,32 +17,44 @@ class Main(object):
         config.FULL_SCREEN = enable
 
     def run(self):
-        pygame.mixer.pre_init(44100, -16, 2, 1)
+        pygame.mixer.pre_init(44100, -16, 2, 512)
         pygame.mixer.init()
         pygame.init()
 
         EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
 
-        managers = [
+        managers1 = [
             InputManager(),
             GameManager(),
             GameEngine(),
-            Renderer(),
+        ]
+        managers2 = [
+            Renderer()
         ]
 
-        for manager in managers:
+        for manager in managers1:
+            manager.setup()
+        for manager in managers2:
             manager.setup()
 
         self._running = True
-        period_sync = PeriodSync()
+        period_sync1 = PeriodSync()
+        period_sync2 = PeriodSync()
         while self._running:
-            period_sync.Start()
-            for manager in managers:
+            period_sync1.Start()
+            for manager in managers1:
                 manager.update()
-            period_sync.End()
-            period_sync.Sync()
+            period_sync1.End()
+            period_sync1.Sync()
+            period_sync2.Start()
+            for manager in managers2:
+                manager.update()
+            period_sync2.End()
+            period_sync2.Sync()
 
-        for manager in managers:
+        for manager in managers1:
+            manager.stop()
+        for manager in managers2:
             manager.stop()
 
         pygame.quit()

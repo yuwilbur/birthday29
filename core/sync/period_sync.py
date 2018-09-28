@@ -1,7 +1,7 @@
 import time
 
 class PeriodSync:
-    PERIOD = 0.033 # 30Hz
+    PERIOD = 0.02 # 30Hz
 
     def Start(self):
         self._start_time = time.time()
