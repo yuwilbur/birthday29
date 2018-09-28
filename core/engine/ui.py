@@ -33,7 +33,7 @@ class TextBox(UI):
 		self.width = 0
 		self.height = 0
 		self.color = Color.WHITE
-		self.font_type = 'Arial'
+		self.font_type = None
 		self.font_size = 24
 		self.align = Align.RIGHT
 		self.surface = None
