@@ -49,11 +49,15 @@ class YuGame(Game):
 			self.right.addComponent(Circle)
 			self.right.addComponent(LateMaterial)
 			self.right.getComponent(Circle).radius = radius
+			self.up_key = up
+			self.down_key = down
+			self.left_key = left
+			self.right_key = right
 			self.controls = {
-				up : (self.up, Color.LIGHT_BLUE, Color.DARK_BLUE),
-				down : (self.down, Color.LIGHT_YELLOW, Color.DARK_YELLOW),
-				left : (self.left, Color.LIGHT_GREEN, Color.DARK_GREEN),
-				right : (self.right, Color.LIGHT_RED, Color.DARK_RED)
+				self.up_key : (self.up, Color.LIGHT_BLUE, Color.DARK_BLUE),
+				self.down_key : (self.down, Color.LIGHT_YELLOW, Color.DARK_YELLOW),
+				self.left_key : (self.left, Color.LIGHT_GREEN, Color.DARK_GREEN),
+				self.right_key : (self.right, Color.LIGHT_RED, Color.DARK_RED)
 			}
 			self.up.getComponent(LateMaterial).color = self.controls[up][2]
 			self.down.getComponent(LateMaterial).color = self.controls[down][2]
@@ -88,17 +92,26 @@ class YuGame(Game):
 			self._p2_info.processed = result
 
 	def onYImageEvent(self, event):
-		def overlayImage(pixels, img):
+		def processPlayer(player, img):
 			width = 2
+			up_count = 0
+			down_count = 0
+			left_count = 0
+			right_count = 0
+			pixels = player.processed
 			for pixel in pixels:
 				color = Color.RED
 				if pixel.direction == Key.UP:
+					up_count += 1
 					color = Color.BLUE
 				elif pixel.direction == Key.DOWN:
+					down_count += 1
 					color = Color.YELLOW
 				elif pixel.direction == Key.LEFT:
+					left_count += 1
 					color = Color.GREEN
 				elif pixel.direction == Key.RIGHT:
+					right_count += 1
 					color = Color.RED
 				elif pixel.direction == Key.DEBUG:
 					color = Color.ORANGE
@@ -110,15 +123,24 @@ class YuGame(Game):
 				img[(y + length - width):(y + length),(x - length):(x + length)] = color
 				img[(y - length):(y + length),(x - length):(x - length + width)] = color
 				img[(y - length):(y + length),(x + length - width):(x + length)] = color
+			if (up_count > down_count):
+				EventDispatcher().dispatch_event(KeyEvent(player.up_key))
+			elif (down_count > up_count):
+				EventDispatcher().dispatch_event(KeyEvent(player.down_key))
+
+			if (right_count > left_count):
+				EventDispatcher().dispatch_event(KeyEvent(player.right_key))
+			elif(left_count > right_count):
+				EventDispatcher().dispatch_event(KeyEvent(player.left_key))
 		
 		p1_raw = event.data()[0]
 		p2_raw = event.data()[1]
 		stereo = [Frame(), Frame()]
 		p1_raw.scale3(stereo[0])
 		p2_raw.scale3(stereo[1])
-		overlayImage(self._p1_info.processed, stereo[0].data)
+		processPlayer(self._p1_info, stereo[0].data)
 		self._p1_info.camera.getComponent(Image).fromNumpy(stereo[0].data)
-		overlayImage(self._p2_info.processed, stereo[1].data)
+		processPlayer(self._p2_info, stereo[1].data)
 		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
 
 	def onP1Score(self):
@@ -144,7 +166,7 @@ class YuGame(Game):
 			control = self._p2_info.controls[key]
 			control[0].getComponent(LateMaterial).color = control[2]
 
-	def onMainKeyDownEvent(self, event):
+	def onMainKeyEvent(self, event):
 		key = event.data()
 		if key in self._p1_info.controls:
 			control = self._p1_info.controls[key]
@@ -216,7 +238,7 @@ class YuGame(Game):
 		length = self._resolution.x / 2
 		self._p1_info = self.createPlayer(Vector(p1_x, p1_y), Align.RIGHT, length, Key.W, Key.S, Key.A, Key.D)
 		self._p2_info = self.createPlayer(Vector(p2_x, p2_y), Align.LEFT, length, Key.I, Key.K, Key.J, Key.L)
-		EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onMainKeyDownEvent)
+		EventDispatcher().add_event_listener(KeyEvent.TYPE, self.onMainKeyEvent)
 		EventDispatcher().add_event_listener(KeyUpEvent.TYPE, self.onMainKeyUpEvent)
 		EventDispatcher().add_event_listener(YImageEvent.TYPE, self.onYImageEvent)
 		EventDispatcher().add_event_listener(LatencyEvent.TYPE, self.onLatencyEvent)
