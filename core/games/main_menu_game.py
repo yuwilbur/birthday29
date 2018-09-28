@@ -18,8 +18,12 @@ from ..engine.align import Align
 
 import time
 import random
+import pygame
+import os, sys
 
 class MainMenuGame(YuGame):
+	ASSETS_PATH = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "core", "assets")
+	HIT_SOUND_PATH = os.path.join(ASSETS_PATH, "boop.wav")
 	DELTA = 300
 	acc = DELTA * 4
 	vel = DELTA
@@ -32,12 +36,14 @@ class MainMenuGame(YuGame):
 
 	def onP1Collision(self, game_object):
 		if game_object.name == 'ball':
+			self._hit_sound.play()
 			return
 		self._p1.getComponent(Transform).position.y -= self._p1.getComponent(Solid).velocity.y * PeriodSync.PERIOD
 		self._p1.getComponent(Solid).velocity.y = 0
 
 	def onP2Collision(self, game_object):
 		if game_object.name == 'ball':
+			self._hit_sound.play()
 			return
 		self._p2.getComponent(Transform).position.y -= self._p2.getComponent(Solid).velocity.y * PeriodSync.PERIOD
 		self._p2.getComponent(Solid).velocity.y = 0
@@ -113,6 +119,9 @@ class MainMenuGame(YuGame):
 		self._stage = 1
 
 		self._resolution = self.getResolution()
+
+		pygame.mixer.init()
+		self._hit_sound = pygame.mixer.Sound(self.HIT_SOUND_PATH)
 
 		def createWall(position, dimensions, color):
 			wall = GameObject("wall")
