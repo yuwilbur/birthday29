@@ -25,7 +25,7 @@ class MainMenuGame(YuGame):
 	ASSETS_PATH = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "core", "assets")
 	HIT_SOUND_PATH = os.path.join(ASSETS_PATH, "boop.wav")
 	BOOM_SOUND_PATH = os.path.join(ASSETS_PATH, "boom.wav")
-	MUSIC_PATH = os.path.join(ASSETS_PATH, "music.mp3")
+	MUSIC_PATH = os.path.join(ASSETS_PATH, "music2.ogg")
 	DELTA = 300
 	acc = DELTA * 4
 	vel = DELTA
@@ -131,7 +131,7 @@ class MainMenuGame(YuGame):
 		self._boom_sound = pygame.mixer.Sound(self.BOOM_SOUND_PATH)
 		self._boom_sound.set_volume(1.0)
 		pygame.mixer.music.load(self.MUSIC_PATH)
-		pygame.mixer.music.set_volume(0.5)
+		pygame.mixer.music.set_volume(1.0)
 		pygame.mixer.music.play(-1)
 
 		def createWall(position, dimensions, color):
