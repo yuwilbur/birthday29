@@ -20,11 +20,13 @@ import time
 import random
 
 class MainMenuGame(YuGame):
-	DELTA = 100
+	DELTA = 300
 	acc = DELTA * 4
 	vel = DELTA
 	ball_speed = DELTA * 2
 	ball_acceleration = DELTA / 2
+	score_width = 600
+	score_delay = 0.8
 	def __init__(self):
 		super(MainMenuGame, self).__init__("MainMenuGame")
 
@@ -48,12 +50,14 @@ class MainMenuGame(YuGame):
 			return
 		super(MainMenuGame, self).onP1Score()
 		self.resetPositions()
+		self._p1_score.getComponent(GradientRectangle).dimensions = Vector(self._resolution.x, self._resolution.y)
 
 	def onP2Score(self, game_object):
 		if not game_object.name == 'ball':
 			return
 		super(MainMenuGame, self).onP2Score()
 		self.resetPositions()
+		self._p2_score.getComponent(GradientRectangle).dimensions = Vector(self._resolution.x, self._resolution.y)
 
 	def start(self):
 		super(MainMenuGame, self).start()
@@ -82,7 +86,8 @@ class MainMenuGame(YuGame):
 		self._p1_pull = False
 		self._p1_score = GameObject("p1 score")
 		self._p1_score.addComponent(GradientRectangle)
-		self._p1_score.getComponent(GradientRectangle).dimensions = Vector(100,100)
+		self._p1_score.getComponent(GradientRectangle).start_color = Color.BLACK
+		self._p1_score.getComponent(GradientRectangle).end_color = Color.WHITE
 
 		self._p2 = GameObject("p2")
 		self._p2.addComponent(Rectangle)
@@ -94,6 +99,10 @@ class MainMenuGame(YuGame):
 		self._p2.getComponent(DashedLine).color = Color.WHITE
 		self._p2_push = False
 		self._p2_pull = False
+		self._p2_score = GameObject("p2 score")
+		self._p2_score.addComponent(GradientRectangle)
+		self._p2_score.getComponent(GradientRectangle).start_color = Color.WHITE
+		self._p2_score.getComponent(GradientRectangle).end_color = Color.BLACK
 
 		self._ball = GameObject("ball")
 		self._ball.addComponent(Circle)
@@ -135,18 +144,26 @@ class MainMenuGame(YuGame):
 
 	def update(self):
 		super(MainMenuGame, self).update()
+		if (self._p1_score.getComponent(GradientRectangle).dimensions.x > 0):
+			width = int(self._p1_score.getComponent(GradientRectangle).dimensions.x * self.score_delay)
+			self._p1_score.getComponent(GradientRectangle).dimensions.x = width
+			self._p1_score.getComponent(Transform).position = Vector(self._resolution.x / 2 - width / 2,0) + self.getOffset()
+		if (self._p2_score.getComponent(GradientRectangle).dimensions.x > 0):
+			width = int(self._p2_score.getComponent(GradientRectangle).dimensions.x * self.score_delay)
+			self._p2_score.getComponent(GradientRectangle).dimensions.x = width
+			self._p2_score.getComponent(Transform).position = Vector(-self._resolution.x / 2 + width / 2,0) + self.getOffset()
 		if (self._game_lock):
 			self._game_start = time.time()
 		self._game_duration = time.time() - self._game_start
-		if (self._game_duration < 1.0):
+		if (self._game_duration < 2.0):
 			self.setGameInfo(["READY?"])
-		elif (self._game_duration < 2.0):
-			self.setGameInfo(["3"])
 		elif (self._game_duration < 3.0):
-			self.setGameInfo(["2"])
+			self.setGameInfo(["3"])
 		elif (self._game_duration < 4.0):
-			self.setGameInfo(["1"])
+			self.setGameInfo(["2"])
 		elif (self._game_duration < 5.0):
+			self.setGameInfo(["1"])
+		elif (self._game_duration < 6.0):
 			self.setGameInfo(["FIGHT"])
 			if (self._control_lock):
 				direction = random.randint(0,1)

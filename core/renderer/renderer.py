@@ -64,9 +64,11 @@ class Renderer(Manager):
     def renderGradientRectangles(self):
         rectangles = self._engine.getObjectsWithType(GradientRectangle)
         for rectangle_id, rectangle in rectangles.items():
-            position = self._center + rectangle.getComponent(Transform).position
-            height = rectangle.dimensions.y
             width = rectangle.dimensions.x
+            if (width == 0):
+                continue
+            height = rectangle.dimensions.y
+            position = self._center + rectangle.getComponent(Transform).position
             step = rectangle.step
             color_diff = [
                 (rectangle.end_color[0] - rectangle.start_color[0]) * step / float(width),
@@ -85,8 +87,6 @@ class Renderer(Manager):
                     int(rectangle.start_color[2] + color_diff[2] * count),
                     int(rectangle.start_color[3] + color_diff[3] * count)
                     ]
-                print rectangle_color
-                #print rectangle_color
                 pygame.draw.rect(self._screen, rectangle_color, rect)
                 count += 1
 

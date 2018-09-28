@@ -9,5 +9,4 @@ class GradientRectangle(Component):
 		self.start_color = Color.WHITE
 		self.end_color = Color.BLACK
 		self.step = 5
-		self.gradient_direction = Vector(1.0, 0.0)
 		self.dimensions = Vector()
