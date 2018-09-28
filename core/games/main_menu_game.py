@@ -38,17 +38,18 @@ class MainMenuGame(YuGame):
 
 	def onP1Collision(self, game_object):
 		if game_object.name == 'ball':
-			self._hit_sound.play()
 			return
 		self._p1.getComponent(Transform).position.y -= self._p1.getComponent(Solid).velocity.y * PeriodSync.PERIOD
 		self._p1.getComponent(Solid).velocity.y = 0
 
 	def onP2Collision(self, game_object):
 		if game_object.name == 'ball':
-			self._hit_sound.play()
 			return
 		self._p2.getComponent(Transform).position.y -= self._p2.getComponent(Solid).velocity.y * PeriodSync.PERIOD
 		self._p2.getComponent(Solid).velocity.y = 0
+
+	def onBallCollision(self, game_object):
+		self._hit_sound.play()
 
 	def setGameInfo(self, texts):
 		self._game_info.getComponent(TextBox).setTexts(texts)
@@ -119,6 +120,7 @@ class MainMenuGame(YuGame):
 		self._ball.addComponent(Material)
 		self._ball.addComponent(Collider)
 		self._ball.getComponent(Circle).radius = 25
+		self._ball.getComponent(Collider).setOnCollisionListener(self.onBallCollision)
 
 		self._stage = 1
 
