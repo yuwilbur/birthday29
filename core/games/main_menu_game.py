@@ -13,6 +13,7 @@ from ..engine.transform import Transform
 from ..renderer.color import Color
 from ..sync.period_sync import PeriodSync
 from ..engine.line import *
+from ..engine.gradient_rectangle import GradientRectangle
 from ..engine.align import Align
 
 import time
@@ -79,6 +80,9 @@ class MainMenuGame(YuGame):
 		self._p1.getComponent(DashedLine).color = Color.WHITE
 		self._p1_push = False
 		self._p1_pull = False
+		self._p1_score = GameObject("p1 score")
+		self._p1_score.addComponent(GradientRectangle)
+		self._p1_score.getComponent(GradientRectangle).dimensions = Vector(100,100)
 
 		self._p2 = GameObject("p2")
 		self._p2.addComponent(Rectangle)
