@@ -24,11 +24,13 @@ import os, sys
 class MainMenuGame(YuGame):
 	ASSETS_PATH = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "core", "assets")
 	HIT_SOUND_PATH = os.path.join(ASSETS_PATH, "boop.wav")
+	BOOM_SOUND_PATH = os.path.join(ASSETS_PATH, "boom.wav")
+	MUSIC_PATH = os.path.join(ASSETS_PATH, "music.mp3")
 	DELTA = 300
 	acc = DELTA * 4
 	vel = DELTA
-	ball_speed = DELTA * 2
-	ball_acceleration = DELTA / 2
+	ball_speed = DELTA
+	ball_acceleration = DELTA / 4
 	score_width = 600
 	score_delay = 0.8
 	def __init__(self):
@@ -55,6 +57,7 @@ class MainMenuGame(YuGame):
 		if not game_object.name == 'ball':
 			return
 		super(MainMenuGame, self).onP1Score()
+		self._boom_sound.play()
 		self.resetPositions()
 		self._p1_score.getComponent(GradientRectangle).dimensions = Vector(self._resolution.x, self._resolution.y)
 
@@ -62,6 +65,7 @@ class MainMenuGame(YuGame):
 		if not game_object.name == 'ball':
 			return
 		super(MainMenuGame, self).onP2Score()
+		self._boom_sound.play()
 		self.resetPositions()
 		self._p2_score.getComponent(GradientRectangle).dimensions = Vector(self._resolution.x, self._resolution.y)
 
@@ -93,7 +97,7 @@ class MainMenuGame(YuGame):
 		self._p1_score = GameObject("p1 score")
 		self._p1_score.addComponent(GradientRectangle)
 		self._p1_score.getComponent(GradientRectangle).start_color = Color.BLACK
-		self._p1_score.getComponent(GradientRectangle).end_color = Color.WHITE
+		self._p1_score.getComponent(GradientRectangle).end_color = Color.BLUE
 
 		self._p2 = GameObject("p2")
 		self._p2.addComponent(Rectangle)
@@ -107,7 +111,7 @@ class MainMenuGame(YuGame):
 		self._p2_pull = False
 		self._p2_score = GameObject("p2 score")
 		self._p2_score.addComponent(GradientRectangle)
-		self._p2_score.getComponent(GradientRectangle).start_color = Color.WHITE
+		self._p2_score.getComponent(GradientRectangle).start_color = Color.RED
 		self._p2_score.getComponent(GradientRectangle).end_color = Color.BLACK
 
 		self._ball = GameObject("ball")
@@ -120,8 +124,13 @@ class MainMenuGame(YuGame):
 
 		self._resolution = self.getResolution()
 
-		pygame.mixer.init()
 		self._hit_sound = pygame.mixer.Sound(self.HIT_SOUND_PATH)
+		self._hit_sound.set_volume(0.5)
+		self._boom_sound = pygame.mixer.Sound(self.BOOM_SOUND_PATH)
+		self._boom_sound.set_volume(1.0)
+		pygame.mixer.music.load(self.MUSIC_PATH)
+		pygame.mixer.music.set_volume(0.5)
+		pygame.mixer.music.play(-1)
 
 		def createWall(position, dimensions, color):
 			wall = GameObject("wall")
@@ -173,7 +182,7 @@ class MainMenuGame(YuGame):
 		elif (self._game_duration < 5.0):
 			self.setGameInfo(["1"])
 		elif (self._game_duration < 6.0):
-			self.setGameInfo(["FIGHT"])
+			self.setGameInfo(["GO"])
 			if (self._control_lock):
 				direction = random.randint(0,1)
 				if (direction == 0):

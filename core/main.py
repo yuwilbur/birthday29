@@ -17,6 +17,8 @@ class Main(object):
         config.FULL_SCREEN = enable
 
     def run(self):
+        pygame.mixer.pre_init(44100, -16, 2, 512)
+        pygame.mixer.init()
         pygame.init()
 
         EventDispatcher().add_event_listener(KeyDownEvent.TYPE, self.onKeyDownEvent)
