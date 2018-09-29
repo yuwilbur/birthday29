@@ -117,12 +117,13 @@ def processYImage(img):
 
         start_time = time.time()
         direction = right
-        position = start + delta[direction]
-        while(not isWithinBounds(position)):
+        start_direction = direction
+        position = start
+        while(not isWithinBounds(position + delta[direction]) or getValue(position + delta[direction]) < threshold):
             direction = turn_right[direction]
-            position = start + delta[direction]
             if direction == start_direction:
                 return (start, Vector(1,1))
+        position += delta[direction]
         while(not position == start):
             if (time.time() - start_time) > 0.1:
                 break
@@ -141,7 +142,7 @@ def processYImage(img):
                 position -= delta[direction]
                 direction = turn_right[direction]
                 position += delta[direction]
-        #print 'square', time.time() - start_time
+        print 'square', time.time() - start_time
         return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
     def useMooreNeighborTracing(start):
         start_time = time.time()
@@ -173,9 +174,9 @@ def processYImage(img):
         start_time = time.time()
         direction = right
         position = start + delta[direction]
-        while(not isWithinBounds(position)):
+        start_direction = copy.copy(direction)
+        while(not isWithinBounds(position + delta[direction]) or getValue(position + delta[direction]) < threshold):
             direction = turn_right[direction]
-            position = start + delta[direction]
             if direction == start_direction:
                 return (start, Vector(1,1))
         count = 0
@@ -189,18 +190,20 @@ def processYImage(img):
                     top_left.x = position.x
                 if (position.x > bot_right.x):
                     bot_right.x = position.x
-            if count > 60:
+            if count > 100:
+                print 'how?', getValue(position - delta[direction])
+                print getValue(position)
                 print 'weird'
                 break
             count += 1
-            addPixel(position)
-            start_position = copy.copy(position)
+            #addPixel(position)
             direction = turn_left[direction]
-            start_direction = copy.copy(direction)
-            position = start_position + delta[direction]
-            while(not isWithinBounds(position) or getValue(position) < threshold):
+            test = 0
+            while(not isWithinBounds(position + delta[direction]) or getValue(position + delta[direction]) < threshold):
                 direction = turn_right[direction]
-                position = start_position + delta[direction]
+                #print getValue(position + delta[direction]), test
+            test = getValue(position)
+            position += delta[direction]
         print 'moore', time.time() - start_time
         return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
 
@@ -225,7 +228,7 @@ def processYImage(img):
         (center, size) = useMooreNeighborTracing(Vector(cx, cy))
         #(center, size) = useSquareTracing(Vector(cx, cy))
         #(center, size) = useWilburContour(Vector(cx, cy))
-        break
+        #break
         y = center.y
         x = center.x
 
@@ -263,7 +266,7 @@ def processYImage(img):
             elif (right == min_value):
                 key_direction = Key.RIGHT
         if not (key_direction == None):
-            #addPixel(center, size, key_direction)
+            addPixel(center, size, key_direction)
             clearArea(center, size)
     print cycles
     return results
