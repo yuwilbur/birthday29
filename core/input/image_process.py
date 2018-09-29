@@ -23,7 +23,7 @@ def processYImage(img):
     def addPixel(pixel, size = Vector(1,1), direction = Key.DEBUG):
         results.append(ImageInput(pixel, direction, size))
     def clearArea(center, size):
-        img[center.y - size.y / 2: center.y + size.y / 2, center.x - size.x / 2:center.x + size.x / 2] = 0
+        img[center.y - size.y / 2: center.y + size.y / 2 + 1, center.x - size.x / 2:center.x + size.x / 2 + 1] = 0
     def getValue(top_left, bot_right):
         count = (bot_right[0] - top_left[0] + 1) * (bot_right[1] - top_left[1] + 1)
         if count == 0:
@@ -123,10 +123,21 @@ def processYImage(img):
         direction = right
         position = start
         position += delta[direction]
-        if not isWithinBounds(position):
-            return (Vector(), Vector())
+        while(not isWithinBounds(position)):
+            position -= delta[direction]
+            direction = turn_right[direction]
+            position += delta[direction]
+        top_left = copy.copy(start)
+        bot_right = copy.copy(start)
         while(not position == start):
             if (img[position.y][position.x][0] >= threshold):
+                if (position.y > bot_right.y):
+                    bot_right.y = position.y
+                if (position.x < top_left.x):
+                    top_left.x = position.x
+                if (position.x > bot_right.x):
+                    bot_right.x = position.x
+
                 direction = turn_left[direction]
             else:
                 direction = turn_right[direction]
@@ -136,7 +147,7 @@ def processYImage(img):
                 direction = turn_right[direction]
                 position += delta[direction]
         print 'square', time.time() - start_time
-        return (Vector(), Vector())
+        return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
     def useMooreNeighborTracing(start):
         pass
 
@@ -157,10 +168,10 @@ def processYImage(img):
         if (cy > img_height - min_length):
             break
 
-        useSquareTracing(Vector(cx, cy))
-        useWilburContour(Vector(cx, cy))
-        break
-        (center, size) = useWilburContour(Vector(cx, cy))
+        
+        (center, size) = useSquareTracing(Vector(cx, cy))
+        #(center, size) = useWilburContour(Vector(cx, cy))
+
         y = center.y
         x = center.x
 
@@ -200,7 +211,7 @@ def processYImage(img):
         if not (key_direction == None):
             addPixel(center, size, key_direction)
             clearArea(center, size)
-    #print cycles
+    print cycles
     return results
 
 def yImageWorker(pipe):
