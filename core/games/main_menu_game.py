@@ -27,7 +27,7 @@ class MainMenuGame(YuGame):
 	BOOM_SOUND_PATH = os.path.join(ASSETS_PATH, "boom.wav")
 	#MUSIC_PATH = os.path.join(ASSETS_PATH, "music2.ogg")
 	MUSIC_PATH = os.path.join(ASSETS_PATH, "music.mp3")
-	DELTA = 300
+	DELTA = 500
 	acc = DELTA * 4
 	vel = DELTA
 	ball_speed = DELTA

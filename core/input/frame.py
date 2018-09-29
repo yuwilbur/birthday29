@@ -1,14 +1,13 @@
 import numpy as np
 
 class Frame(object):
-	def __init__(self, resolution=(0,0), bits=0):
+	def __init__(self, resolution=(0,0)):
 		self.timestamp = 0
 		self._resolution = resolution
-		self._bits = bits
-		self.data = self.createData(self._bits)
+		self.data = self.createData()
 
 	def createData(self, scale = 1):
-		return np.empty((self._resolution[0], self._resolution[1], self._bits * scale), dtype=np.uint8)
+		return np.empty((self._resolution[0], self._resolution[1], scale), dtype=np.uint8)
 
 	def scale3(self, output):
 		output.timestamp = self.timestamp

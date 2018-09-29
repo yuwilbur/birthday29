@@ -14,8 +14,8 @@ def cameraWorker(pipe, resolution):
     main_conn, worker_conn = pipe
     camera = Camera(resolution)
     mono_resolution = (resolution[0] / 2, resolution[1])
-    y_mono = Frame(resolution, 1)
-    y_stereo = [Frame(mono_resolution, 1), Frame(mono_resolution, 1)]
+    y_mono = Frame(resolution)
+    y_stereo = [Frame(mono_resolution), Frame(mono_resolution)]
     while True:
         y_mono.data = camera.capture()
         y_mono.timestamp = time.time()

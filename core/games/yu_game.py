@@ -14,6 +14,7 @@ from ..engine.ui import TextBox
 from ..engine.transform import Transform
 from ..input.frame import Frame
 from ..renderer.color import Color
+from ..common import config
 
 import time
 
@@ -136,15 +137,16 @@ class YuGame(Game):
 					player.borders[index].getComponent(Rectangle).dimensions = pixel.size
 				else:
 					player.borders[index].getComponent(Rectangle).dimensions = Vector()
-			if (up_count > down_count):
-				EventDispatcher().dispatch_event(KeyEvent(player.up_key))
-			elif (down_count > up_count):
-				EventDispatcher().dispatch_event(KeyEvent(player.down_key))
+			if config.USE_CAMERA:
+				if (up_count > down_count):
+					EventDispatcher().dispatch_event(KeyEvent(player.up_key))
+				elif (down_count > up_count):
+					EventDispatcher().dispatch_event(KeyEvent(player.down_key))
 
-			if (right_count > left_count):
-				EventDispatcher().dispatch_event(KeyEvent(player.right_key))
-			elif(left_count > right_count):
-				EventDispatcher().dispatch_event(KeyEvent(player.left_key))
+				if (right_count > left_count):
+					EventDispatcher().dispatch_event(KeyEvent(player.right_key))
+				elif(left_count > right_count):
+					EventDispatcher().dispatch_event(KeyEvent(player.left_key))
 		
 		p1_raw = event.data()[0]
 		p2_raw = event.data()[1]

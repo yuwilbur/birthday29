@@ -87,9 +87,61 @@ def processYImage(img):
         if center.y + length / 2 > img_height - 1:
             length = ((img_height - 1) - center.y) * 2
         length = int(length)
-        print 'wilbur', time.time() - start_time
+        #print 'wilbur', time.time() - start_time
         return (center, Vector(length, length))
     def useSquareTracing(start):
+        up = 'up'
+        right = 'right'
+        down = 'down'
+        left = 'left'
+        delta = {
+            up : Vector(0, -1),
+            down : Vector(0, 1),
+            left : Vector(-1, 0),
+            right : Vector(1, 0)
+        }
+        turn_left = {
+            up : left,
+            down : right,
+            left : down,
+            right : up
+        }
+        turn_right = {
+            up : right,
+            down : left,
+            left : up,
+            right : down
+        }
+        top_left = copy.copy(start)
+        bot_right = copy.copy(start)
+
+        start_time = time.time()
+        direction = right
+        position = start + delta[direction]
+        # while(not isWithinBounds(position)):
+        #     direction = turn_right[direction]
+        #     position = start + delta[direction]
+        while(not position == start):
+            if (time.time() - start_time) > 0.1:
+                break
+            if (getValue(position) >= threshold):
+                if (position.y > bot_right.y):
+                    bot_right.y = position.y
+                if (position.x < top_left.x):
+                    top_left.x = position.x
+                if (position.x > bot_right.x):
+                    bot_right.x = position.x
+                direction = turn_left[direction]
+            else:
+                direction = turn_right[direction]
+            position += delta[direction]
+            while(not isWithinBounds(position)):
+                position -= delta[direction]
+                direction = turn_right[direction]
+                position += delta[direction]
+        #print 'square', time.time() - start_time
+        return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
+    def useMooreNeighborTracing(start):
         start_time = time.time()
         up = 'up'
         right = 'right'
@@ -113,89 +165,38 @@ def processYImage(img):
             left : up,
             right : down
         }
-        direction = right
-        position = start
-        position += delta[direction]
-        while(not isWithinBounds(position)):
-            position -= delta[direction]
-            direction = turn_right[direction]
-            position += delta[direction]
         top_left = copy.copy(start)
         bot_right = copy.copy(start)
-        while(not position == start):
-            if (getValue(position) >= threshold):
-                if (position.y > bot_right.y):
-                    bot_right.y = position.y
-                if (position.x < top_left.x):
-                    top_left.x = position.x
-                if (position.x > bot_right.x):
-                    bot_right.x = position.x
-                direction = turn_left[direction]
-            else:
-                direction = turn_right[direction]
-            position += delta[direction]
-            while(not isWithinBounds(position)):
-                position -= delta[direction]
-                direction = turn_right[direction]
-                position += delta[direction]
-        print 'square', time.time() - start_time
-        return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
-    def useMooreNeighborTracing(start):
-        pass
-        # start_time = time.time()
-        # up = 'up'
-        # right = 'right'
-        # down = 'down'
-        # left = 'left'
-        # delta = {
-        #     up : Vector(0, -1),
-        #     down : Vector(0, 1),
-        #     left : Vector(-1, 0),
-        #     right : Vector(1, 0)
-        # }
-        # turn_left = {
-        #     up : left,
-        #     down : right,
-        #     left : down,
-        #     right : up
-        # }
-        # turn_right = {
-        #     up : right,
-        #     down : left,
-        #     left : up,
-        #     right : down
-        # }
-        # direction = right
-        # position = start
-        # position += delta[direction]
-        # while(not isWithinBounds(position)):
-        #     position -= delta[direction]
-        #     direction = turn_right[direction]
-        #     position += delta[direction]
-        # top_left = copy.copy(start)
-        # bot_right = copy.copy(start)
-        # while(not position == start):
-        #     potential_direction = left_turn[direction]
-        #     potential_position = delta[potential_direction]
-        #     while(img[])
-        #     if (img[position.y][position.x][0] >= threshold):
-        #         if (position.y > bot_right.y):
-        #             bot_right.y = position.y
-        #         if (position.x < top_left.x):
-        #             top_left.x = position.x
-        #         if (position.x > bot_right.x):
-        #             bot_right.x = position.x
 
-        #         direction = turn_left[direction]
-        #     else:
-        #         direction = turn_right[direction]
-        #     position += delta[direction]
-        #     while(not isWithinBounds(position)):
-        #         position -= delta[direction]
-        #         direction = turn_right[direction]
-        #         position += delta[direction]
-        # print 'square', time.time() - start_time
-        # return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
+        start_time = time.time()
+        direction = right
+        position = start + delta[direction]
+        # while(not isWithinBounds(position)):
+        #     direction = turn_right[direction]
+        #     position = start + delta[direction]
+        count = 0
+        while(not position == start):
+            if (time.time() - start_time) > 0.1:
+                break
+            if not count == 0:
+                if Vector.DistanceSqu(start, position) < 5:
+                    print position, start, direction
+            count += 1
+            addPixel(position)
+            start_position = copy.copy(position)
+            direction = turn_left[direction]
+            position = start_position + delta[direction]
+            # while(not isWithinBounds(position)):
+            #     direction = turn_right[direction]
+            #     position = start_position + delta[direction]
+            while(getValue(position) < threshold):
+                direction = turn_right[direction]
+                position = start_position + delta[direction]
+                # while(not isWithinBounds(position)):
+                #     direction = turn_right[direction]
+                #     position = start_position + delta[direction]
+        print 'moore', time.time() - start_time
+        return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
 
     cycles = 0
     start_time = time.time()
@@ -215,9 +216,10 @@ def processYImage(img):
             break
 
         
-        (center, size) = useSquareTracing(Vector(cx, cy))
-        #(center, size) = useWilburContour(Vector(cx, cy))
-
+        #(center, size) = useMooreNeighborTracing(Vector(cx, cy))
+        #(center, size) = useSquareTracing(Vector(cx, cy))
+        (center, size) = useWilburContour(Vector(cx, cy))
+        #break
         y = center.y
         x = center.x
 
