@@ -19,6 +19,33 @@ from ..common import config
 import time
 
 class YuGame(Game):
+	TROLL_INDEX = 0
+	TROLL = [
+		"HAPPY BIRTHDAY TO YU",
+		"HAPPY BIRTHDAY TO YU!",
+		"HAPPY BIRTHDAY TO WILBUR",
+		"HAPPY BIRTHDAY TO YU!!",
+		"",
+		"Never gonna give you up",
+		"Never gonna let you down",
+		"Never gonna run around and desert you",
+		"Never gonna make you cry",
+		"Never gonna say goodbye",
+		"Never gonna tell a lie and hurt you",
+		"",
+		"...",
+		"Really?",
+		"Are you still playing?",
+		"Are you actually enjoying my game?",
+		"If so, you're crazier than me",
+		"...",
+		"LEAVE ME ALONE!",
+		"Ain't nobody got time for this",
+		"BYE",
+		"",
+		"penis",
+		""
+	]
 	class PlayerInfo(object):
 		def __init__(self, up, down, left, right):
 			self.background = GameObject("background")
@@ -190,11 +217,19 @@ class YuGame(Game):
 		processPlayer(self._p2_info, stereo[1].data)
 		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
 
+	def updateTroll(self):
+		self.TROLL_INDEX += 1
+		if self.TROLL_INDEX == len(self.TROLL):
+			return
+		self.setGameTitle(["|",self.TROLL[self.TROLL_INDEX]])
+
 	def onP1Score(self):
+		self.updateTroll()
 		self._p1_info.score += 1
 		self.updatePlayer1Score()
 
 	def onP2Score(self):
+		self.updateTroll()
 		self._p2_info.score += 1
 		self.updatePlayer2Score()
 
@@ -275,7 +310,7 @@ class YuGame(Game):
 		pass
 
 	def setup(self):
-		self._font_size = 64
+		self._font_size = 54
 		self._offset = Vector(0, -self._info_width / 2)
 		self._resolution = Renderer().getResolution() - Vector(0, self._info_width)
 		p1_x = - self._resolution.x / 2
@@ -297,7 +332,7 @@ class YuGame(Game):
 		self._game_title.getComponent(TextBox).height = self._info_width * 3 / 4
 		self._game_title.getComponent(TextBox).align = Align.CENTER
 		self._game_title.getComponent(Transform).position = Vector(0, p1_y)
-		self.setGameTitle(["|","BABY DON'T HURT ME"])
+		self.setGameTitle(["|",self.TROLL[self.TROLL_INDEX]])
 
 	def reset(self):
 		self._p1_info.score = 0

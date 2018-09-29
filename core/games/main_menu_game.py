@@ -27,15 +27,16 @@ class MainMenuGame(YuGame):
 	BOOM_SOUND_PATH = os.path.join(ASSETS_PATH, "boom.wav")
 	#MUSIC_PATH = os.path.join(ASSETS_PATH, "music2.ogg")
 	MUSIC_PATH = os.path.join(ASSETS_PATH, "music.mp3")
-	DELTA = 500
-	acc = DELTA * 4
-	vel = DELTA
-	ball_speed = DELTA
-	ball_acceleration = DELTA / 4
 	score_width = 600
 	score_delay = 0.8
 	def __init__(self):
 		super(MainMenuGame, self).__init__("MainMenuGame")
+
+	def setSpeeds(self, delta):
+		self.acc = delta * 4
+		self.vel = delta
+		self.ball_speed = delta
+		self.ball_acceleration = delta / 4
 
 	def onP1Collision(self, game_object):
 		if game_object.name == 'ball':
@@ -135,6 +136,8 @@ class MainMenuGame(YuGame):
 		pygame.mixer.music.set_volume(1.0)
 		pygame.mixer.music.play(-1)
 
+		self.setSpeeds(500)
+
 		def createWall(position, dimensions, color):
 			wall = GameObject("wall")
 			wall.addComponent(Rectangle)
@@ -194,7 +197,10 @@ class MainMenuGame(YuGame):
 			self._control_lock = False
 		else:
 			self.setGameInfo([""])
+		
 
+		self._p1.getComponent(DashedLine).dash_length = -1
+		self._p2.getComponent(DashedLine).dash_length = -1
 		if (self._stage >= 3):
 			self._p1.getComponent(DashedLine).start = self._p1.getComponent(Transform).position
 			self._p1.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
@@ -209,29 +215,26 @@ class MainMenuGame(YuGame):
 			push_offset = 2.5
 			push_length = 5.0
 			self._ball.getComponent(Solid).acceleration = Vector(0, 0)
+
+			p1_acceleration = p1_vector * self.ball_acceleration
 			if self._p1_pull and not self._p1_push:
 				self._p1.getComponent(DashedLine).offset -= pull_offset
 				self._p1.getComponent(DashedLine).dash_length = pull_length
-				self._ball.getComponent(Solid).acceleration -= p1_vector * self.ball_acceleration
+				self._ball.getComponent(Solid).acceleration -= p1_acceleration
 			elif self._p1_push and not self._p1_pull:
 				self._p1.getComponent(DashedLine).offset += push_offset
 				self._p1.getComponent(DashedLine).dash_length = push_length
-				self._ball.getComponent(Solid).acceleration += p1_vector * self.ball_acceleration
-			else:
-				pass
+				self._ball.getComponent(Solid).acceleration += p1_acceleration
+			
+			p2_acceleration = p2_vector * self.ball_acceleration
 			if self._p2_pull and not self._p2_push:
 				self._p2.getComponent(DashedLine).offset -= pull_offset
 				self._p2.getComponent(DashedLine).dash_length = pull_length
-				self._ball.getComponent(Solid).acceleration -= p2_vector * self.ball_acceleration
+				self._ball.getComponent(Solid).acceleration -= p2_acceleration
 			elif self._p2_push and not self._p2_pull:
 				self._p2.getComponent(DashedLine).offset += push_offset
 				self._p2.getComponent(DashedLine).dash_length = push_length
-				self._ball.getComponent(Solid).acceleration += p2_vector * self.ball_acceleration
-			else:
-				pass
-		else:
-			self._p1.getComponent(DashedLine).dash_length = -1
-			self._p2.getComponent(DashedLine).dash_length = -1
+				self._ball.getComponent(Solid).acceleration += p2_acceleration
 
 	def resetPositions(self):
 		start_distance = 500
@@ -251,8 +254,26 @@ class MainMenuGame(YuGame):
 		self.resetPositions()
 
 	def onKeyEvent(self, event):
-		if (self._control_lock):
+		if event.data() == Key.NUM_1:
+			self._stage = 1
 			return
+		elif event.data() == Key.NUM_2:
+			self._stage = 2
+			return
+		elif event.data() == Key.NUM_3:
+			self._stage = 3
+			return
+		elif event.data() == Key.NUM_7:
+			self.setSpeeds(500)
+			return
+		elif event.data() == Key.NUM_8:
+			self.setSpeeds(1000)
+			return
+		elif event.data() == Key.NUM_9:
+			self.setSpeeds(2000)
+			return
+		if (self._control_lock):
+				return
 		if event.data() == Key.W:
 			if (self._stage >= 2):
 				self._p1.getComponent(Solid).acceleration.y = -self.acc
@@ -288,15 +309,6 @@ class MainMenuGame(YuGame):
 			return
 		elif event.data() == Key.L:
 			self._p2_pull = True
-			return
-		elif event.data() == Key.NUM_1:
-			self._stage = 1
-			return
-		elif event.data() == Key.NUM_2:
-			self._stage = 2
-			return
-		elif event.data() == Key.NUM_3:
-			self._stage = 3
 			return
 		return
 

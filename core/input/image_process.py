@@ -279,7 +279,7 @@ def processYImage(img):
         if not (key_direction == None):
             addPixel(center, size, key_direction)
             clearArea(center, size)
-    if time.time() - start_time:
+    if (time.time() - start_time > 1.0):
          print cycles, time.time() - start_time
     return results
 

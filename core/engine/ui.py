@@ -34,7 +34,7 @@ class TextBox(UI):
 		self.height = 0
 		self.color = Color.WHITE
 		self.font_type = None
-		self.font_size = 24
+		self.font_size = 20
 		self.align = Align.RIGHT
 		self.surface = None
 		pygame.font.init()
