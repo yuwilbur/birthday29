@@ -24,17 +24,10 @@ def processYImage(img):
         results.append(ImageInput(pixel, direction, size))
     def clearArea(center, size):
         img[center.y - size.y / 2: center.y + size.y / 2 + 1, center.x - size.x / 2:center.x + size.x / 2 + 1] = 0
-    def getValue(top_left, bot_right):
-        count = (bot_right[0] - top_left[0] + 1) * (bot_right[1] - top_left[1] + 1)
-        if count == 0:
-            return 0.0
-        if (top_left[0] <= 0 or top_left[1] <= 0 or bot_right[0] >= img_height - 1 or bot_right[1] >= img_width - 1):
-            return 0.0
-        value = 0.0
-        for y in range(top_left[0], bot_right[0] + 1, +1):
-            for x in range(top_left[1], bot_right[1] + 1, +1):
-                value += img[y][x][0]
-        return value / count + 1
+    def getValueFromArea(center, size):
+        return np.average(img[center.y - size.y / 2: center.y + size.y / 2 + 1, center.x - size.x / 2:center.x + size.x / 2 + 1])
+    def getValue(center):
+        return img[center.y][center.x][0]
     def useWilburContour(start):
         start_time = time.time()
         cy = start.y
@@ -130,14 +123,13 @@ def processYImage(img):
         top_left = copy.copy(start)
         bot_right = copy.copy(start)
         while(not position == start):
-            if (img[position.y][position.x][0] >= threshold):
+            if (getValue(position) >= threshold):
                 if (position.y > bot_right.y):
                     bot_right.y = position.y
                 if (position.x < top_left.x):
                     top_left.x = position.x
                 if (position.x > bot_right.x):
                     bot_right.x = position.x
-
                 direction = turn_left[direction]
             else:
                 direction = turn_right[direction]
@@ -150,6 +142,60 @@ def processYImage(img):
         return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
     def useMooreNeighborTracing(start):
         pass
+        # start_time = time.time()
+        # up = 'up'
+        # right = 'right'
+        # down = 'down'
+        # left = 'left'
+        # delta = {
+        #     up : Vector(0, -1),
+        #     down : Vector(0, 1),
+        #     left : Vector(-1, 0),
+        #     right : Vector(1, 0)
+        # }
+        # turn_left = {
+        #     up : left,
+        #     down : right,
+        #     left : down,
+        #     right : up
+        # }
+        # turn_right = {
+        #     up : right,
+        #     down : left,
+        #     left : up,
+        #     right : down
+        # }
+        # direction = right
+        # position = start
+        # position += delta[direction]
+        # while(not isWithinBounds(position)):
+        #     position -= delta[direction]
+        #     direction = turn_right[direction]
+        #     position += delta[direction]
+        # top_left = copy.copy(start)
+        # bot_right = copy.copy(start)
+        # while(not position == start):
+        #     potential_direction = left_turn[direction]
+        #     potential_position = delta[potential_direction]
+        #     while(img[])
+        #     if (img[position.y][position.x][0] >= threshold):
+        #         if (position.y > bot_right.y):
+        #             bot_right.y = position.y
+        #         if (position.x < top_left.x):
+        #             top_left.x = position.x
+        #         if (position.x > bot_right.x):
+        #             bot_right.x = position.x
+
+        #         direction = turn_left[direction]
+        #     else:
+        #         direction = turn_right[direction]
+        #     position += delta[direction]
+        #     while(not isWithinBounds(position)):
+        #         position -= delta[direction]
+        #         direction = turn_right[direction]
+        #         position += delta[direction]
+        # print 'square', time.time() - start_time
+        # return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
 
     cycles = 0
     start_time = time.time()
@@ -193,10 +239,10 @@ def processYImage(img):
                 x = x + delta
                 break
 
-        top = getValue([y - step, x - step], [y - step, x + step])
-        bottom = getValue([y + step, x - step], [y + step, x + step])
-        left = getValue([y - step, x - step], [y + step, x - step])
-        right = getValue([y - step, x + step], [y + step, x + step])
+        top = getValueFromArea(Vector(x,y - step), Vector(step * 2, 0))
+        bottom = getValueFromArea(Vector(x,y + step), Vector(step * 2, 0))
+        left = getValueFromArea(Vector(x - step,y), Vector(0, step * 2))
+        right = getValueFromArea(Vector(x + step,y), Vector(0, step * 2))
         min_value = min(top, bottom, left, right)
         key_direction = None
         if min_value < threshold and min_value > 0.0:
@@ -211,7 +257,6 @@ def processYImage(img):
         if not (key_direction == None):
             addPixel(center, size, key_direction)
             clearArea(center, size)
-    print cycles
     return results
 
 def yImageWorker(pipe):
