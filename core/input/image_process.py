@@ -166,12 +166,8 @@ def processYImage(img):
                 direction = turn_right[direction]
             #position += delta[direction]
             onMove[direction](position)
-            while(not isWithinBounds(position)):
-                position -= delta[direction]
-                direction = turn_right[direction]
-                position += delta[direction]
         #print time.time() - start_time
-        return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
+        return ((top_left + bot_right) / 2, bot_right - top_left + Vector(3,3))
     def useMooreNeighborTracing(start):
         start_time = time.time()
         up = 'up'
@@ -225,12 +221,12 @@ def processYImage(img):
                 position = start_position + delta[direction]
         return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
 
-    cycles = 0
     start_time = time.time()
+    cycles = 0
     while True:
-        cycles += 1
-        if (time.time() - start_time) > 1.0: # If this cycle exceeds 2 seconds, break out.
+        if (time.time() - start_time) > 1.0:
             break
+        cycles += 1
         candidates = np.argwhere(img >= threshold)
         if len(candidates) == 0:
             break
@@ -283,7 +279,8 @@ def processYImage(img):
         if not (key_direction == None):
             addPixel(center, size, key_direction)
             clearArea(center, size)
-    #print cycles
+    if time.time() - start_time:
+         print cycles, time.time() - start_time
     return results
 
 def yImageWorker(pipe):
