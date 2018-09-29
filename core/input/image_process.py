@@ -114,16 +114,16 @@ def processYImage(img):
         x = center.x
 
         if (y <= min_length):
-            clearArea([0,0],[min_length,img_width - 1])
+            clearArea(Vector(img_width / 2, min_length / 2),Vector(img_width, min_length))
             continue
         if (y >= img_height - min_length):
-            clearArea([img_height - min_length,0],[img_height - 1,img_width - 1])
+            clearArea(Vector(img_width / 2, img_height - min_length / 2),Vector(img_width, min_length))
             continue
         if (x <= min_length):
-            clearArea([0,0],[img_height - 1,min_length])
+            clearArea(Vector(min_length / 2, img_height / 2), Vector(min_length, img_height))
             continue
         if (x >= img_width - min_length):
-            clearArea([0,img_width - min_length],[img_height - 1,img_width - 1])
+            clearArea(Vector(img_width - min_length / 2, img_height / 2), Vector(min_length, img_height))
             continue
 
         value = img[y][x][0]
