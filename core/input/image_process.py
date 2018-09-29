@@ -108,7 +108,7 @@ def processYImage(img):
 
         (center, size) = useWilburContour(Vector(cx, cy))
         if center == Vector(cx, cy):
-            clearArea(Vector(cx, cy + length / 2), Vector(length ,length))
+            clearArea(Vector(cx, cy + size.y / 2), size)
             continue
         y = center.y
         x = center.x
