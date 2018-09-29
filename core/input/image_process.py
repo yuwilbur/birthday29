@@ -80,8 +80,16 @@ def processYImage(img):
         left = Vector(x - cx, y - cy)
 
         # Crudely calculate the length.
-        length = math.sqrt(Vector.DistanceSqu(left, right) * 2.0)
         center = start + (left+right) / 2
+        length = math.sqrt(Vector.DistanceSqu(left, right) * 2.0)
+        if center.x - length / 2 < 0:
+            length = center.x * 2
+        if center.x + length / 2 > img_width - 1:
+            length = ((img_width - 1) - center.x) * 2
+        if center.y - length / 2 < 0:
+            length = center.y * 2
+        if center.y + length / 2 > img_height - 1:
+            length = ((img_height - 1) - center.y) * 2
         return (center, Vector(length, length))
     def useSquareTracing(start):
         pass
