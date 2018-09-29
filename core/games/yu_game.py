@@ -54,6 +54,10 @@ class YuGame(Game):
 			self.down_key = down
 			self.left_key = left
 			self.right_key = right
+			self.up_pressed = False
+			self.down_pressed = False
+			self.left_pressed = False
+			self.right_pressed = False
 			self.controls = {
 				self.up_key : (self.up, Color.LIGHT_BLUE, Color.DARK_BLUE),
 				self.down_key : (self.down, Color.LIGHT_YELLOW, Color.DARK_YELLOW),
@@ -139,13 +143,35 @@ class YuGame(Game):
 					player.borders[index].getComponent(Rectangle).dimensions = Vector()
 			if config.USE_CAMERA:
 				if (up_count > down_count):
+					if player.down_pressed:
+						EventDispatcher().dispatch_event(KeyUpEvent(player.down_key))
+					if not player.up_pressed:
+						EventDispatcher().dispatch_event(KeyDownEvent(player.up_key))
 					EventDispatcher().dispatch_event(KeyEvent(player.up_key))
 				elif (down_count > up_count):
+					if player.up_pressed:
+						EventDispatcher().dispatch_event(KeyUpEvent(player.up_key))
+					if not player.down_pressed:
+						EventDispatcher().dispatch_event(KeyDownEvent(player.down_key))
 					EventDispatcher().dispatch_event(KeyEvent(player.down_key))
+				else:
+					if player.up_pressed:
+						EventDispatcher().dispatch_event(KeyUpEvent(player.up_key))
+					if player.down_pressed:
+						EventDispatcher().dispatch_event(KeyDownEvent(player.down_key))
+
 
 				if (right_count > left_count):
+					if player.left_pressed:
+						EventDispatcher().dispatch_event(KeyUpEvent(player.left_key))
+					if not player.right_pressed:
+						EventDispatcher().dispatch_event(KeyDownEvent(player.right_key))
 					EventDispatcher().dispatch_event(KeyEvent(player.right_key))
 				elif(left_count > right_count):
+					if player.right_pressed:
+						EventDispatcher().dispatch_event(KeyUpEvent(player.right_key))
+					if not player.left_pressed:
+						EventDispatcher().dispatch_event(KeyDownEvent(player.left_key))
 					EventDispatcher().dispatch_event(KeyEvent(player.left_key))
 		
 		p1_raw = event.data()[0]
