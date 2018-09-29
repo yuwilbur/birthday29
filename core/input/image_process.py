@@ -41,6 +41,7 @@ def processYImage(img):
         min_y = cy
         max_y = img_height - 1
 
+        # Find bottom right corner.
         x = cx
         for y in range(cy + 1, max_y + 1, +1):
             if img[y][x][0] < threshold:
@@ -57,8 +58,9 @@ def processYImage(img):
             if img[y][x][0] < threshold:
                 y -= 1
                 break
-        right = [y - cy, x - cx]
+        right = Vector(x - cx, y - cy)
 
+        # Find top left corner.
         x = cx
         for y in range(cy + 1, max_y + 1, +1):
             if img[y][x][0] < threshold:
@@ -75,24 +77,20 @@ def processYImage(img):
             if img[y][x][0] < threshold:
                 y += 1
                 break
-        left = [y - cy, x - cx]
+        left = Vector(x - cx, y - cy)
 
-        length = int(max(right[1] - left[1] + 3, 4) * 1.5)
-
-        if (length < min_length):
-            return (Vector(cx, cy), Vector(length, length))
-
-        y = cy + (right[0] + left[0]) / 2 + 1
-        x = cx + (right[1] + left[1]) / 2 + 1
-        return (Vector(x,y), Vector(length, length))
+        # Crudely calculate the length.
+        length = math.sqrt(Vector.DistanceSqu(left, right) * 2.0)
+        center = start + (left+right) / 2
+        return (center, Vector(length, length))
     def useSquareTracing(start):
         pass
-    angle_threshold = 1
-    cycles = 0
 
+    cycles = 0
     img[0][0][0] = 0
     start_time = time.time()
     while True:
+        cycles += 1
         if (time.time() - start_time) > 1.0: # If this cycle exceeds 2 seconds, break out.
             break
         candidates = np.argwhere(img >= threshold)
@@ -107,51 +105,31 @@ def processYImage(img):
             break
 
         (center, size) = useWilburContour(Vector(cx, cy))
-        if center == Vector(cx, cy):
-            clearArea(Vector(cx, cy + size.y / 2), size)
-            continue
         y = center.y
         x = center.x
 
-        if (y <= min_length):
-            clearArea(Vector(img_width / 2, min_length / 2),Vector(img_width, min_length))
-            continue
-        if (y >= img_height - min_length):
-            clearArea(Vector(img_width / 2, img_height - min_length / 2),Vector(img_width, min_length))
-            continue
-        if (x <= min_length):
-            clearArea(Vector(min_length / 2, img_height / 2), Vector(min_length, img_height))
-            continue
-        if (x >= img_width - min_length):
-            clearArea(Vector(img_width - min_length / 2, img_height / 2), Vector(min_length, img_height))
-            continue
-
-        value = img[y][x][0]
-        value_threshold = threshold / 2
-        for diff in range(0, min_length):
-            if (y - diff > 0):
-                if abs(value - int(img[y - diff][x][0])) > value_threshold:
-                    y = y - diff
-                    break
-            if (x - diff > 0):
-                if abs(value - int(img[y][x - diff][0])) > value_threshold:
-                    x = x - diff
-                    break
-            if (x + diff < img_width):
-                if abs(value - int(img[y][x + diff][0])) > value_threshold:
-                    x = x + diff
-                    break
-
-        if diff == min_length - 1:
+        if (size.x <= min_length or size.y <= min_length):
             clearArea(center, size)
             continue
 
-        diff = 2
         step = 2
-        top = getValue([y - diff, x - step], [y - diff, x + step])
-        bottom = getValue([y + diff, x - step], [y + diff, x + step])
-        left = getValue([y - step, x - diff], [y + step, x - diff])
-        right = getValue([y - step, x + diff], [y + step, x + diff])
+        value = img[y][x][0]
+        value_threshold = threshold / 2
+        for delta in range(0, min_length - step):
+            if abs(value - int(img[y - delta][x][0])) > value_threshold:
+                y = y - delta
+                break
+            if abs(value - int(img[y][x - delta][0])) > value_threshold:
+                x = x - delta
+                break
+            if abs(value - int(img[y][x + delta][0])) > value_threshold:
+                x = x + delta
+                break
+
+        top = getValue([y - step, x - step], [y - step, x + step])
+        bottom = getValue([y + step, x - step], [y + step, x + step])
+        left = getValue([y - step, x - step], [y + step, x - step])
+        right = getValue([y - step, x + step], [y + step, x + step])
         min_value = min(top, bottom, left, right)
         key_direction = None
         if min_value < threshold and min_value > 0.0:
@@ -166,6 +144,7 @@ def processYImage(img):
         if not (key_direction == None):
             addPixel(center, size, key_direction)
             clearArea(center, size)
+    print cycles
     return results
 
 def yImageWorker(pipe):
