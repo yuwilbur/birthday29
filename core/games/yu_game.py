@@ -65,7 +65,7 @@ class YuGame(Game):
 			self.right.getComponent(LateMaterial).color = self.controls[right][2]
 			self.score = 0
 			self.borders = []
-			for x in range(0,20):
+			for x in range(0,100):
 				border = GameObject("border")
 				border.addComponent(Rectangle)
 				border.addComponent(PostUIMaterial)

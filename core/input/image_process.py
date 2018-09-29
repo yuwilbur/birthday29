@@ -18,7 +18,7 @@ def processYImage(img):
     threshold = 150
     min_length = 12
 
-    def addPixel(pixel, size = Vector(10,10), direction = Key.DEBUG):
+    def addPixel(pixel, size = Vector(1,1), direction = Key.DEBUG):
         results.append(ImageInput(pixel, direction, size))
     def clearArea(center, size):
         img[center.y - size.y / 2: center.y + size.y / 2, center.x - size.x / 2:center.x + size.x / 2] = 0
@@ -34,6 +34,7 @@ def processYImage(img):
                 value += img[y][x][0]
         return value / count + 1
     def useWilburContour(start):
+        start_time = time.time()
         cy = start.y
         cx = start.x
         min_x = 0
@@ -91,9 +92,45 @@ def processYImage(img):
         if center.y + length / 2 > img_height - 1:
             length = ((img_height - 1) - center.y) * 2
         length = int(length)
+        print 'wilbur', time.time() - start_time
         return (center, Vector(length, length))
     def useSquareTracing(start):
-        pass
+        start_time = time.time()
+        up = 'up'
+        right = 'right'
+        down = 'down'
+        left = 'left'
+        delta = {
+            up : Vector(0, -1),
+            down : Vector(0, 1),
+            left : Vector(-1, 0),
+            right : Vector(1, 0)
+        }
+        turn_left = {
+            up : left,
+            down : right,
+            left : down,
+            right : up
+        }
+        turn_right = {
+            up : right,
+            down : left,
+            left : up,
+            right : down
+        }
+        def check(position):
+            return img[position.y][position.x][0] >= threshold
+        direction = right
+        position = start
+        position += delta[direction]
+        while(not position == start):
+            if (check(position)):
+                direction = turn_left[direction]
+            else:
+                direction = turn_right[direction]
+            position += delta[direction]
+        print 'square', time.time() - start_time
+        return (Vector(), Vector())
 
     cycles = 0
     img[0][0][0] = 0
@@ -113,6 +150,9 @@ def processYImage(img):
         if (cy > img_height - min_length):
             break
 
+        useSquareTracing(Vector(cx, cy))
+        useWilburContour(Vector(cx, cy))
+        break
         (center, size) = useWilburContour(Vector(cx, cy))
         y = center.y
         x = center.x
