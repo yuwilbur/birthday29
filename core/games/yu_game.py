@@ -133,7 +133,7 @@ class YuGame(Game):
 						color = Color.ORANGE
 					player.borders[index].getComponent(PostUIMaterial).color = color
 					player.borders[index].getComponent(Transform).position = pixel.position + border_offset
-					player.borders[index].getComponent(Rectangle).dimensions = Vector(pixel.size, pixel.size)
+					player.borders[index].getComponent(Rectangle).dimensions = pixel.size
 				else:
 					player.borders[index].getComponent(Rectangle).dimensions = Vector()
 			if (up_count > down_count):

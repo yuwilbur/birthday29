@@ -18,10 +18,10 @@ def processYImage(img):
     threshold = 150
     min_length = 12
 
-    def addPixel(y, x, direction, size = 1):
-        results.append(ImageInput(Vector(x, y), direction, size))
-    def clearArea(top_left, bot_right):
-        img[top_left[0]:bot_right[0],top_left[1]:bot_right[1]] = 0
+    def addPixel(pixel, size = Vector(10,10), direction = Key.DEBUG):
+        results.append(ImageInput(pixel, direction, size))
+    def clearArea(center, size):
+        img[center.y - size.y / 2: center.y + size.y / 2, center.x - size.x / 2:center.x + size.x / 2] = 0
     def getValue(top_left, bot_right):
         count = (bot_right[0] - top_left[0] + 1) * (bot_right[1] - top_left[1] + 1)
         if count == 0:
@@ -33,30 +33,9 @@ def processYImage(img):
             for x in range(top_left[1], bot_right[1] + 1, +1):
                 value += img[y][x][0]
         return value / count + 1
-    def distanceSqu(x1, x2):
-        y_diff = x1[0] - x2[0]
-        x_diff = x1[1] - x2[1]
-        return (y_diff*y_diff + x_diff*x_diff)
-
-    angle_threshold = 1
-    cycles = 0
-
-    img[0][0][0] = 0
-    while True:
-        cycles += 1
-        if cycles > 75:
-            break
-        candidates = np.argwhere(img >= threshold)
-        if len(candidates) == 0:
-            break
-        candidate = candidates[0]
-        cy = candidate[0]
-        cx = candidate[1]
-        img[cy][cx][0] = 0
-        # Stop processing if the newest value is at the bottom.
-        if (cy > img_height - min_length):
-            break
-
+    def useWilburContour(start):
+        cy = start.y
+        cx = start.x
         min_x = 0
         max_x = img_width - 1
         min_y = cy
@@ -99,19 +78,41 @@ def processYImage(img):
         left = [y - cy, x - cx]
 
         length = int(max(right[1] - left[1] + 3, 4) * 1.5)
-        
-        #addPixel(cy, cx, Key.UP)
-        #addPixel(cy + right[0], cx + right[1], Key.RIGHT)
-        #addPixel(cy + left[0], cx + left[1], Key.LEFT)
 
         if (length < min_length):
-            clearArea([cy, x - length / 2],[cy + length, x + length / 2])
-            continue
+            clearArea(Vector(x, cy + length / 2), Vector(length ,length))
+            addPixel(Vector(x, cy + length / 2))
+            return (Vector(cx, cy), Vector(length, length))
 
         y = cy + (right[0] + left[0]) / 2 + 1
         x = cx + (right[1] + left[1]) / 2 + 1
+        return (Vector(x,y), Vector(length, length))
+    def useSquareTracing(start):
+        pass
+    angle_threshold = 1
+    cycles = 0
 
-        #addPixel(y, x, Key.DOWN)
+    img[0][0][0] = 0
+    while True:
+        cycles += 1
+        if cycles >= 75:
+            break
+        candidates = np.argwhere(img >= threshold)
+        if len(candidates) == 0:
+            break
+        candidate = candidates[0]
+        cy = candidate[0]
+        cx = candidate[1]
+        img[cy][cx][0] = 0
+        # Stop processing if the newest value is at the bottom.
+        if (cy > img_height - min_length):
+            break
+
+        (center, size) = useWilburContour(Vector(cx, cy))
+        if center == Vector(cx, cy):
+            continue
+        y = center.y
+        x = center.x
 
         if (y <= min_length):
             clearArea([0,0],[min_length,img_width - 1])
@@ -143,7 +144,7 @@ def processYImage(img):
                     break
 
         if diff == min_length - 1:
-            clearArea([y - length / 2, x - length / 2],[y + length / 2, x + length / 2])
+            clearArea(center, size)
             continue
 
         diff = 2
@@ -164,8 +165,8 @@ def processYImage(img):
             elif (right == min_value):
                 key_direction = Key.RIGHT
         if not (key_direction == None):
-            addPixel(y, x, key_direction, length)
-        clearArea([y - length / 2, x - length / 2],[y + length / 2, x + length / 2])
+            addPixel(center, size, key_direction)
+            clearArea(center, size)
     return results
 
 def yImageWorker(pipe):
