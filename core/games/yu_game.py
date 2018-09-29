@@ -5,7 +5,7 @@ from ..renderer.renderer import Renderer
 from ..engine.vector import Vector
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
-from ..engine.material import LateMaterial
+from ..engine.material import *
 from ..engine.game_object import GameObject
 from ..engine.align import Align
 from ..engine.line import Line
@@ -64,6 +64,16 @@ class YuGame(Game):
 			self.left.getComponent(LateMaterial).color = self.controls[left][2]
 			self.right.getComponent(LateMaterial).color = self.controls[right][2]
 			self.score = 0
+			self.borders = []
+			for x in range(0,20):
+				border = GameObject("border")
+				border.addComponent(Rectangle)
+				border.addComponent(PostUIMaterial)
+				border.getComponent(PostUIMaterial).color = Color.WHITE
+				border.getComponent(PostUIMaterial).width = 2
+				border.getComponent(Rectangle).dimensions = Vector(100,100)
+				self.borders.append(border)
+
 
 	def updatePlayer1Score(self):
 		self._p1_info.game_text.getComponent(TextBox).setTexts([str(self._p1_info.score) + " "])
@@ -93,36 +103,39 @@ class YuGame(Game):
 
 	def onYImageEvent(self, event):
 		def processPlayer(player, img):
+			latency_text_transform = player.latency_text.getComponent(Transform)
+			latency_text_textbox = player.latency_text.getComponent(TextBox)
+			border_offset = latency_text_transform.position - Vector(latency_text_textbox.width, latency_text_textbox.height) / 2
 			width = 2
 			up_count = 0
 			down_count = 0
 			left_count = 0
 			right_count = 0
 			pixels = player.processed
-			for pixel in pixels:
-				color = Color.RED
-				if pixel.direction == Key.UP:
-					up_count += 1
-					color = Color.BLUE
-				elif pixel.direction == Key.DOWN:
-					down_count += 1
-					color = Color.YELLOW
-				elif pixel.direction == Key.LEFT:
-					left_count += 1
-					color = Color.GREEN
-				elif pixel.direction == Key.RIGHT:
-					right_count += 1
+			index = 0
+			for index in range(index, len(player.borders)):
+				if index < len(pixels):
+					pixel = pixels[index]
 					color = Color.RED
-				elif pixel.direction == Key.DEBUG:
-					color = Color.ORANGE
-				y = pixel.position[0]
-				x = pixel.position[1]
-				length = pixel.half_length
-				color = color[0:3]
-				img[(y - length):(y - length + width),(x - length):(x + length)] = color
-				img[(y + length - width):(y + length),(x - length):(x + length)] = color
-				img[(y - length):(y + length),(x - length):(x - length + width)] = color
-				img[(y - length):(y + length),(x + length - width):(x + length)] = color
+					if pixel.direction == Key.UP:
+						up_count += 1
+						color = Color.BLUE
+					elif pixel.direction == Key.DOWN:
+						down_count += 1
+						color = Color.YELLOW
+					elif pixel.direction == Key.LEFT:
+						left_count += 1
+						color = Color.GREEN
+					elif pixel.direction == Key.RIGHT:
+						right_count += 1
+						color = Color.RED
+					elif pixel.direction == Key.DEBUG:
+						color = Color.ORANGE
+					player.borders[index].getComponent(PostUIMaterial).color = color
+					player.borders[index].getComponent(Transform).position = pixel.position + border_offset
+					player.borders[index].getComponent(Rectangle).dimensions = Vector(pixel.size, pixel.size)
+				else:
+					player.borders[index].getComponent(Rectangle).dimensions = Vector()
 			if (up_count > down_count):
 				EventDispatcher().dispatch_event(KeyEvent(player.up_key))
 			elif (down_count > up_count):

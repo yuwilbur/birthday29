@@ -7,8 +7,7 @@ from ..sync.period_sync import PeriodSync
 from ..engine.primitive import Solid
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
-from ..engine.material import Material
-from ..engine.material import LateMaterial
+from ..engine.material import *
 from ..engine.gradient_rectangle import GradientRectangle
 from ..engine.line import *
 from ..engine.ui import UI
@@ -97,10 +96,12 @@ class Renderer(Manager):
             if material.hasComponent(Circle):
                 pygame.draw.circle(self._screen, material.color, position, material.getComponent(Circle).radius)
             elif material.hasComponent(Rectangle):
+                if material.getComponent(Rectangle).dimensions == Vector():
+                    continue
                 rect = pygame.Rect(0,0,0,0)
                 rect.size = material.getComponent(Rectangle).dimensions.toIntTuple()
                 rect.center = position
-                pygame.draw.rect(self._screen,  material.color, rect)
+                pygame.draw.rect(self._screen,  material.color, rect, material.width)
 
     def update(self):
         self._screen.fill(Color.BLACK)
@@ -116,6 +117,7 @@ class Renderer(Manager):
                 continue
             position = (self._center + ui.getComponent(Transform).position - Vector(surface.get_width() / 2, surface.get_height() / 2)).toIntTuple()
             self._screen.blit(surface, position, (0, 0, surface.get_width(), surface.get_height()))
+        self.renderMaterial(PostUIMaterial)
         pygame.display.update()
 
     

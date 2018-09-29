@@ -9,7 +9,12 @@ class Material(Component):
 		if not self.getGameObject().hasComponent(Solid):
 			raise ValueError("Material component needs a solid.")
 		self.color = Color.WHITE
+		self.width = 0
 
 class LateMaterial(Material):
 	def __init__(self, game_object):
 		super(LateMaterial, self).__init__(game_object)
+
+class PostUIMaterial(Material):
+	def __init__(self, game_object):
+		super(PostUIMaterial, self).__init__(game_object)

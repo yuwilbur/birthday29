@@ -18,8 +18,8 @@ def processYImage(img):
     threshold = 150
     min_length = 12
 
-    def addPixel(y, x, direction, length = 1):
-        results.append(ImageInput(np.array([y, x]), direction, length))
+    def addPixel(y, x, direction, size = 1):
+        results.append(ImageInput(Vector(x, y), direction, size))
     def clearArea(top_left, bot_right):
         img[top_left[0]:bot_right[0],top_left[1]:bot_right[1]] = 0
     def getValue(top_left, bot_right):
@@ -164,7 +164,7 @@ def processYImage(img):
             elif (right == min_value):
                 key_direction = Key.RIGHT
         if not (key_direction == None):
-            addPixel(y, x, key_direction, length / 2)
+            addPixel(y, x, key_direction, length)
         clearArea([y - length / 2, x - length / 2],[y + length / 2, x + length / 2])
     return results
 
