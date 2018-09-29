@@ -90,6 +90,7 @@ def processYImage(img):
             length = center.y * 2
         if center.y + length / 2 > img_height - 1:
             length = ((img_height - 1) - center.y) * 2
+        length = int(length)
         return (center, Vector(length, length))
     def useSquareTracing(start):
         pass
@@ -152,7 +153,7 @@ def processYImage(img):
         if not (key_direction == None):
             addPixel(center, size, key_direction)
             clearArea(center, size)
-    print cycles
+    #print cycles
     return results
 
 def yImageWorker(pipe):
