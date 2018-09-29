@@ -19,7 +19,7 @@ class Main(object):
         config.USE_CAMERA = enable
 
     def run(self):
-        pygame.mixer.pre_init(44100, -16, 2, 512)
+        pygame.mixer.pre_init(44100, -16, 2, 4096)
         pygame.mixer.init()
         pygame.init()
 

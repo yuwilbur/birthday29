@@ -96,7 +96,7 @@ def processYImage(img):
         if center.y + length / 2 > img_height - 1:
             length = ((img_height - 1) - center.y) * 2
         length = int(length)
-        print 'wilbur', time.time() - start_time
+        #print 'wilbur', time.time() - start_time
         return (center, Vector(length, length))
     def useSquareTracing(start):
         up = 'up'
@@ -243,7 +243,7 @@ def processYImage(img):
 
         #useMooreNeighborTracing(Vector(cx, cy))
         (center, size) = useSquareTracing(Vector(cx, cy))
-        #useWilburContour(Vector(cx, cy))
+        #(center, size) = useWilburContour(Vector(cx, cy))
         y = center.y
         x = center.x
 
