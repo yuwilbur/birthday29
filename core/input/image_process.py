@@ -121,6 +121,23 @@ def processYImage(img):
             left : up,
             right : down
         }
+
+        def onUp(position):
+            position.y -= 1
+        def onDown(position):
+            position.y += 1
+        def onLeft(position):
+            position.x -= 1
+        def onRight(position):
+            position.x += 1
+
+        onMove = {
+            up : onUp,
+            down : onDown,
+            left : onLeft,
+            right : onRight
+        }
+
         top_left = copy.copy(start)
         bot_right = copy.copy(start)
 
@@ -133,6 +150,7 @@ def processYImage(img):
             if direction == start_direction:
                 return (start, Vector(1,1))
         position += delta[direction]
+        #onMove[direction](position)
         while(not position == start):
             if (time.time() - start_time) > 0.1:
                 break
@@ -146,11 +164,13 @@ def processYImage(img):
                 direction = turn_left[direction]
             else:
                 direction = turn_right[direction]
-            position += delta[direction]
+            #position += delta[direction]
+            onMove[direction](position)
             while(not isWithinBounds(position)):
                 position -= delta[direction]
                 direction = turn_right[direction]
                 position += delta[direction]
+        #print time.time() - start_time
         return ((top_left + bot_right) / 2, bot_right - top_left + Vector(2,2))
     def useMooreNeighborTracing(start):
         start_time = time.time()
