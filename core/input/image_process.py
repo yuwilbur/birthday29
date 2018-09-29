@@ -80,8 +80,6 @@ def processYImage(img):
         length = int(max(right[1] - left[1] + 3, 4) * 1.5)
 
         if (length < min_length):
-            clearArea(Vector(x, cy + length / 2), Vector(length ,length))
-            addPixel(Vector(x, cy + length / 2))
             return (Vector(cx, cy), Vector(length, length))
 
         y = cy + (right[0] + left[0]) / 2 + 1
@@ -93,9 +91,9 @@ def processYImage(img):
     cycles = 0
 
     img[0][0][0] = 0
+    start_time = time.time()
     while True:
-        cycles += 1
-        if cycles >= 75:
+        if (time.time() - start_time) > 1.0: # If this cycle exceeds 2 seconds, break out.
             break
         candidates = np.argwhere(img >= threshold)
         if len(candidates) == 0:
@@ -110,6 +108,7 @@ def processYImage(img):
 
         (center, size) = useWilburContour(Vector(cx, cy))
         if center == Vector(cx, cy):
+            clearArea(Vector(cx, cy + length / 2), Vector(length ,length))
             continue
         y = center.y
         x = center.x
