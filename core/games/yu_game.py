@@ -142,37 +142,43 @@ class YuGame(Game):
 				else:
 					player.borders[index].getComponent(Rectangle).dimensions = Vector()
 			if config.USE_CAMERA:
+                                was_up_pressed = player.up_pressed
+                                was_down_pressed = player.down_pressed
+                                was_left_pressed = player.left_pressed
+                                was_right_pressed = player.right_pressed
 				if (up_count > down_count):
-					if player.down_pressed:
-						EventDispatcher().dispatch_event(KeyUpEvent(player.down_key))
-					if not player.up_pressed:
-						EventDispatcher().dispatch_event(KeyDownEvent(player.up_key))
-					EventDispatcher().dispatch_event(KeyEvent(player.up_key))
+                                        player.up_pressed = True
+                                        player.down_pressed = False
 				elif (down_count > up_count):
-					if player.up_pressed:
-						EventDispatcher().dispatch_event(KeyUpEvent(player.up_key))
-					if not player.down_pressed:
-						EventDispatcher().dispatch_event(KeyDownEvent(player.down_key))
-					EventDispatcher().dispatch_event(KeyEvent(player.down_key))
+                                        player.down_pressed = True
+                                        player.up_pressed = False
 				else:
-					if player.up_pressed:
-						EventDispatcher().dispatch_event(KeyUpEvent(player.up_key))
-					if player.down_pressed:
-						EventDispatcher().dispatch_event(KeyDownEvent(player.down_key))
-
+                                        player.up_pressed = False
+					player.down_pressed = False
 
 				if (right_count > left_count):
-					if player.left_pressed:
-						EventDispatcher().dispatch_event(KeyUpEvent(player.left_key))
-					if not player.right_pressed:
-						EventDispatcher().dispatch_event(KeyDownEvent(player.right_key))
-					EventDispatcher().dispatch_event(KeyEvent(player.right_key))
+                                        player.right_pressed = True
+                                        player.left_pressed = False
 				elif(left_count > right_count):
-					if player.right_pressed:
-						EventDispatcher().dispatch_event(KeyUpEvent(player.right_key))
-					if not player.left_pressed:
-						EventDispatcher().dispatch_event(KeyDownEvent(player.left_key))
-					EventDispatcher().dispatch_event(KeyEvent(player.left_key))
+                                        player.left_pressed = True
+                                        player.right_pressed = False
+                                else:
+                                        player.left_pressed = False
+                                        player.right_pressed = False
+
+                                def processKeyEvent(key_event, is_pressed, was_pressed):
+                                        if is_pressed:
+                                                if not was_pressed:
+                                                        EventDispatcher().dispatch_event(KeyDownEvent(key_event))
+                                                EventDispatcher().dispatch_event(KeyEvent(key_event))
+                                        else:
+                                                if was_pressed:
+                                                        EventDispatcher().dispatch_event(KeyUpEvent(key_event))                                                
+
+                                processKeyEvent(player.up_key, player.up_pressed, was_up_pressed)
+                                processKeyEvent(player.down_key, player.down_pressed, was_down_pressed)
+                                processKeyEvent(player.left_key, player.left_pressed, was_left_pressed)
+                                processKeyEvent(player.right_key, player.right_pressed, was_right_pressed)
 		
 		p1_raw = event.data()[0]
 		p2_raw = event.data()[1]
