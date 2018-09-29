@@ -129,8 +129,14 @@ def processYImage(img):
             else:
                 direction = turn_right[direction]
             position += delta[direction]
+            if position.x < 0 or position.x >= img_width or position.y < 0 or position.y >= img_height:
+                position -= delta[direction]
+                direction = turn_left[direction]
+                position += delta[direction]
         print 'square', time.time() - start_time
         return (Vector(), Vector())
+    def useMooreNeighborTracing(start):
+        pass
 
     cycles = 0
     img[0][0][0] = 0
