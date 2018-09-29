@@ -18,6 +18,8 @@ def processYImage(img):
     threshold = 150
     min_length = 12
 
+    def isWithinBounds(position):
+        return position.x >= 0 and position.x < img_width and position.y >= 0 and position.y < img_height
     def addPixel(pixel, size = Vector(1,1), direction = Key.DEBUG):
         results.append(ImageInput(pixel, direction, size))
     def clearArea(center, size):
@@ -118,20 +120,20 @@ def processYImage(img):
             left : up,
             right : down
         }
-        def check(position):
-            return img[position.y][position.x][0] >= threshold
         direction = right
         position = start
         position += delta[direction]
+        if not isWithinBounds(position):
+            return (Vector(), Vector())
         while(not position == start):
-            if (check(position)):
+            if (img[position.y][position.x][0] >= threshold):
                 direction = turn_left[direction]
             else:
                 direction = turn_right[direction]
             position += delta[direction]
-            if position.x < 0 or position.x >= img_width or position.y < 0 or position.y >= img_height:
+            while(not isWithinBounds(position)):
                 position -= delta[direction]
-                direction = turn_left[direction]
+                direction = turn_right[direction]
                 position += delta[direction]
         print 'square', time.time() - start_time
         return (Vector(), Vector())
@@ -139,7 +141,6 @@ def processYImage(img):
         pass
 
     cycles = 0
-    img[0][0][0] = 0
     start_time = time.time()
     while True:
         cycles += 1
