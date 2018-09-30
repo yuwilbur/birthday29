@@ -36,7 +36,8 @@ class MainMenuGame(YuGame):
 		self.acc = delta * 4
 		self.vel = delta
 		self.ball_speed = delta
-		self.ball_acceleration = delta / 4
+		self.ball_acceleration = delta / 2
+		self.max_ball_speed = self.ball_speed * 3
 
 	def onP1Collision(self, game_object):
 		if game_object.name == 'ball':
@@ -235,6 +236,8 @@ class MainMenuGame(YuGame):
 				self._p2.getComponent(DashedLine).offset += push_offset
 				self._p2.getComponent(DashedLine).dash_length = push_length
 				self._ball.getComponent(Solid).acceleration += p2_acceleration
+		if (self._ball.getComponent(Solid).velocity.magnitude() > self.max_ball_speed):
+			self._ball.getComponent(Solid).velocity = self._ball.getComponent(Solid).velocity.toUnitVector() * self.max_ball_speed
 
 	def resetPositions(self):
 		start_distance = 500
@@ -267,10 +270,10 @@ class MainMenuGame(YuGame):
 			self.setSpeeds(500)
 			return
 		elif event.data() == Key.NUM_8:
-			self.setSpeeds(1000)
+			self.setSpeeds(250)
 			return
 		elif event.data() == Key.NUM_9:
-			self.setSpeeds(2000)
+			self.setSpeeds(750)
 			return
 		if (self._control_lock):
 				return

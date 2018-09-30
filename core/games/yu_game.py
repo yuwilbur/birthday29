@@ -44,6 +44,7 @@ class YuGame(Game):
 		"BYE",
 		"",
 		"penis",
+		"</end>",
 		""
 	]
 	class PlayerInfo(object):

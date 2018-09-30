@@ -17,6 +17,9 @@ class Vector(object):
 	def toUnitVector(self):
 		return self / Vector.Distance(self, Vector())
 
+	def magnitude(self):
+		return Vector.Distance(self, Vector())
+
 	def __neg__(self):
 		return Vector(-self.x, -self.y)
 
