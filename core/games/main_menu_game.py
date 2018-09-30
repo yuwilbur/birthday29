@@ -42,6 +42,7 @@ class MainMenuGame(YuGame):
 		self.ball_speed = delta * 1.5
 		self.ball_acceleration = delta * 3
 		self.max_ball_speed = self.ball_speed * 2
+		self.gradience_speed = delta / 2
 
 	def diffSpeeds(self, delta):
 		self.delta += delta
@@ -151,7 +152,7 @@ class MainMenuGame(YuGame):
 		pygame.mixer.music.set_volume(0.25)
 		pygame.mixer.music.play(-1)
 
-		self.setSpeeds(500)
+		self.setSpeeds(50)
 
 		def createWall(position, dimensions, color):
 			wall = GameObject("wall")
@@ -238,18 +239,17 @@ class MainMenuGame(YuGame):
 			self._ball.getComponent(Solid).acceleration = Vector(0, 0)
 
 			max_distance = self._resolution.x * 3 / 4
-			gradience_speed = 75
 
 			p1_acceleration = 0
 			if self._p1_pull:
 				#self._p1.getComponent(DashedLine).offset -= pull_offset
 				#self._p1.getComponent(DashedLine).dash_length = pull_length
-				self._p1.getComponent(GradientCircle).radius -= gradience_speed
+				self._p1.getComponent(GradientCircle).radius -= self.gradience_speed
 				if (self._p1.getComponent(GradientCircle).radius < 0):
 					self._p1.getComponent(GradientCircle).radius = max_distance
 				p1_acceleration = -self.ball_acceleration
 			elif self._p1_push:
-				self._p1.getComponent(GradientCircle).radius += gradience_speed
+				self._p1.getComponent(GradientCircle).radius += self.gradience_speed
 				if (self._p1.getComponent(GradientCircle).radius > max_distance):
 					self._p1.getComponent(GradientCircle).radius = 0
 				#self._p1.getComponent(DashedLine).offset += push_offset
@@ -265,14 +265,14 @@ class MainMenuGame(YuGame):
 			
 			p2_acceleration = 0
 			if self._p2_pull:
-				self._p2.getComponent(GradientCircle).radius -= gradience_speed
+				self._p2.getComponent(GradientCircle).radius -= self.gradience_speed
 				if (self._p2.getComponent(GradientCircle).radius < 0):
 					self._p2.getComponent(GradientCircle).radius = max_distance
 				#self._p2.getComponent(DashedLine).offset -= pull_offset
 				#self._p2.getComponent(DashedLine).dash_length = pull_length
 				p2_acceleration = -self.ball_acceleration
 			elif self._p2_push:
-				self._p2.getComponent(GradientCircle).radius += gradience_speed
+				self._p2.getComponent(GradientCircle).radius += self.gradience_speed
 				if (self._p2.getComponent(GradientCircle).radius > max_distance):
 					self._p2.getComponent(GradientCircle).radius = 0
 				#self._p2.getComponent(DashedLine).offset += push_offset
@@ -347,19 +347,10 @@ class MainMenuGame(YuGame):
 			self._stage = 3
 			return
 		elif event.data() == Key.NUM_5:
-			self.diffSpeeds(-100)
+			self.diffSpeeds(-10)
 			return
 		elif event.data() == Key.NUM_6:
-			self.diffSpeeds(100)
-			return
-		elif event.data() == Key.NUM_7:
-			self.setSpeeds(500)
-			return
-		elif event.data() == Key.NUM_8:
-			self.setSpeeds(250)
-			return
-		elif event.data() == Key.NUM_9:
-			self.setSpeeds(750)
+			self.diffSpeeds(10)
 			return
 		if (self._control_lock):
 				return

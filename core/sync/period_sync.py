@@ -1,7 +1,8 @@
 import time
 
 class PeriodSync:
-    PERIOD = 0.0167
+    DESIRED_PERIOD = 0.033
+    PERIOD = DESIRED_PERIOD
 
     def Start(self):
         self._start_time = time.time()
@@ -10,7 +11,8 @@ class PeriodSync:
         self._end_time = time.time()
             
     def Sync(self):
-        delta = self.PERIOD - (self._end_time - self._start_time)
+    	self.PERIOD = self._end_time - self._start_time
+        delta = self.DESIRED_PERIOD - self.PERIOD
         if (delta > 0):
             time.sleep(delta)
     
