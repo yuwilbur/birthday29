@@ -250,7 +250,11 @@ def processYImage(img):
         step = 2
         value = img[y][x]
         value_threshold = threshold / 2
-        for delta in range(0, min_length - step):
+        step_limit = min_length - step
+        if (y - step_limit < 0 or x - step_limit < 0 or x + step_limit >= img_width):
+            clearArea(center, size)
+            continue
+        for delta in range(0, step_limit):
             if abs(value - int(img[y - delta][x])) > value_threshold:
                 y = y - delta
                 break
