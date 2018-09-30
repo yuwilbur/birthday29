@@ -153,7 +153,7 @@ class Renderer(Manager):
             self._screen.blit(surface, position, (0, 0, surface.get_width(), surface.get_height()))
 
     def update(self):
-        latency = str(int((time.time() - self._start_time) * 1000))
+        latency = str(int(1.0 / (time.time() - self._start_time)))
         self._fps.getComponent(TextBox).setTexts([latency])
         self._start_time = time.time()
         self._screen.fill(Color.BLACK)
