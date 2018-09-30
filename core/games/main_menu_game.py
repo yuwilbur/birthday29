@@ -36,7 +36,7 @@ class MainMenuGame(YuGame):
 		super(MainMenuGame, self).__init__("MainMenuGame")
 
 	def setSpeeds(self, delta):
-		delta = min(800, delta)
+		delta = min(500, delta)
 		self.delta = delta
 		self.acc = delta * 4
 		self.vel = delta
@@ -162,7 +162,7 @@ class MainMenuGame(YuGame):
 		pygame.mixer.music.set_volume(0.25)
 		pygame.mixer.music.play(-1)
 
-		self.setSpeeds(50)
+		self.setSpeeds(75)
 
 		def createWall(position, dimensions, color):
 			wall = GameObject("wall")
