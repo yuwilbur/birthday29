@@ -295,7 +295,7 @@ class MainMenuGame(YuGame):
 					self._p1_hold = True
 			elif self._p1_hold:
 				self._boom_sound.play()
-				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed / 2, 0) + self._p1.getComponent(Solid).velocity / 2
+				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed / 2, 0) + self._p1.getComponent(Solid).velocity
 				self._p1_hold = False
 
 			if self._p2_pull:
@@ -306,7 +306,7 @@ class MainMenuGame(YuGame):
 					self._p2_hold = True
 			elif self._p2_hold:
 				self._boom_sound.play()
-				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed / 2, 0) + self._p2.getComponent(Solid).velocity / 2
+				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed / 2, 0) + self._p2.getComponent(Solid).velocity
 				self._p2_hold = False
 
 
