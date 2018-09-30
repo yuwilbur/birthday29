@@ -8,5 +8,5 @@ class GradientRectangle(Component):
 		super(GradientRectangle, self).__init__(game_object)
 		self.start_color = Color.WHITE
 		self.end_color = Color.BLACK
-		self.step = 5
+		self.step = 100
 		self.dimensions = Vector()

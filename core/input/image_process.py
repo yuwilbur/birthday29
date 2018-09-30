@@ -152,7 +152,7 @@ def processYImage(img):
         position += delta[direction]
         #onMove[direction](position)
         while(not position == start):
-            if (time.time() - start_time) > 0.1:
+            if (time.time() - start_time) > 0.25:
                 break
             if (getValue(position) >= threshold):
                 if (position.y > bot_right.y):
@@ -224,7 +224,7 @@ def processYImage(img):
     start_time = time.time()
     cycles = 0
     while True:
-        if (time.time() - start_time) > 1.0:
+        if (time.time() - start_time) > 2.0:
             break
         cycles += 1
         candidates = np.argwhere(img >= threshold)

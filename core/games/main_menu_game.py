@@ -174,7 +174,7 @@ class MainMenuGame(YuGame):
 		pygame.mixer.music.set_volume(0.25)
 		pygame.mixer.music.play(-1)
 
-		self.setSpeeds(80)
+		self.setSpeeds(50)
 
 		def createWall(position, dimensions, color):
 			wall = GameObject("wall")
@@ -318,8 +318,10 @@ class MainMenuGame(YuGame):
 
 			self._ball.getComponent(Solid).acceleration += p2_vector * p2_acceleration
 
+			hold_distance = self.delta * 3
+
 			if self._p1_pull:
-				if self._p1_hold or Vector.DistanceSqu(self._ball.getComponent(Transform).position, p1_position) <= self.delta * 2:
+				if self._p1_hold or Vector.DistanceSqu(self._ball.getComponent(Transform).position, p1_position) <= hold_distance:
 					self._ball.getComponent(Transform).position = p1_position
 					self._ball.getComponent(Solid).velocity = Vector()
 					self._ball.getComponent(Solid).acceleration = Vector()
@@ -335,7 +337,7 @@ class MainMenuGame(YuGame):
 				self._is_hum_playing = False
 
 			if self._p2_pull:
-				if self._p2_hold or Vector.DistanceSqu(self._ball.getComponent(Transform).position, p2_position) <= self.delta * 2:
+				if self._p2_hold or Vector.DistanceSqu(self._ball.getComponent(Transform).position, p2_position) <= hold_distance:
 					self._ball.getComponent(Transform).position = p2_position
 					self._ball.getComponent(Solid).velocity = Vector()
 					self._ball.getComponent(Solid).acceleration = Vector()

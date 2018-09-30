@@ -99,7 +99,7 @@ class YuGame(Game):
 			self.right.getComponent(LateMaterial).color = self.controls[right][2]
 			self.score = 0
 			self.borders = []
-			for x in range(0,100):
+			for x in range(0,20):
 				border = GameObject("border")
 				border.addComponent(Rectangle)
 				border.addComponent(PostUIMaterial)
@@ -136,7 +136,7 @@ class YuGame(Game):
 			self._p2_info.processed = result
 
 	def onYImageEvent(self, event):
-		def processPlayer(player, img):
+		def processPlayer(player):
 			latency_text_transform = player.latency_text.getComponent(Transform)
 			latency_text_textbox = player.latency_text.getComponent(TextBox)
 			border_offset = latency_text_transform.position - Vector(latency_text_textbox.width, latency_text_textbox.height) / 2
@@ -214,9 +214,9 @@ class YuGame(Game):
 		stereo = [Frame(), Frame()]
 		p1_raw.scale3(stereo[0])
 		p2_raw.scale3(stereo[1])
-		processPlayer(self._p1_info, stereo[0].data)
+		processPlayer(self._p1_info)
 		self._p1_info.camera.getComponent(Image).fromNumpy(stereo[0].data)
-		processPlayer(self._p2_info, stereo[1].data)
+		processPlayer(self._p2_info)
 		self._p2_info.camera.getComponent(Image).fromNumpy(stereo[1].data)
 
 	def updateTroll(self):
