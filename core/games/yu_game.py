@@ -335,19 +335,19 @@ class YuGame(Game):
 		key = event.data()
 		if key in self._p1_info.controls:
 			control = self._p1_info.controls[key]
-			control[0].getComponent(LateMaterial).color = control[2]
+			control[0].getComponent(PostUIMaterial).color = control[2]
 		if key in self._p2_info.controls:
 			control = self._p2_info.controls[key]
-			control[0].getComponent(LateMaterial).color = control[2]
+			control[0].getComponent(PostUIMaterial).color = control[2]
 
 	def onMainKeyEvent(self, event):
 		key = event.data()
 		if key in self._p1_info.controls:
 			control = self._p1_info.controls[key]
-			control[0].getComponent(LateMaterial).color = control[1]
+			control[0].getComponent(PostUIMaterial).color = control[1]
 		if key in self._p2_info.controls:
 			control = self._p2_info.controls[key]
-			control[0].getComponent(LateMaterial).color = control[1]
+			control[0].getComponent(PostUIMaterial).color = control[1]
 		if key == Key.C:
 			self.resetScore()
 

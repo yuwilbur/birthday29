@@ -318,7 +318,7 @@ class MainMenuGame(YuGame):
 
 			self._ball.getComponent(Solid).acceleration += p2_vector * p2_acceleration
 
-			hold_distance = self.delta * 3
+			hold_distance = self.delta * 4
 
 			if self._p1_pull:
 				if self._p1_hold or Vector.DistanceSqu(self._ball.getComponent(Transform).position, p1_position) <= hold_distance:
