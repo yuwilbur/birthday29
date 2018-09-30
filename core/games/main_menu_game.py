@@ -234,15 +234,14 @@ class MainMenuGame(YuGame):
 			gradience_speed = 75
 
 			p1_acceleration = 0
-			if self._p1_pull and not self._p1_push:
+			if self._p1_pull:
 				#self._p1.getComponent(DashedLine).offset -= pull_offset
 				#self._p1.getComponent(DashedLine).dash_length = pull_length
 				self._p1.getComponent(GradientCircle).radius -= gradience_speed
 				if (self._p1.getComponent(GradientCircle).radius < 0):
 					self._p1.getComponent(GradientCircle).radius = max_distance
-				print self._p1.getComponent(GradientCircle).radius
 				p1_acceleration = -self.ball_acceleration
-			elif self._p1_push and not self._p1_pull:
+			elif self._p1_push:
 				self._p1.getComponent(GradientCircle).radius += gradience_speed
 				if (self._p1.getComponent(GradientCircle).radius > max_distance):
 					self._p1.getComponent(GradientCircle).radius = 0
@@ -258,14 +257,14 @@ class MainMenuGame(YuGame):
 			self._ball.getComponent(Solid).acceleration += p1_vector * p1_acceleration
 			
 			p2_acceleration = 0
-			if self._p2_pull and not self._p2_push:
+			if self._p2_pull:
 				self._p2.getComponent(GradientCircle).radius -= gradience_speed
 				if (self._p2.getComponent(GradientCircle).radius < 0):
 					self._p2.getComponent(GradientCircle).radius = max_distance
 				#self._p2.getComponent(DashedLine).offset -= pull_offset
 				#self._p2.getComponent(DashedLine).dash_length = pull_length
 				p2_acceleration = -self.ball_acceleration
-			elif self._p2_push and not self._p2_pull:
+			elif self._p2_push:
 				self._p2.getComponent(GradientCircle).radius += gradience_speed
 				if (self._p2.getComponent(GradientCircle).radius > max_distance):
 					self._p2.getComponent(GradientCircle).radius = 0
@@ -278,6 +277,12 @@ class MainMenuGame(YuGame):
 			p2_acceleration *= p2_strength
 
 			self._ball.getComponent(Solid).acceleration += p2_vector * p2_acceleration
+
+			if self._p1_pull:
+				if Vector.DistanceSqu(self._ball.getComponent(Transform).position, self._p1.getComponent(Transform).position) <= 4:
+					self._ball.getComponent(Transform).position = self._p1.getComponent(Transform).position
+					self._ball.getComponent(Solid).velocity = Vector()
+					self._ball.getComponent(Solid).acceleration = Vector()
 
 		if (self._ball.getComponent(Solid).velocity.magnitude() > self.max_ball_speed):
 			self._ball.getComponent(Solid).velocity = self._ball.getComponent(Solid).velocity.toUnitVector() * self.max_ball_speed

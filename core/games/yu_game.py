@@ -21,6 +21,7 @@ import time
 class YuGame(Game):
 	TROLL_INDEX = 0
 	TROLL = [
+		"THIS IS NOT PLAY TESTED",
 		"HAPPY BIRTHDAY TO YU",
 		"HAPPY BIRTHDAY TO YU!",
 		"HAPPY BIRTHDAY TO WILBUR",
@@ -240,24 +241,6 @@ class YuGame(Game):
 	def getOffset(self):
 		return self._offset
 
-	def onMainKeyUpEvent(self, event):
-		key = event.data()
-		if key in self._p1_info.controls:
-			control = self._p1_info.controls[key]
-			control[0].getComponent(LateMaterial).color = control[2]
-		if key in self._p2_info.controls:
-			control = self._p2_info.controls[key]
-			control[0].getComponent(LateMaterial).color = control[2]
-
-	def onMainKeyEvent(self, event):
-		key = event.data()
-		if key in self._p1_info.controls:
-			control = self._p1_info.controls[key]
-			control[0].getComponent(LateMaterial).color = control[1]
-		if key in self._p2_info.controls:
-			control = self._p2_info.controls[key]
-			control[0].getComponent(LateMaterial).color = control[1]
-
 	def __init__(self, name):
 		super(YuGame, self).__init__(name)
 		self._info_width = 160
@@ -336,6 +319,9 @@ class YuGame(Game):
 		self.setGameTitle(["|",self.TROLL[self.TROLL_INDEX]])
 
 	def reset(self):
+		pass
+
+	def resetScore(self):
 		self._p1_info.score = 0
 		self.updatePlayer1Score()
 		self._p2_info.score = 0
@@ -343,4 +329,24 @@ class YuGame(Game):
 
 	def update(self):
 		pass
+
+	def onMainKeyUpEvent(self, event):
+		key = event.data()
+		if key in self._p1_info.controls:
+			control = self._p1_info.controls[key]
+			control[0].getComponent(LateMaterial).color = control[2]
+		if key in self._p2_info.controls:
+			control = self._p2_info.controls[key]
+			control[0].getComponent(LateMaterial).color = control[2]
+
+	def onMainKeyEvent(self, event):
+		key = event.data()
+		if key in self._p1_info.controls:
+			control = self._p1_info.controls[key]
+			control[0].getComponent(LateMaterial).color = control[1]
+		if key in self._p2_info.controls:
+			control = self._p2_info.controls[key]
+			control[0].getComponent(LateMaterial).color = control[1]
+		if key == Key.C:
+			self.resetScore()
 
