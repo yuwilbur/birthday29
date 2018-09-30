@@ -35,12 +35,17 @@ class MainMenuGame(YuGame):
 		super(MainMenuGame, self).__init__("MainMenuGame")
 
 	def setSpeeds(self, delta):
+		delta = min(800, delta)
 		self.delta = delta
 		self.acc = delta * 4
 		self.vel = delta
-		self.ball_speed = delta
+		self.ball_speed = delta * 1.5
 		self.ball_acceleration = delta * 3
-		self.max_ball_speed = self.ball_speed * 3
+		self.max_ball_speed = self.ball_speed * 2
+
+	def diffSpeeds(self, delta):
+		self.delta += delta
+		self.setSpeeds(self.delta)
 
 	def onP1Collision(self, game_object):
 		if game_object.name == 'ball':
@@ -89,7 +94,7 @@ class MainMenuGame(YuGame):
 		EventDispatcher().add_event_listener(KeyEvent.TYPE, self.onKeyEvent)
 		EventDispatcher().add_event_listener(KeyUpEvent.TYPE, self.onKeyUpEvent)
 
-		thickness = 25
+		thickness = 40
 
 		self._p1 = GameObject("p1")
 		self._p1.addComponent(Rectangle)
@@ -139,11 +144,11 @@ class MainMenuGame(YuGame):
 		self._resolution = self.getResolution()
 
 		self._hit_sound = pygame.mixer.Sound(self.HIT_SOUND_PATH)
-		self._hit_sound.set_volume(0.5)
+		self._hit_sound.set_volume(1.0)
 		self._boom_sound = pygame.mixer.Sound(self.BOOM_SOUND_PATH)
 		self._boom_sound.set_volume(1.0)
 		pygame.mixer.music.load(self.MUSIC_PATH)
-		pygame.mixer.music.set_volume(1.0)
+		pygame.mixer.music.set_volume(0.25)
 		pygame.mixer.music.play(-1)
 
 		self.setSpeeds(500)
@@ -157,11 +162,12 @@ class MainMenuGame(YuGame):
 			wall.getComponent(Transform).position = position + self.getOffset()
 			wall.getComponent(Rectangle).dimensions = dimensions
 			return wall
-		createWall(Vector(0, -self._resolution.y / 2), Vector(self._resolution.x, thickness), Color.WHITE)
-		createWall(Vector(0, self._resolution.y / 2), Vector(self._resolution.x, thickness), Color.WHITE)
-		p1_target = createWall(Vector(self._resolution.x / 2, 0), Vector(thickness, self._resolution.y), Color.BLUE)
+		wall_thickness = 100
+		createWall(Vector(0, -self._resolution.y / 2 - (wall_thickness / 2 - thickness)), Vector(self._resolution.x, wall_thickness), Color.WHITE)
+		createWall(Vector(0, self._resolution.y / 2 + (wall_thickness / 2 - thickness)), Vector(self._resolution.x, wall_thickness), Color.WHITE)
+		p1_target = createWall(Vector(self._resolution.x / 2 + (wall_thickness / 2 - thickness), 0), Vector(wall_thickness, self._resolution.y), Color.BLUE)
 		p1_target.getComponent(Collider).setOnCollisionListener(self.onP1Score)
-		p2_target = createWall(Vector(-self._resolution.x / 2, 0), Vector(thickness, self._resolution.y), Color.RED)
+		p2_target = createWall(Vector(-self._resolution.x / 2 - (wall_thickness / 2 - thickness), 0), Vector(wall_thickness, self._resolution.y), Color.RED)
 		p2_target.getComponent(Collider).setOnCollisionListener(self.onP2Score)
 
 		self._game_info = GameObject("main game info")
@@ -231,7 +237,7 @@ class MainMenuGame(YuGame):
 			#push_length = 5.0
 			self._ball.getComponent(Solid).acceleration = Vector(0, 0)
 
-			max_distance = self._resolution.x
+			max_distance = self._resolution.x * 3 / 4
 			gradience_speed = 75
 
 			p1_acceleration = 0
@@ -287,7 +293,7 @@ class MainMenuGame(YuGame):
 					self._p1_hold = True
 			elif self._p1_hold:
 				self._boom_sound.play()
-				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed * 3 / 4, 0)
+				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed / 2, 0) + self._p1.getComponent(Solid).velocity / 2
 				self._p1_hold = False
 
 			if self._p2_pull:
@@ -298,7 +304,7 @@ class MainMenuGame(YuGame):
 					self._p2_hold = True
 			elif self._p2_hold:
 				self._boom_sound.play()
-				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed * 3 / 4, 0)
+				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed / 2, 0) + self._p2.getComponent(Solid).velocity / 2
 				self._p2_hold = False
 
 
@@ -339,6 +345,12 @@ class MainMenuGame(YuGame):
 			return
 		elif event.data() == Key.NUM_3:
 			self._stage = 3
+			return
+		elif event.data() == Key.NUM_5:
+			self.diffSpeeds(-100)
+			return
+		elif event.data() == Key.NUM_6:
+			self.diffSpeeds(100)
 			return
 		elif event.data() == Key.NUM_7:
 			self.setSpeeds(500)
