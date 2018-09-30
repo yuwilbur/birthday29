@@ -35,10 +35,11 @@ class MainMenuGame(YuGame):
 		super(MainMenuGame, self).__init__("MainMenuGame")
 
 	def setSpeeds(self, delta):
+		self.delta = delta
 		self.acc = delta * 4
 		self.vel = delta
 		self.ball_speed = delta
-		self.ball_acceleration = delta * 4
+		self.ball_acceleration = delta * 3
 		self.max_ball_speed = self.ball_speed * 3
 
 	def onP1Collision(self, game_object):
@@ -217,11 +218,11 @@ class MainMenuGame(YuGame):
 			#self._p2.getComponent(DashedLine).start = self._p2.getComponent(Transform).position + self._p2.getComponent(Magnet).offset
 			#self._p2.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
 			#p2_vector = (self._p2.getComponent(DashedLine).end - self._p2.getComponent(DashedLine).start).toUnitVector()
-			p1_position = self._p1.getComponent(Transform).position
-			p2_position = self._p2.getComponent(Transform).position
+			p1_position = self._p1.getComponent(Transform).position + self._p1.getComponent(GradientCircle).offset
+			p2_position = self._p2.getComponent(Transform).position + self._p2.getComponent(GradientCircle).offset
 			ball_position = self._ball.getComponent(Transform).position
-			p1_vector = (ball_position - (p1_position + self._p1.getComponent(GradientCircle).offset)).toUnitVector()
-			p2_vector = (ball_position - (p2_position + self._p2.getComponent(GradientCircle).offset)).toUnitVector()
+			p1_vector = (ball_position - p1_position).toUnitVector()
+			p2_vector = (ball_position - p2_position).toUnitVector()
 			#self._p1.getComponent(DashedLine).dash_length = 0
 			#self._p2.getComponent(DashedLine).dash_length = 0
 			#pull_offset = 5.0
@@ -279,10 +280,27 @@ class MainMenuGame(YuGame):
 			self._ball.getComponent(Solid).acceleration += p2_vector * p2_acceleration
 
 			if self._p1_pull:
-				if Vector.DistanceSqu(self._ball.getComponent(Transform).position, self._p1.getComponent(Transform).position) <= 4:
-					self._ball.getComponent(Transform).position = self._p1.getComponent(Transform).position
+				if Vector.DistanceSqu(self._ball.getComponent(Transform).position, p1_position) <= self.delta * 2:
+					self._ball.getComponent(Transform).position = p1_position
 					self._ball.getComponent(Solid).velocity = Vector()
 					self._ball.getComponent(Solid).acceleration = Vector()
+					self._p1_hold = True
+			elif self._p1_hold:
+				self._boom_sound.play()
+				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed * 3 / 4, 0)
+				self._p1_hold = False
+
+			if self._p2_pull:
+				if Vector.DistanceSqu(self._ball.getComponent(Transform).position, p2_position) <= self.delta * 2:
+					self._ball.getComponent(Transform).position = p2_position
+					self._ball.getComponent(Solid).velocity = Vector()
+					self._ball.getComponent(Solid).acceleration = Vector()
+					self._p2_hold = True
+			elif self._p2_hold:
+				self._boom_sound.play()
+				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed * 3 / 4, 0)
+				self._p2_hold = False
+
 
 		if (self._ball.getComponent(Solid).velocity.magnitude() > self.max_ball_speed):
 			self._ball.getComponent(Solid).velocity = self._ball.getComponent(Solid).velocity.toUnitVector() * self.max_ball_speed
@@ -301,8 +319,10 @@ class MainMenuGame(YuGame):
 		self._p2.getComponent(GradientCircle).radius = 0
 		self._p1_push = False
 		self._p1_pull = False
+		self._p1_hold = False
 		self._p2_push = False
 		self._p2_pull = False
+		self._p2_hold = False
 		self._game_start = time.time()
 		self._control_lock = True
 

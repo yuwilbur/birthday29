@@ -15,7 +15,10 @@ class Vector(object):
 		return (int(self.y), int(self.x))
 
 	def toUnitVector(self):
-		return self / Vector.Distance(self, Vector())
+		distance = Vector.Distance(self, Vector())
+		if distance == 0:
+			return Vector()
+		return self / distance
 
 	def magnitude(self):
 		return Vector.Distance(self, Vector())

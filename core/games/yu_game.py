@@ -317,6 +317,7 @@ class YuGame(Game):
 		self._game_title.getComponent(TextBox).align = Align.CENTER
 		self._game_title.getComponent(Transform).position = Vector(0, p1_y)
 		self.setGameTitle(["|",self.TROLL[self.TROLL_INDEX]])
+		self.resetScore()
 
 	def reset(self):
 		pass
