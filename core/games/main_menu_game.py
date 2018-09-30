@@ -37,7 +37,7 @@ class MainMenuGame(YuGame):
 		self.acc = delta * 4
 		self.vel = delta
 		self.ball_speed = delta
-		self.ball_acceleration = delta
+		self.ball_acceleration = delta * 4
 		self.max_ball_speed = self.ball_speed * 3
 
 	def onP1Collision(self, game_object):
@@ -233,7 +233,8 @@ class MainMenuGame(YuGame):
 				self._p1.getComponent(DashedLine).offset += push_offset
 				self._p1.getComponent(DashedLine).dash_length = push_length
 				p1_acceleration = self.ball_acceleration
-			p1_strength = max(max_distance, Vector.Distance(self._ball.getComponent(Transform).position, self._p1.getComponent(Transform).position))
+			p1_strength = max(0.0, (max_distance - Vector.Distance(self._ball.getComponent(Transform).position, self._p1.getComponent(Transform).position)) / max_distance)
+			p1_acceleration *= p1_strength
 
 			self._ball.getComponent(Solid).acceleration += p1_vector * p1_acceleration
 			
@@ -246,6 +247,8 @@ class MainMenuGame(YuGame):
 				self._p2.getComponent(DashedLine).offset += push_offset
 				self._p2.getComponent(DashedLine).dash_length = push_length
 				p2_acceleration = self.ball_acceleration
+			p2_strength = max(0.0, (max_distance - Vector.Distance(self._ball.getComponent(Transform).position, self._p2.getComponent(Transform).position)) / max_distance)
+			p2_acceleration *= p2_strength
 
 			self._ball.getComponent(Solid).acceleration += p2_vector * p2_acceleration
 
@@ -262,6 +265,10 @@ class MainMenuGame(YuGame):
 		self._p2.getComponent(Solid).acceleration = Vector(0, 0)
 		self._ball.getComponent(Transform).position = Vector() + self.getOffset()
 		self._ball.getComponent(Solid).velocity = Vector(0, 0)
+		self._p1_pull = False
+		self._p1_push = False
+		self._p2_pull = False
+		self._p2_push = False
 		self._game_start = time.time()
 		self._control_lock = True
 
