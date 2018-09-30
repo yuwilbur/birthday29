@@ -65,19 +65,19 @@ class YuGame(Game):
 			radius = 25
 			self.up = GameObject("up")
 			self.up.addComponent(Circle)
-			self.up.addComponent(LateMaterial)
+			self.up.addComponent(PostUIMaterial)
 			self.up.getComponent(Circle).radius = radius
 			self.down = GameObject("down")
 			self.down.addComponent(Circle)
-			self.down.addComponent(LateMaterial)
+			self.down.addComponent(PostUIMaterial)
 			self.down.getComponent(Circle).radius = radius
 			self.left = GameObject("left")
 			self.left.addComponent(Circle)
-			self.left.addComponent(LateMaterial)
+			self.left.addComponent(PostUIMaterial)
 			self.left.getComponent(Circle).radius = radius
 			self.right = GameObject("right")
 			self.right.addComponent(Circle)
-			self.right.addComponent(LateMaterial)
+			self.right.addComponent(PostUIMaterial)
 			self.right.getComponent(Circle).radius = radius
 			self.up_key = up
 			self.down_key = down
@@ -93,10 +93,10 @@ class YuGame(Game):
 				self.left_key : (self.left, Color.LIGHT_GREEN, Color.DARK_GREEN),
 				self.right_key : (self.right, Color.LIGHT_RED, Color.DARK_RED)
 			}
-			self.up.getComponent(LateMaterial).color = self.controls[up][2]
-			self.down.getComponent(LateMaterial).color = self.controls[down][2]
-			self.left.getComponent(LateMaterial).color = self.controls[left][2]
-			self.right.getComponent(LateMaterial).color = self.controls[right][2]
+			self.up.getComponent(PostUIMaterial).color = self.controls[up][2]
+			self.down.getComponent(PostUIMaterial).color = self.controls[down][2]
+			self.left.getComponent(PostUIMaterial).color = self.controls[left][2]
+			self.right.getComponent(PostUIMaterial).color = self.controls[right][2]
 			self.score = 0
 			self.borders = []
 			for x in range(0,20):
