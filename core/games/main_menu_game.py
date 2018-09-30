@@ -108,6 +108,7 @@ class MainMenuGame(YuGame):
 		self._p1.addComponent(GradientCircle)
 		self._p1.getComponent(GradientCircle).offset = Vector(50,0)
 		self._p1.getComponent(GradientCircle).start_color = Color.RED
+		self._p1.getComponent(GradientCircle).step = 0
 		self._p1_push = False
 		self._p1_pull = False
 		self._p1_score = GameObject("p1 score")
@@ -124,6 +125,7 @@ class MainMenuGame(YuGame):
 		self._p2.addComponent(GradientCircle)
 		self._p2.getComponent(GradientCircle).offset = Vector(-50,0)
 		self._p2.getComponent(GradientCircle).start_color = Color.BLUE
+		self._p2.getComponent(GradientCircle).step = 0
 		#self._p2.addComponent(DashedLine)
 		#self._p2.getComponent(DashedLine).color = Color.WHITE
 		self._p2_push = False
