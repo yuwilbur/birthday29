@@ -10,6 +10,7 @@ from ..common.events import *
 from ..engine.game_object import GameObject
 from ..engine.collider import Collider
 from ..engine.transform import Transform
+from ..engine.magnet import Magnet
 from ..renderer.color import Color
 from ..sync.period_sync import PeriodSync
 from ..engine.line import *
@@ -36,7 +37,7 @@ class MainMenuGame(YuGame):
 		self.acc = delta * 4
 		self.vel = delta
 		self.ball_speed = delta
-		self.ball_acceleration = delta / 2
+		self.ball_acceleration = delta
 		self.max_ball_speed = self.ball_speed * 3
 
 	def onP1Collision(self, game_object):
@@ -96,6 +97,8 @@ class MainMenuGame(YuGame):
 		self._p1.getComponent(Collider).setOnCollisionListener(self.onP1Collision)
 		self._p1.addComponent(DashedLine)
 		self._p1.getComponent(DashedLine).color = Color.WHITE
+		self._p1.addComponent(Magnet)
+		self._p1.getComponent(Magnet).offset = Vector(50,0)
 		self._p1_push = False
 		self._p1_pull = False
 		self._p1_score = GameObject("p1 score")
@@ -111,6 +114,8 @@ class MainMenuGame(YuGame):
 		self._p2.getComponent(Collider).setOnCollisionListener(self.onP2Collision)
 		self._p2.addComponent(DashedLine)
 		self._p2.getComponent(DashedLine).color = Color.WHITE
+		self._p2.addComponent(Magnet)
+		self._p2.getComponent(Magnet).offset = Vector(-50,0)
 		self._p2_push = False
 		self._p2_pull = False
 		self._p2_score = GameObject("p2 score")
@@ -203,10 +208,10 @@ class MainMenuGame(YuGame):
 		self._p1.getComponent(DashedLine).dash_length = -1
 		self._p2.getComponent(DashedLine).dash_length = -1
 		if (self._stage >= 3):
-			self._p1.getComponent(DashedLine).start = self._p1.getComponent(Transform).position
+			self._p1.getComponent(DashedLine).start = self._p1.getComponent(Transform).position + self._p1.getComponent(Magnet).offset
 			self._p1.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
 			p1_vector = (self._p1.getComponent(DashedLine).end - self._p1.getComponent(DashedLine).start).toUnitVector()
-			self._p2.getComponent(DashedLine).start = self._p2.getComponent(Transform).position
+			self._p2.getComponent(DashedLine).start = self._p2.getComponent(Transform).position + self._p2.getComponent(Magnet).offset
 			self._p2.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
 			p2_vector = (self._p2.getComponent(DashedLine).end - self._p2.getComponent(DashedLine).start).toUnitVector()
 			self._p1.getComponent(DashedLine).dash_length = 0
@@ -217,25 +222,33 @@ class MainMenuGame(YuGame):
 			push_length = 5.0
 			self._ball.getComponent(Solid).acceleration = Vector(0, 0)
 
-			p1_acceleration = p1_vector * self.ball_acceleration
+			max_distance = self._resolution.x / 2
+
+			p1_acceleration = 0
 			if self._p1_pull and not self._p1_push:
 				self._p1.getComponent(DashedLine).offset -= pull_offset
 				self._p1.getComponent(DashedLine).dash_length = pull_length
-				self._ball.getComponent(Solid).acceleration -= p1_acceleration
+				p1_acceleration = -self.ball_acceleration
 			elif self._p1_push and not self._p1_pull:
 				self._p1.getComponent(DashedLine).offset += push_offset
 				self._p1.getComponent(DashedLine).dash_length = push_length
-				self._ball.getComponent(Solid).acceleration += p1_acceleration
+				p1_acceleration = self.ball_acceleration
+			p1_strength = max(max_distance, Vector.Distance(self._ball.getComponent(Transform).position, self._p1.getComponent(Transform).position))
+
+			self._ball.getComponent(Solid).acceleration += p1_vector * p1_acceleration
 			
-			p2_acceleration = p2_vector * self.ball_acceleration
+			p2_acceleration = 0
 			if self._p2_pull and not self._p2_push:
 				self._p2.getComponent(DashedLine).offset -= pull_offset
 				self._p2.getComponent(DashedLine).dash_length = pull_length
-				self._ball.getComponent(Solid).acceleration -= p2_acceleration
+				p2_acceleration = -self.ball_acceleration
 			elif self._p2_push and not self._p2_pull:
 				self._p2.getComponent(DashedLine).offset += push_offset
 				self._p2.getComponent(DashedLine).dash_length = push_length
-				self._ball.getComponent(Solid).acceleration += p2_acceleration
+				p2_acceleration = self.ball_acceleration
+
+			self._ball.getComponent(Solid).acceleration += p2_vector * p2_acceleration
+
 		if (self._ball.getComponent(Solid).velocity.magnitude() > self.max_ball_speed):
 			self._ball.getComponent(Solid).velocity = self._ball.getComponent(Solid).velocity.toUnitVector() * self.max_ball_speed
 
