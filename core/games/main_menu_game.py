@@ -4,7 +4,7 @@ from ..engine.ui import TextBox
 from ..engine.solid import Solid
 from ..engine.primitive import Rectangle
 from ..engine.primitive import Circle
-from ..engine.material import Material
+from ..engine.material import *
 from ..common.event import EventDispatcher
 from ..common.events import *
 from ..engine.game_object import GameObject
@@ -26,7 +26,8 @@ import os, sys
 class MainMenuGame(YuGame):
 	ASSETS_PATH = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "core", "assets")
 	HIT_SOUND_PATH = os.path.join(ASSETS_PATH, "boop.wav")
-	BOOM_SOUND_PATH = os.path.join(ASSETS_PATH, "boom.wav")
+	BOOM_SOUND_PATH = os.path.join(ASSETS_PATH, "boom2.wav")
+	HUM_SOUND_PATH = os.path.join(ASSETS_PATH, "hum.wav")
 	#MUSIC_PATH = os.path.join(ASSETS_PATH, "music2.ogg")
 	MUSIC_PATH = os.path.join(ASSETS_PATH, "music.mp3")
 	score_width = 600
@@ -41,7 +42,7 @@ class MainMenuGame(YuGame):
 		self.vel = delta
 		self.ball_speed = delta * 1.5
 		self.ball_acceleration = delta * 3
-		self.max_ball_speed = self.ball_speed * 2
+		self.max_ball_speed = self.ball_speed * 3
 		self.gradience_speed = delta / 2
 
 	def diffSpeeds(self, delta):
@@ -73,6 +74,8 @@ class MainMenuGame(YuGame):
 		self._boom_sound.play()
 		self.resetPositions()
 		self._p1_score.getComponent(GradientRectangle).dimensions = Vector(self._resolution.x, self._resolution.y)
+		width = int(self._p1_score.getComponent(GradientRectangle).dimensions.x * self.score_delay)
+		self._p1_score.getComponent(Transform).position = Vector(self._resolution.x / 2 - width / 2 + self.wall_thickness / 2,0) + self.getOffset()
 
 	def onP2Score(self, game_object):
 		if not game_object.name == 'ball':
@@ -81,6 +84,8 @@ class MainMenuGame(YuGame):
 		self._boom_sound.play()
 		self.resetPositions()
 		self._p2_score.getComponent(GradientRectangle).dimensions = Vector(self._resolution.x, self._resolution.y)
+		width = int(self._p2_score.getComponent(GradientRectangle).dimensions.x * self.score_delay)
+		self._p2_score.getComponent(Transform).position = Vector(-self._resolution.x / 2 + width / 2 - self.wall_thickness / 2,0) + self.getOffset()
 
 	def start(self):
 		super(MainMenuGame, self).start()
@@ -99,7 +104,7 @@ class MainMenuGame(YuGame):
 
 		self._p1 = GameObject("p1")
 		self._p1.addComponent(Rectangle)
-		self._p1.addComponent(Material)
+		self._p1.addComponent(LateMaterial)
 		self._p1.addComponent(Collider)
 		self._p1.getComponent(Rectangle).dimensions = Vector(thickness, 150)
 		self._p1.getComponent(Collider).setOnCollisionListener(self.onP1Collision)
@@ -118,7 +123,7 @@ class MainMenuGame(YuGame):
 
 		self._p2 = GameObject("p2")
 		self._p2.addComponent(Rectangle)
-		self._p2.addComponent(Material)
+		self._p2.addComponent(LateMaterial)
 		self._p2.addComponent(Collider)
 		self._p2.getComponent(Rectangle).dimensions = Vector(thickness, 150) 
 		self._p2.getComponent(Collider).setOnCollisionListener(self.onP2Collision)
@@ -150,6 +155,9 @@ class MainMenuGame(YuGame):
 		self._hit_sound.set_volume(1.0)
 		self._boom_sound = pygame.mixer.Sound(self.BOOM_SOUND_PATH)
 		self._boom_sound.set_volume(1.0)
+		self._hum_sound = pygame.mixer.Sound(self.HUM_SOUND_PATH)
+		self._hum_sound.set_volume(1.0)
+		self._is_hum_playing = False
 		pygame.mixer.music.load(self.MUSIC_PATH)
 		pygame.mixer.music.set_volume(0.25)
 		pygame.mixer.music.play(-1)
@@ -165,12 +173,13 @@ class MainMenuGame(YuGame):
 			wall.getComponent(Transform).position = position + self.getOffset()
 			wall.getComponent(Rectangle).dimensions = dimensions
 			return wall
-		wall_thickness = 100
-		createWall(Vector(0, -self._resolution.y / 2 - (wall_thickness / 2 - thickness)), Vector(self._resolution.x - thickness * 2, wall_thickness), Color.WHITE)
-		createWall(Vector(0, self._resolution.y / 2 + (wall_thickness / 2 - thickness)), Vector(self._resolution.x - thickness * 2, wall_thickness), Color.WHITE)
-		p1_target = createWall(Vector(self._resolution.x / 2 + (wall_thickness / 2 - thickness), 0), Vector(wall_thickness, self._resolution.y), Color.BLUE)
+		self.wall_thickness = 100
+		wall_thickness = self.wall_thickness
+		createWall(Vector(0, -self._resolution.y / 2 - (wall_thickness / 2 - thickness)), Vector(self._resolution.x, wall_thickness), Color.WHITE)
+		createWall(Vector(0, self._resolution.y / 2 + (wall_thickness / 2 - thickness)), Vector(self._resolution.x, wall_thickness), Color.WHITE)
+		p1_target = createWall(Vector(self._resolution.x / 2 - (wall_thickness / 2 - thickness), 0), Vector(wall_thickness, self._resolution.y - thickness * 2), Color.BLUE)
 		p1_target.getComponent(Collider).setOnCollisionListener(self.onP1Score)
-		p2_target = createWall(Vector(-self._resolution.x / 2 - (wall_thickness / 2 - thickness), 0), Vector(wall_thickness, self._resolution.y), Color.RED)
+		p2_target = createWall(Vector(-self._resolution.x / 2 + (wall_thickness / 2 - thickness), 0), Vector(wall_thickness, self._resolution.y - thickness * 2), Color.RED)
 		p2_target.getComponent(Collider).setOnCollisionListener(self.onP2Score)
 
 		self._game_info = GameObject("main game info")
@@ -190,11 +199,11 @@ class MainMenuGame(YuGame):
 		if (self._p1_score.getComponent(GradientRectangle).dimensions.x > 0):
 			width = int(self._p1_score.getComponent(GradientRectangle).dimensions.x * self.score_delay)
 			self._p1_score.getComponent(GradientRectangle).dimensions.x = width
-			self._p1_score.getComponent(Transform).position = Vector(self._resolution.x / 2 - width / 2,0) + self.getOffset()
+			self._p1_score.getComponent(Transform).position = Vector(self._resolution.x / 2 - width / 2 + self.wall_thickness / 2,0) + self.getOffset()
 		if (self._p2_score.getComponent(GradientRectangle).dimensions.x > 0):
 			width = int(self._p2_score.getComponent(GradientRectangle).dimensions.x * self.score_delay)
 			self._p2_score.getComponent(GradientRectangle).dimensions.x = width
-			self._p2_score.getComponent(Transform).position = Vector(-self._resolution.x / 2 + width / 2,0) + self.getOffset()
+			self._p2_score.getComponent(Transform).position = Vector(-self._resolution.x / 2 + width / 2 - self.wall_thickness / 2,0) + self.getOffset()
 		if (self._game_lock):
 			self._game_start = time.time()
 		self._game_duration = time.time() - self._game_start
@@ -288,27 +297,36 @@ class MainMenuGame(YuGame):
 			self._ball.getComponent(Solid).acceleration += p2_vector * p2_acceleration
 
 			if self._p1_pull:
-				if Vector.DistanceSqu(self._ball.getComponent(Transform).position, p1_position) <= self.delta * 2:
+				if self._p1_hold or Vector.DistanceSqu(self._ball.getComponent(Transform).position, p1_position) <= self.delta * 2:
 					self._ball.getComponent(Transform).position = p1_position
 					self._ball.getComponent(Solid).velocity = Vector()
 					self._ball.getComponent(Solid).acceleration = Vector()
 					self._p1_hold = True
+					if not self._is_hum_playing:
+						self._is_hum_playing = True
+						self._hum_sound.play(-1)
 			elif self._p1_hold:
 				self._boom_sound.play()
-				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed / 2, 0) + self._p1.getComponent(Solid).velocity
+				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed / 2, 0) + self._p1.getComponent(Solid).velocity * 2
 				self._p1_hold = False
+				self._hum_sound.stop()
+				self._is_hum_playing = False
 
 			if self._p2_pull:
-				if Vector.DistanceSqu(self._ball.getComponent(Transform).position, p2_position) <= self.delta * 2:
+				if self._p2_hold or Vector.DistanceSqu(self._ball.getComponent(Transform).position, p2_position) <= self.delta * 2:
 					self._ball.getComponent(Transform).position = p2_position
 					self._ball.getComponent(Solid).velocity = Vector()
 					self._ball.getComponent(Solid).acceleration = Vector()
 					self._p2_hold = True
+					if not self._is_hum_playing:
+						self._is_hum_playing = True
+						self._hum_sound.play(-1)
 			elif self._p2_hold:
 				self._boom_sound.play()
-				self._ball.getComponent(Solid).velocity = Vector(self.max_ball_speed / 2, 0) + self._p2.getComponent(Solid).velocity
+				self._ball.getComponent(Solid).velocity = - Vector(self.max_ball_speed / 2, 0) + self._p2.getComponent(Solid).velocity * 2
 				self._p2_hold = False
-
+				self._hum_sound.stop()
+				self._is_hum_playing = False
 
 		if (self._ball.getComponent(Solid).velocity.magnitude() > self.max_ball_speed):
 			self._ball.getComponent(Solid).velocity = self._ball.getComponent(Solid).velocity.toUnitVector() * self.max_ball_speed

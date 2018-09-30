@@ -165,6 +165,7 @@ class Renderer(Manager):
         self.renderGradientCircles()
         self.renderLines()
         self.renderDashedLines()
+        self.renderGradientRectangles()
         self.renderMaterial(Material)
         self.renderMaterial(LateMaterial)
         self.renderUI()
