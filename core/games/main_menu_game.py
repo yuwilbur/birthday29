@@ -37,6 +37,7 @@ class MainMenuGame(YuGame):
 
 	def setSpeeds(self, delta):
 		delta = min(500, delta)
+		self._speed_text.getComponent(TextBox).setTexts([str(delta)])
 		self.delta = delta
 		self.acc = delta * 4
 		self.vel = delta
@@ -147,6 +148,17 @@ class MainMenuGame(YuGame):
 		self._ball.getComponent(Circle).radius = 25
 		self._ball.getComponent(Collider).setOnCollisionListener(self.onBallCollision)
 
+		self._speed_text = GameObject("speed")
+		self._speed_text.addComponent(TextBox)
+		self._speed_text.getComponent(TextBox).font_size = 30
+		self._speed_text.getComponent(TextBox).color = Color.BLACK
+		self._speed_text.getComponent(Transform).position = Vector()
+		self._speed_text.getComponent(TextBox).width = 1000
+		self._speed_text.getComponent(TextBox).height = 60
+		self._speed_text.getComponent(TextBox).align = Align.CENTER
+		self._speed_text.getComponent(Transform).position = Vector(0, self._resolution.y / 2) + self.getOffset()
+		self._speed_text.getComponent(TextBox).setTexts([""])
+
 		self._stage = 1
 
 		self._resolution = self.getResolution()
@@ -162,7 +174,7 @@ class MainMenuGame(YuGame):
 		pygame.mixer.music.set_volume(0.25)
 		pygame.mixer.music.play(-1)
 
-		self.setSpeeds(75)
+		self.setSpeeds(80)
 
 		def createWall(position, dimensions, color):
 			wall = GameObject("wall")
