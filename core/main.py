@@ -40,13 +40,13 @@ class Main(object):
             manager.setup()
 
         self._running = True
-        period_sync1 = PeriodSync()
+        period_sync = PeriodSync()
         while self._running:
-            period_sync1.Start()
+            period_sync.Start()
             for manager in managers1:
                 manager.update()
-            period_sync1.End()
-            period_sync1.Sync()
+            period_sync.End()
+            period_sync.Sync()
 
         for manager in managers1:
             manager.stop()

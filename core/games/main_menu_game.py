@@ -51,13 +51,13 @@ class MainMenuGame(YuGame):
 	def onP1Collision(self, game_object):
 		if game_object.name == 'ball':
 			return
-		self._p1.getComponent(Transform).position.y -= self._p1.getComponent(Solid).velocity.y * PeriodSync.PERIOD
+		self._p1.getComponent(Transform).position.y -= self._p1.getComponent(Solid).velocity.y * PeriodSync().period
 		self._p1.getComponent(Solid).velocity.y = 0
 
 	def onP2Collision(self, game_object):
 		if game_object.name == 'ball':
 			return
-		self._p2.getComponent(Transform).position.y -= self._p2.getComponent(Solid).velocity.y * PeriodSync.PERIOD
+		self._p2.getComponent(Transform).position.y -= self._p2.getComponent(Solid).velocity.y * PeriodSync().period
 		self._p2.getComponent(Solid).velocity.y = 0
 
 	def onBallCollision(self, game_object):

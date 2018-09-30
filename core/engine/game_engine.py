@@ -21,8 +21,8 @@ class GameEngine(Manager):
 		self._game_object_manager = GameObjectManager()
 		
 	def runPhysics(self, solid):
-		solid.getComponent(Solid).velocity += solid.getComponent(Solid).acceleration * PeriodSync.PERIOD
-		solid.getComponent(Transform).position += solid.getComponent(Solid).velocity * PeriodSync.PERIOD
+		solid.getComponent(Solid).velocity += solid.getComponent(Solid).acceleration * PeriodSync().period
+		solid.getComponent(Transform).position += solid.getComponent(Solid).velocity * PeriodSync().period
 
 	def runCircleCircleCollision(self, collider, reference):
 		x1 = collider.getComponent(Transform).position
