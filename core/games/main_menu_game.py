@@ -163,8 +163,8 @@ class MainMenuGame(YuGame):
 			wall.getComponent(Rectangle).dimensions = dimensions
 			return wall
 		wall_thickness = 100
-		createWall(Vector(0, -self._resolution.y / 2 - (wall_thickness / 2 - thickness)), Vector(self._resolution.x, wall_thickness), Color.WHITE)
-		createWall(Vector(0, self._resolution.y / 2 + (wall_thickness / 2 - thickness)), Vector(self._resolution.x, wall_thickness), Color.WHITE)
+		createWall(Vector(0, -self._resolution.y / 2 - (wall_thickness / 2 - thickness)), Vector(self._resolution.x - thickness * 2, wall_thickness), Color.WHITE)
+		createWall(Vector(0, self._resolution.y / 2 + (wall_thickness / 2 - thickness)), Vector(self._resolution.x - thickness * 2, wall_thickness), Color.WHITE)
 		p1_target = createWall(Vector(self._resolution.x / 2 + (wall_thickness / 2 - thickness), 0), Vector(wall_thickness, self._resolution.y), Color.BLUE)
 		p1_target.getComponent(Collider).setOnCollisionListener(self.onP1Score)
 		p2_target = createWall(Vector(-self._resolution.x / 2 - (wall_thickness / 2 - thickness), 0), Vector(wall_thickness, self._resolution.y), Color.RED)

@@ -5,18 +5,20 @@ from ..engine.vector import Vector
 from ..engine.transform import Transform
 from ..sync.period_sync import PeriodSync
 from ..engine.primitive import Solid
+from ..engine.game_object import GameObject
 from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.material import *
 from ..engine.gradient_rectangle import GradientRectangle
 from ..engine.gradient_circle import GradientCircle
 from ..engine.line import *
-from ..engine.ui import UI
+from ..engine.ui import *
 from ..sync.manager import Manager
 from ..renderer.color import Color
 
 import pygame
 import math
+import time
 
 class Renderer(Manager):
     __metaclass__ = Singleton
@@ -26,6 +28,16 @@ class Renderer(Manager):
         display_info = pygame.display.Info()
         resolution = Vector(1280, 720)
         self._resolution = resolution
+        self._fps = GameObject("fps")
+        self._fps.addComponent(TextBox)
+        self._fps.getComponent(TextBox).font_size = 30
+        self._fps.getComponent(TextBox).width = 1000
+        self._fps.getComponent(TextBox).height = 100
+        self._fps.getComponent(TextBox).align = Align.CENTER
+        self._fps.getComponent(TextBox).color = Color.BLACK
+        self._fps.getComponent(Transform).position = Vector(0, - self._resolution.y / 2 + 60)
+        self._fps.getComponent(TextBox).setTexts([""])
+        self._start_time = time.time()
 
     def getResolution(self):
         return self._resolution
@@ -131,14 +143,7 @@ class Renderer(Manager):
                 rect.center = position
                 pygame.draw.rect(self._screen,  material.color, rect, material.width)
 
-    def update(self):
-        self._screen.fill(Color.BLACK)
-        self.renderGradientRectangles()
-        self.renderGradientCircles()
-        self.renderLines()
-        self.renderDashedLines()
-        self.renderMaterial(Material)
-        self.renderMaterial(LateMaterial)
+    def renderUI(self):
         uis = self._engine.getObjectsWithType(UI)
         for ui_id, ui in uis.items():
             surface = ui.getComponent(UI).getSurface()
@@ -146,6 +151,19 @@ class Renderer(Manager):
                 continue
             position = (self._center + ui.getComponent(Transform).position - Vector(surface.get_width() / 2, surface.get_height() / 2)).toIntTuple()
             self._screen.blit(surface, position, (0, 0, surface.get_width(), surface.get_height()))
+
+    def update(self):
+        latency = str(int((time.time() - self._start_time) * 1000))
+        self._fps.getComponent(TextBox).setTexts([latency])
+        self._start_time = time.time()
+        self._screen.fill(Color.BLACK)
+        self.renderGradientRectangles()
+        self.renderGradientCircles()
+        self.renderLines()
+        self.renderDashedLines()
+        self.renderMaterial(Material)
+        self.renderMaterial(LateMaterial)
+        self.renderUI()
         self.renderMaterial(PostUIMaterial)
         pygame.display.update()
 

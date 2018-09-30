@@ -29,9 +29,9 @@ class Main(object):
             InputManager(),
             GameManager(),
             GameEngine(),
+            Renderer()
         ]
         managers2 = [
-            Renderer()
         ]
 
         for manager in managers1:
@@ -41,18 +41,12 @@ class Main(object):
 
         self._running = True
         period_sync1 = PeriodSync()
-        period_sync2 = PeriodSync()
         while self._running:
             period_sync1.Start()
             for manager in managers1:
                 manager.update()
             period_sync1.End()
             period_sync1.Sync()
-            period_sync2.Start()
-            for manager in managers2:
-                manager.update()
-            period_sync2.End()
-            period_sync2.Sync()
 
         for manager in managers1:
             manager.stop()
