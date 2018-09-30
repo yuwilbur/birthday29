@@ -9,6 +9,7 @@ from ..engine.primitive import Circle
 from ..engine.primitive import Rectangle
 from ..engine.material import *
 from ..engine.gradient_rectangle import GradientRectangle
+from ..engine.gradient_circle import GradientCircle
 from ..engine.line import *
 from ..engine.ui import UI
 from ..sync.manager import Manager
@@ -89,6 +90,33 @@ class Renderer(Manager):
                 pygame.draw.rect(self._screen, rectangle_color, rect)
                 count += 1
 
+    def renderGradientCircles(self):
+        circles = self._engine.getObjectsWithType(GradientCircle)
+        for circle_id, circle in circles.items():
+            radius = circle.radius
+            if (radius == 0):
+                continue
+            position = self._center + circle.getComponent(Transform).position + circle.offset
+            step = circle.step
+            thickness = circle.thickness
+            color_diff = [
+                (circle.end_color[0] - circle.start_color[0]) * step / float(thickness),
+                (circle.end_color[1] - circle.start_color[1]) * step / float(thickness),
+                (circle.end_color[2] - circle.start_color[2]) * step / float(thickness),
+                (circle.end_color[3] - circle.start_color[3]) * step / float(thickness)
+                ]
+            count = 0
+            for width in range(thickness, 0, -step):
+                color = [
+                    int(circle.end_color[0] - color_diff[0] * count),
+                    int(circle.end_color[1] - color_diff[1] * count),
+                    int(circle.end_color[2] - color_diff[2] * count),
+                    int(circle.end_color[3] - color_diff[3] * count)
+                    ]
+                width = min(width, radius)
+                pygame.draw.circle(self._screen, color, position.toIntTuple(), radius, width)
+                count += 1
+
     def renderMaterial(self, material_type):
         materials = self._engine.getObjectsWithType(material_type)
         for material_id, material in materials.items():
@@ -106,6 +134,7 @@ class Renderer(Manager):
     def update(self):
         self._screen.fill(Color.BLACK)
         self.renderGradientRectangles()
+        self.renderGradientCircles()
         self.renderLines()
         self.renderDashedLines()
         self.renderMaterial(Material)

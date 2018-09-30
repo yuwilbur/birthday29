@@ -16,6 +16,7 @@ from ..sync.period_sync import PeriodSync
 from ..engine.line import *
 from ..engine.gradient_rectangle import GradientRectangle
 from ..engine.align import Align
+from ..engine.gradient_circle import GradientCircle
 
 import time
 import random
@@ -95,10 +96,11 @@ class MainMenuGame(YuGame):
 		self._p1.addComponent(Collider)
 		self._p1.getComponent(Rectangle).dimensions = Vector(thickness, 150)
 		self._p1.getComponent(Collider).setOnCollisionListener(self.onP1Collision)
-		self._p1.addComponent(DashedLine)
-		self._p1.getComponent(DashedLine).color = Color.WHITE
-		self._p1.addComponent(Magnet)
-		self._p1.getComponent(Magnet).offset = Vector(50,0)
+		#self._p1.addComponent(DashedLine)
+		#self._p1.getComponent(DashedLine).color = Color.WHITE
+		self._p1.addComponent(GradientCircle)
+		self._p1.getComponent(GradientCircle).offset = Vector(50,0)
+		self._p1.getComponent(GradientCircle).start_color = Color.RED
 		self._p1_push = False
 		self._p1_pull = False
 		self._p1_score = GameObject("p1 score")
@@ -112,10 +114,11 @@ class MainMenuGame(YuGame):
 		self._p2.addComponent(Collider)
 		self._p2.getComponent(Rectangle).dimensions = Vector(thickness, 150) 
 		self._p2.getComponent(Collider).setOnCollisionListener(self.onP2Collision)
-		self._p2.addComponent(DashedLine)
-		self._p2.getComponent(DashedLine).color = Color.WHITE
-		self._p2.addComponent(Magnet)
-		self._p2.getComponent(Magnet).offset = Vector(-50,0)
+		self._p2.addComponent(GradientCircle)
+		self._p2.getComponent(GradientCircle).offset = Vector(-50,0)
+		self._p2.getComponent(GradientCircle).start_color = Color.BLUE
+		#self._p2.addComponent(DashedLine)
+		#self._p2.getComponent(DashedLine).color = Color.WHITE
 		self._p2_push = False
 		self._p2_pull = False
 		self._p2_score = GameObject("p2 score")
@@ -205,34 +208,50 @@ class MainMenuGame(YuGame):
 			self.setGameInfo([""])
 		
 
-		self._p1.getComponent(DashedLine).dash_length = -1
-		self._p2.getComponent(DashedLine).dash_length = -1
+		#self._p1.getComponent(DashedLine).dash_length = -1
+		#self._p2.getComponent(DashedLine).dash_length = -1
 		if (self._stage >= 3):
-			self._p1.getComponent(DashedLine).start = self._p1.getComponent(Transform).position + self._p1.getComponent(Magnet).offset
-			self._p1.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
-			p1_vector = (self._p1.getComponent(DashedLine).end - self._p1.getComponent(DashedLine).start).toUnitVector()
-			self._p2.getComponent(DashedLine).start = self._p2.getComponent(Transform).position + self._p2.getComponent(Magnet).offset
-			self._p2.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
-			p2_vector = (self._p2.getComponent(DashedLine).end - self._p2.getComponent(DashedLine).start).toUnitVector()
-			self._p1.getComponent(DashedLine).dash_length = 0
-			self._p2.getComponent(DashedLine).dash_length = 0
-			pull_offset = 5.0
-			pull_length = 10.0
-			push_offset = 2.5
-			push_length = 5.0
+			#self._p1.getComponent(DashedLine).start = self._p1.getComponent(Transform).position + self._p1.getComponent(Magnet).offset
+			#self._p1.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
+			#p1_vector = (self._p1.getComponent(DashedLine).end - self._p1.getComponent(DashedLine).start).toUnitVector()
+			#self._p2.getComponent(DashedLine).start = self._p2.getComponent(Transform).position + self._p2.getComponent(Magnet).offset
+			#self._p2.getComponent(DashedLine).end = self._ball.getComponent(Transform).position
+			#p2_vector = (self._p2.getComponent(DashedLine).end - self._p2.getComponent(DashedLine).start).toUnitVector()
+			p1_position = self._p1.getComponent(Transform).position
+			p2_position = self._p2.getComponent(Transform).position
+			ball_position = self._ball.getComponent(Transform).position
+			p1_vector = (ball_position - (p1_position + self._p1.getComponent(GradientCircle).offset)).toUnitVector()
+			p2_vector = (ball_position - (p2_position + self._p2.getComponent(GradientCircle).offset)).toUnitVector()
+			#self._p1.getComponent(DashedLine).dash_length = 0
+			#self._p2.getComponent(DashedLine).dash_length = 0
+			#pull_offset = 5.0
+			#pull_length = 10.0
+			#push_offset = 2.5
+			#push_length = 5.0
 			self._ball.getComponent(Solid).acceleration = Vector(0, 0)
 
-			max_distance = self._resolution.x / 2
+			max_distance = self._resolution.x
+			gradience_speed = 75
 
 			p1_acceleration = 0
 			if self._p1_pull and not self._p1_push:
-				self._p1.getComponent(DashedLine).offset -= pull_offset
-				self._p1.getComponent(DashedLine).dash_length = pull_length
+				#self._p1.getComponent(DashedLine).offset -= pull_offset
+				#self._p1.getComponent(DashedLine).dash_length = pull_length
+				self._p1.getComponent(GradientCircle).radius -= gradience_speed
+				if (self._p1.getComponent(GradientCircle).radius < 0):
+					self._p1.getComponent(GradientCircle).radius = max_distance
+				print self._p1.getComponent(GradientCircle).radius
 				p1_acceleration = -self.ball_acceleration
 			elif self._p1_push and not self._p1_pull:
-				self._p1.getComponent(DashedLine).offset += push_offset
-				self._p1.getComponent(DashedLine).dash_length = push_length
+				self._p1.getComponent(GradientCircle).radius += gradience_speed
+				if (self._p1.getComponent(GradientCircle).radius > max_distance):
+					self._p1.getComponent(GradientCircle).radius = 0
+				#self._p1.getComponent(DashedLine).offset += push_offset
+				#self._p1.getComponent(DashedLine).dash_length = push_length
 				p1_acceleration = self.ball_acceleration
+			else:
+				self._p1.getComponent(GradientCircle).radius = 0
+
 			p1_strength = max(0.0, (max_distance - Vector.Distance(self._ball.getComponent(Transform).position, self._p1.getComponent(Transform).position)) / max_distance)
 			p1_acceleration *= p1_strength
 
@@ -240,13 +259,21 @@ class MainMenuGame(YuGame):
 			
 			p2_acceleration = 0
 			if self._p2_pull and not self._p2_push:
-				self._p2.getComponent(DashedLine).offset -= pull_offset
-				self._p2.getComponent(DashedLine).dash_length = pull_length
+				self._p2.getComponent(GradientCircle).radius -= gradience_speed
+				if (self._p2.getComponent(GradientCircle).radius < 0):
+					self._p2.getComponent(GradientCircle).radius = max_distance
+				#self._p2.getComponent(DashedLine).offset -= pull_offset
+				#self._p2.getComponent(DashedLine).dash_length = pull_length
 				p2_acceleration = -self.ball_acceleration
 			elif self._p2_push and not self._p2_pull:
-				self._p2.getComponent(DashedLine).offset += push_offset
-				self._p2.getComponent(DashedLine).dash_length = push_length
+				self._p2.getComponent(GradientCircle).radius += gradience_speed
+				if (self._p2.getComponent(GradientCircle).radius > max_distance):
+					self._p2.getComponent(GradientCircle).radius = 0
+				#self._p2.getComponent(DashedLine).offset += push_offset
+				#self._p2.getComponent(DashedLine).dash_length = push_length
 				p2_acceleration = self.ball_acceleration
+			else:
+				self._p2.getComponent(GradientCircle).radius = 0
 			p2_strength = max(0.0, (max_distance - Vector.Distance(self._ball.getComponent(Transform).position, self._p2.getComponent(Transform).position)) / max_distance)
 			p2_acceleration *= p2_strength
 
@@ -265,10 +292,12 @@ class MainMenuGame(YuGame):
 		self._p2.getComponent(Solid).acceleration = Vector(0, 0)
 		self._ball.getComponent(Transform).position = Vector() + self.getOffset()
 		self._ball.getComponent(Solid).velocity = Vector(0, 0)
-		self._p1_pull = False
+		self._p1.getComponent(GradientCircle).radius = 0
+		self._p2.getComponent(GradientCircle).radius = 0
 		self._p1_push = False
-		self._p2_pull = False
+		self._p1_pull = False
 		self._p2_push = False
+		self._p2_pull = False
 		self._game_start = time.time()
 		self._control_lock = True
 
