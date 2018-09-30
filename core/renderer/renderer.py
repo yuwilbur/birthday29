@@ -110,7 +110,10 @@ class Renderer(Manager):
                 continue
             position = self._center + circle.getComponent(Transform).position + circle.offset
             step = circle.step
-            thickness = circle.thickness
+            thickness = min(radius, circle.thickness)
+            if (step == 0):
+                pygame.draw.circle(self._screen, circle.start_color, position.toIntTuple(), radius, thickness)
+                continue
             color_diff = [
                 (circle.end_color[0] - circle.start_color[0]) * step / float(thickness),
                 (circle.end_color[1] - circle.start_color[1]) * step / float(thickness),
@@ -157,6 +160,7 @@ class Renderer(Manager):
         self._fps.getComponent(TextBox).setTexts([latency])
         self._start_time = time.time()
         self._screen.fill(Color.BLACK)
+        self._screen.set_alpha(None)
         self.renderGradientRectangles()
         self.renderGradientCircles()
         self.renderLines()
